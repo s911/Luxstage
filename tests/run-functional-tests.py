@@ -3,6 +3,7 @@ import argparse
 import csv
 import json
 import re
+import socket
 import subprocess
 import sys
 import time
@@ -61,6 +62,8 @@ class Tester:
                 return response.status, response.read().decode("utf-8", errors="ignore"), dict(response.headers)
         except urllib.error.HTTPError as exc:
             return exc.code, exc.read().decode("utf-8", errors="ignore"), dict(exc.headers)
+        except (urllib.error.URLError, TimeoutError, socket.timeout) as exc:
+            return 598, str(exc), {}
 
     def ensure_seed_data(self) -> None:
         seed_script = self.root / "deploy" / "scripts" / "seed-demo-products.sh"
@@ -94,6 +97,16 @@ class Tester:
     def plugin_active(self, slug: str) -> bool:
         proc = self.wp(["plugin", "is-active", slug], timeout=60)
         return proc.returncode == 0
+
+    def role_has_cap(self, role: str, capability: str) -> bool:
+        proc = self.wp(
+            [
+                "eval",
+                f"$r=get_role('{role}'); echo ($r && $r->has_cap('{capability}')) ? '1' : '0';",
+            ],
+            timeout=60,
+        )
+        return proc.returncode == 0 and proc.stdout.strip() == "1"
 
     def run_all(self) -> int:
         self.ensure_seed_data()
@@ -231,18 +244,32 @@ class Tester:
         self.record("B-04", "Category admin", "PASS" if len(self.term_names("product_category")) >= 7 else "FAIL", "product categories")
         self.record("B-05", "Inquiry records", "SKIP", "Requires form plugin submissions")
         self.record("B-06", "Catalog PDF upload", "SKIP", "Requires uploaded PDF fixture")
-        self.record("B-07", "User roles", "SKIP", "Requires dedicated test users/roles")
+        editor_blocked = not self.role_has_cap("editor", "manage_options")
+        admin_allowed = self.role_has_cap("administrator", "manage_options")
+        self.record(
+            "B-07",
+            "User roles",
+            "PASS" if editor_blocked and admin_allowed else "FAIL",
+            f"editor_manage_options={not editor_blocked}, admin_manage_options={admin_allowed}",
+        )
 
     def performance_security_tests(self) -> None:
         start = time.time()
         status, body, headers = self.fetch("/")
         elapsed = time.time() - start
-        self.record("X-01", "Home performance smoke", "PASS" if status < 400 and elapsed < 3 else "FAIL", f"{elapsed:.2f}s")
+        self.record(
+            "X-01",
+            "Home performance smoke",
+            "PASS" if status < 400 and elapsed < 3 else "FAIL",
+            f"status={status}, {elapsed:.2f}s",
+        )
         self.record("X-02", "HTTPS/SSL", "PASS" if self.base_url.startswith("https://") else "SKIP", "Local Docker runs over HTTP")
-        self.record("X-03", "Login protection", "SKIP", "Requires Wordfence or server security policy")
+        security_plugins = ["wordfence", "limit-login-attempts-reloaded", "all-in-one-wp-security-and-firewall"]
+        security_enabled = any(self.plugin_active(slug) for slug in security_plugins)
+        self.record("X-03", "Login protection", "PASS" if security_enabled else "FAIL", "Install Wordfence or equivalent protection plugin")
         self.record("X-04", "XSS baseline escaping", "PASS", "Theme output uses escaping functions")
-        status, _, _ = self.fetch("/products/?s=%27%20OR%201%3D1%20--")
-        self.record("X-05", "SQL injection smoke", "PASS" if status < 500 else "FAIL", f"HTTP {status}")
+        status, _, _ = self.fetch("/products/?s=%27%20OR%201%3D1%20--", timeout=8)
+        self.record("X-05", "SQL injection smoke", "PASS" if 0 < status < 500 else "FAIL", f"HTTP {status}")
         self.record("X-06", "Image lazy loading", "PASS" if 'loading="lazy"' in body or "<img" not in body else "SKIP", "Depends on product images")
         cache_headers = " ".join(f"{k}: {v}" for k, v in headers.items()).lower()
         self.record("X-07", "Static cache headers", "PASS" if "cache" in cache_headers else "SKIP", "Depends on web server/CDN cache")
