@@ -15,10 +15,46 @@ if [[ ! -f "${ROOT_DIR}/.env" ]]; then
   cp "${ROOT_DIR}/.env.example" "${ROOT_DIR}/.env"
 fi
 
+# shellcheck disable=SC1091
+set -a
+source "${ROOT_DIR}/.env"
+set +a
+
+DB_NAME="${DB_NAME:-wp_stage_lighting}"
+DB_USER="${DB_USER:-wp_user}"
+DB_PASSWORD="${DB_PASSWORD:-wp_pass}"
+DB_HOST="${DB_HOST:-db}"
+WP_CORE_VERSION="${WP_CORE_VERSION:-latest}"
+
 docker compose up -d
 sleep 12
 
-if ! "${WPCLI_DOCKER[@]}" core is-installed --path=/var/www/html; then
+if [[ ! -f "${ROOT_DIR}/src/wp-settings.php" ]]; then
+  "${WPCLI_DOCKER[@]}" core download \
+    --path=/var/www/html \
+    --version="${WP_CORE_VERSION}" \
+    --force
+fi
+
+if [[ ! -f "${ROOT_DIR}/src/wp-config.php" ]]; then
+  "${WPCLI_DOCKER[@]}" config create \
+    --path=/var/www/html \
+    --dbname="${DB_NAME}" \
+    --dbuser="${DB_USER}" \
+    --dbpass="${DB_PASSWORD}" \
+    --dbhost="${DB_HOST}" \
+    --skip-check \
+    --force
+fi
+
+for i in {1..30}; do
+  if "${WPCLI_DOCKER[@]}" db check --path=/var/www/html >/dev/null 2>&1; then
+    break
+  fi
+  sleep 2
+done
+
+if ! "${WPCLI_DOCKER[@]}" core is-installed --path=/var/www/html >/dev/null 2>&1; then
   "${WPCLI_DOCKER[@]}" core install \
     --path=/var/www/html \
     --url="${WP_URL}" \
