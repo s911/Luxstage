@@ -31,21 +31,33 @@ DB_NAME="${DB_NAME:-wp_stage_lighting}"
 DB_USER="${DB_USER:-wp_user}"
 DB_PASSWORD="${DB_PASSWORD:-wp_pass}"
 DB_HOST="${DB_HOST:-db}"
+DB_ROOT_PASSWORD="${DB_ROOT_PASSWORD:-wp_root_pass}"
 WP_CORE_VERSION="${WP_CORE_VERSION:-latest}"
+LOCAL_WP_TARBALL="${LOCAL_WP_TARBALL:-}"
 
 if [[ "${DB_HOST}" == "mysql" ]]; then
   DB_HOST="db"
+fi
+
+if [[ -z "${LOCAL_WP_TARBALL}" ]]; then
+  if [[ -f "${ROOT_DIR}/../wordpress-${WP_CORE_VERSION}.tar.gz" ]]; then
+    LOCAL_WP_TARBALL="${ROOT_DIR}/../wordpress-${WP_CORE_VERSION}.tar.gz"
+  elif [[ -f "${ROOT_DIR}/../wordpress-6.6.2.tar.gz" ]]; then
+    LOCAL_WP_TARBALL="${ROOT_DIR}/../wordpress-6.6.2.tar.gz"
+  fi
 fi
 
 docker compose up -d
 sleep 12
 
 if [[ ! -f "${ROOT_DIR}/src/wp-settings.php" ]]; then
-  if ! docker compose exec -T web sh -lc "cp -an /usr/src/wordpress/. /var/www/html/"; then
-    "${WPCLI_DOCKER[@]}" core download \
-      --path=/var/www/html \
-      --version="${WP_CORE_VERSION}" \
-      --force
+  if [[ -n "${LOCAL_WP_TARBALL}" && -f "${LOCAL_WP_TARBALL}" ]]; then
+    tar -xzf "${LOCAL_WP_TARBALL}" -C "${ROOT_DIR}/src" --strip-components=1
+  elif ! docker compose exec -T web sh -lc "cp -an /usr/src/wordpress/. /var/www/html/"; then
+      "${WPCLI_DOCKER[@]}" core download \
+        --path=/var/www/html \
+        --version="${WP_CORE_VERSION}" \
+        --force
   fi
 fi
 
@@ -64,6 +76,19 @@ fi
 "${WPCLI_DOCKER[@]}" config set DB_USER "${DB_USER}" --type=constant --raw --path=/var/www/html
 "${WPCLI_DOCKER[@]}" config set DB_PASSWORD "${DB_PASSWORD}" --type=constant --raw --path=/var/www/html
 "${WPCLI_DOCKER[@]}" config set DB_HOST "${DB_HOST}" --type=constant --raw --path=/var/www/html
+
+if ! docker compose exec -T db mysql -uroot "-p${DB_ROOT_PASSWORD}" -e "SELECT 1;" >/dev/null 2>&1; then
+  echo "Unable to log in to MySQL as root. Check DB_ROOT_PASSWORD in .env or reset db volume."
+  echo "Quick reset command: docker compose down -v"
+  exit 1
+fi
+
+docker compose exec -T db mysql -uroot "-p${DB_ROOT_PASSWORD}" -e \
+  "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; \
+   CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
+   ALTER USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
+   GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'%'; \
+   FLUSH PRIVILEGES;"
 
 for i in {1..30}; do
   if "${WPCLI_DOCKER[@]}" db check --path=/var/www/html >/dev/null 2>&1; then
