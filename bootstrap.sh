@@ -4,7 +4,14 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_NAME_RAW="$(basename "${ROOT_DIR}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//')"
 export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-${PROJECT_NAME_RAW}}"
-WPCLI_DOCKER=(docker run --rm --network "${COMPOSE_PROJECT_NAME}_default" -v "${ROOT_DIR}/src:/var/www/html" wordpress:cli)
+WPCLI_VOLUME="${ROOT_DIR}/src:/var/www/html"
+if command -v getenforce >/dev/null 2>&1; then
+  SELINUX_STATE="$(getenforce || true)"
+  if [[ "${SELINUX_STATE}" == "Enforcing" || "${SELINUX_STATE}" == "Permissive" ]]; then
+    WPCLI_VOLUME="${ROOT_DIR}/src:/var/www/html:Z"
+  fi
+fi
+WPCLI_DOCKER=(docker run --rm --user 0:0 --network "${COMPOSE_PROJECT_NAME}_default" -v "${WPCLI_VOLUME}" wordpress:cli)
 WP_URL="${WP_URL:-http://localhost:8080}"
 WP_TITLE="${WP_TITLE:-Luxstage}"
 WP_ADMIN_USER="${WP_ADMIN_USER:-admin}"
