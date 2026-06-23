@@ -9,6 +9,15 @@ if (!defined('ABSPATH')) {
 
 define('LUXSTAGE_THEME_VERSION', '1.0.0');
 
+function luxstage_field(string $name, int $post_id = 0): mixed
+{
+    if (!function_exists('get_field')) {
+        return '';
+    }
+
+    return get_field($name, $post_id ?: get_the_ID());
+}
+
 add_action('after_setup_theme', static function (): void {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
@@ -104,106 +113,180 @@ add_action('template_redirect', static function (): void {
     }
 });
 
-add_action('init', static function (): void {
-    $labels = [
-        'name'                  => __('Stage Lighting', 'luxstage'),
-        'singular_name'         => __('Stage Lighting', 'luxstage'),
-        'menu_name'             => __('Stage Lighting', 'luxstage'),
-        'name_admin_bar'        => __('Stage Lighting', 'luxstage'),
-        'add_new'               => __('Add New', 'luxstage'),
-        'add_new_item'          => __('Add New Stage Lighting', 'luxstage'),
-        'new_item'              => __('New Stage Lighting', 'luxstage'),
-        'edit_item'             => __('Edit Stage Lighting', 'luxstage'),
-        'view_item'             => __('View Stage Lighting', 'luxstage'),
-        'all_items'             => __('All Stage Lighting', 'luxstage'),
-        'search_items'          => __('Search Stage Lighting', 'luxstage'),
-        'not_found'             => __('No stage lighting found.', 'luxstage'),
-        'not_found_in_trash'    => __('No stage lighting found in Trash.', 'luxstage'),
-        'featured_image'        => __('Product Image', 'luxstage'),
-        'set_featured_image'    => __('Set product image', 'luxstage'),
-        'remove_featured_image' => __('Remove product image', 'luxstage'),
-        'use_featured_image'    => __('Use as product image', 'luxstage'),
-    ];
-
-    register_post_type('stage_lighting', [
-        'labels'             => $labels,
+function luxstage_register_cpt(string $post_type, string $singular, string $plural, string $slug, string $icon): void
+{
+    register_post_type($post_type, [
+        'labels' => [
+            'name'                  => __($plural, 'luxstage'),
+            'singular_name'         => __($singular, 'luxstage'),
+            'menu_name'             => __($plural, 'luxstage'),
+            'name_admin_bar'        => __($singular, 'luxstage'),
+            'add_new_item'          => sprintf(__('Add New %s', 'luxstage'), $singular),
+            'edit_item'             => sprintf(__('Edit %s', 'luxstage'), $singular),
+            'view_item'             => sprintf(__('View %s', 'luxstage'), $singular),
+            'all_items'             => sprintf(__('All %s', 'luxstage'), $plural),
+            'search_items'          => sprintf(__('Search %s', 'luxstage'), $plural),
+            'not_found'             => sprintf(__('No %s found.', 'luxstage'), strtolower($plural)),
+            'not_found_in_trash'    => sprintf(__('No %s found in Trash.', 'luxstage'), strtolower($plural)),
+            'featured_image'        => __('Featured Image', 'luxstage'),
+            'set_featured_image'    => __('Set featured image', 'luxstage'),
+            'remove_featured_image' => __('Remove featured image', 'luxstage'),
+            'use_featured_image'    => __('Use as featured image', 'luxstage'),
+        ],
         'public'             => true,
         'publicly_queryable' => true,
         'show_ui'            => true,
         'show_in_menu'       => true,
         'show_in_rest'       => true,
-        'has_archive'        => 'products',
+        'has_archive'        => $slug,
         'rewrite'            => [
-            'slug'       => 'products',
+            'slug'       => $slug,
             'with_front' => false,
         ],
-        'menu_icon'          => 'dashicons-lightbulb',
+        'menu_icon'          => $icon,
         'supports'           => ['title', 'editor', 'excerpt', 'thumbnail', 'revisions'],
         'map_meta_cap'       => true,
     ]);
+}
+
+add_action('init', static function (): void {
+    luxstage_register_cpt('stage_lighting', 'Stage Lighting', 'Stage Lighting', 'products', 'dashicons-lightbulb');
+    luxstage_register_cpt('application', 'Application Case', 'Application Cases', 'applications', 'dashicons-format-gallery');
+    luxstage_register_cpt('catalog', 'Catalog', 'Catalogs', 'downloads/catalogs', 'dashicons-media-document');
 }, 9);
 
 add_action('init', static function (): void {
     register_taxonomy('product_type', ['stage_lighting'], [
+        'public'            => false,
+        'show_ui'           => false,
+        'show_admin_column' => false,
+        'show_in_rest'      => false,
+        'hierarchical'      => true,
+    ]);
+
+    register_taxonomy('product_category', ['stage_lighting'], [
         'labels'            => [
-            'name'          => __('Product Type', 'luxstage'),
-            'singular_name' => __('Product Type', 'luxstage'),
+            'name'          => __('Product Category', 'luxstage'),
+            'singular_name' => __('Product Category', 'luxstage'),
         ],
         'public'            => true,
         'hierarchical'      => true,
         'show_admin_column' => true,
         'show_in_rest'      => true,
         'rewrite'           => [
-            'slug'       => 'products/type',
+            'slug'       => 'products/category',
             'with_front' => false,
         ],
     ]);
 
-    register_taxonomy('lighting_source', ['stage_lighting'], [
+    register_taxonomy('application_scene', ['stage_lighting', 'application'], [
         'labels'            => [
-            'name'          => __('Lighting Source', 'luxstage'),
-            'singular_name' => __('Lighting Source', 'luxstage'),
+            'name'          => __('Application Scene', 'luxstage'),
+            'singular_name' => __('Application Scene', 'luxstage'),
         ],
         'public'            => true,
         'hierarchical'      => false,
         'show_admin_column' => true,
         'show_in_rest'      => true,
         'rewrite'           => [
-            'slug'       => 'products/source',
+            'slug'       => 'applications/scene',
+            'with_front' => false,
+        ],
+    ]);
+
+    register_taxonomy('light_source', ['stage_lighting'], [
+        'labels'            => [
+            'name'          => __('Light Source', 'luxstage'),
+            'singular_name' => __('Light Source', 'luxstage'),
+        ],
+        'public'            => true,
+        'hierarchical'      => false,
+        'show_admin_column' => true,
+        'show_in_rest'      => true,
+        'rewrite'           => [
+            'slug'       => 'products/light-source',
+            'with_front' => false,
+        ],
+    ]);
+
+    register_taxonomy('certification', ['stage_lighting', 'catalog'], [
+        'labels'            => [
+            'name'          => __('Certification', 'luxstage'),
+            'singular_name' => __('Certification', 'luxstage'),
+        ],
+        'public'            => true,
+        'hierarchical'      => false,
+        'show_admin_column' => true,
+        'show_in_rest'      => true,
+        'rewrite'           => [
+            'slug'       => 'products/certification',
             'with_front' => false,
         ],
     ]);
 }, 10);
 
-add_action('init', static function (): void {
-    $product_types = [
-        'Suiting/Shirting' => 'suiting-shirting',
-        'Functional'       => 'functional',
-        'Fleece'           => 'fleece',
-        'Denim'            => 'denim',
-        'Outdoor'          => 'outdoor',
-        'Workwear'         => 'workwear',
-        'Technical'        => 'technical',
-    ];
-
-    foreach ($product_types as $name => $slug) {
-        if (!term_exists($name, 'product_type')) {
-            wp_insert_term($name, 'product_type', ['slug' => $slug]);
+function luxstage_seed_terms(string $taxonomy, array $terms): void
+{
+    foreach ($terms as $name => $slug) {
+        if (!term_exists($name, $taxonomy)) {
+            wp_insert_term($name, $taxonomy, ['slug' => $slug]);
         }
     }
+}
 
-    $sources = [
+add_action('init', static function (): void {
+    luxstage_seed_terms('product_category', [
+        'Moving Head'  => 'moving-head',
+        'LED Par'      => 'led-par',
+        'Strobe'       => 'strobe',
+        'Effect Light' => 'effect-light',
+        'Follow Spot'  => 'follow-spot',
+        'Laser Light'  => 'laser-light',
+        'Beam Light'   => 'beam-light',
+    ]);
+
+    luxstage_seed_terms('application_scene', [
+        'Concert'           => 'concert',
+        'Theatre'           => 'theatre',
+        'Disco / Club'      => 'disco-club',
+        'Event Rental'      => 'event-rental',
+        'TV Studio'         => 'tv-studio',
+        'Outdoor Festival'  => 'outdoor-festival',
+    ]);
+
+    luxstage_seed_terms('light_source', [
         'LED'   => 'led',
         'Bulb'  => 'bulb',
         'Laser' => 'laser',
-    ];
+    ]);
 
-    foreach ($sources as $name => $slug) {
-        if (!term_exists($name, 'lighting_source')) {
-            wp_insert_term($name, 'lighting_source', ['slug' => $slug]);
+    luxstage_seed_terms('certification', [
+        'CE'   => 'ce',
+        'RoHS' => 'rohs',
+        'UL'   => 'ul',
+        'ETL'  => 'etl',
+        'FCC'  => 'fcc',
+    ]);
+
+    foreach (['Suiting/Shirting', 'Functional', 'Fleece', 'Denim', 'Outdoor', 'Workwear', 'Technical'] as $legacy_term) {
+        $term = term_exists($legacy_term, 'product_type');
+        if (is_array($term)) {
+            wp_delete_term((int) $term['term_id'], 'product_type');
         }
     }
 }, 20);
+
+function luxstage_acf_text_field(string $key, string $label, string $name, string $placeholder = '', bool $required = false): array
+{
+    return [
+        'key'         => $key,
+        'label'       => $label,
+        'name'        => $name,
+        'type'        => 'text',
+        'required'    => $required ? 1 : 0,
+        'placeholder' => $placeholder,
+    ];
+}
 
 add_action('acf/init', static function (): void {
     if (!function_exists('acf_add_local_field_group')) {
@@ -211,39 +294,78 @@ add_action('acf/init', static function (): void {
     }
 
     acf_add_local_field_group([
-        'key' => 'group_fw_stage_lighting_specs',
+        'key' => 'group_luxstage_stage_lighting_specs',
         'title' => 'Stage Lighting Specifications',
         'fields' => [
+            luxstage_acf_text_field('field_luxstage_sku', 'SKU', 'sku', 'e.g. LX-MH350'),
+            luxstage_acf_text_field('field_luxstage_model', 'Model', 'model', 'e.g. X-Series 350'),
             [
-                'key' => 'field_fw_wattage',
-                'label' => 'Wattage',
-                'name' => 'wattage',
-                'type' => 'text',
+                'key' => 'field_luxstage_light_source_type',
+                'label' => 'Light Source Type',
+                'name' => 'light_source_type',
+                'type' => 'select',
+                'choices' => [
+                    'LED' => 'LED',
+                    'Bulb' => 'Bulb',
+                    'Laser' => 'Laser',
+                    'Hybrid' => 'Hybrid',
+                ],
+                'ui' => 1,
                 'required' => 1,
-                'placeholder' => 'e.g. 200W / 350W',
+            ],
+            luxstage_acf_text_field('field_luxstage_wattage', 'Wattage', 'wattage', 'e.g. 200W / 350W / 1200W', true),
+            luxstage_acf_text_field('field_luxstage_color_temperature', 'Color Temperature', 'color_temperature', 'e.g. 3200K-8000K adjustable'),
+            luxstage_acf_text_field('field_luxstage_light_life', 'Light Source Lifetime', 'light_life', 'e.g. 50000 hours'),
+            [
+                'key' => 'field_luxstage_luminous_flux',
+                'label' => 'Luminous Flux',
+                'name' => 'luminous_flux',
+                'type' => 'number',
+                'append' => 'lm',
+            ],
+            luxstage_acf_text_field('field_luxstage_beam_angle', 'Beam Angle', 'beam_angle', 'e.g. 4°-42° motorized zoom'),
+            [
+                'key' => 'field_luxstage_cri',
+                'label' => 'CRI',
+                'name' => 'cri',
+                'type' => 'number',
+                'placeholder' => 'e.g. 90 / 95',
+            ],
+            luxstage_acf_text_field('field_luxstage_channels', 'DMX Channels', 'channels', 'e.g. 16CH / 24CH / 36CH', true),
+            [
+                'key' => 'field_luxstage_control_protocols',
+                'label' => 'Control Protocols',
+                'name' => 'control_protocols',
+                'type' => 'checkbox',
+                'choices' => [
+                    'DMX512' => 'DMX512',
+                    'RDM' => 'RDM',
+                    'Art-Net' => 'Art-Net',
+                    'sACN' => 'sACN',
+                ],
+                'layout' => 'horizontal',
             ],
             [
-                'key' => 'field_fw_channels',
-                'label' => 'Channels',
-                'name' => 'channels',
-                'type' => 'text',
-                'required' => 1,
-                'placeholder' => 'e.g. 16CH / 24CH',
+                'key' => 'field_luxstage_wireless_control',
+                'label' => 'Wireless Control',
+                'name' => 'wireless_control',
+                'type' => 'true_false',
+                'message' => 'Supports CRMX / W-DMX',
+                'ui' => 1,
             ],
             [
-                'key' => 'field_fw_prism',
-                'label' => 'Prism',
-                'name' => 'prism',
-                'type' => 'text',
-                'required' => 0,
-                'placeholder' => 'e.g. 8-facet / 16-facet',
+                'key' => 'field_luxstage_weight',
+                'label' => 'Weight',
+                'name' => 'weight',
+                'type' => 'number',
+                'append' => 'kg',
             ],
+            luxstage_acf_text_field('field_luxstage_dimensions', 'Dimensions', 'dimensions', 'e.g. 350x250x450mm'),
             [
-                'key' => 'field_fw_ip_rating',
+                'key' => 'field_luxstage_ip_rating',
                 'label' => 'IP Rating',
                 'name' => 'ip_rating',
                 'type' => 'select',
-                'required' => 1,
                 'choices' => [
                     'IP20' => 'IP20',
                     'IP54' => 'IP54',
@@ -251,8 +373,80 @@ add_action('acf/init', static function (): void {
                     'IP67' => 'IP67',
                 ],
                 'default_value' => 'IP20',
-                'allow_null' => 0,
                 'ui' => 1,
+                'required' => 1,
+            ],
+            luxstage_acf_text_field('field_luxstage_voltage', 'Voltage', 'voltage', 'e.g. AC 100-240V, 50/60Hz'),
+            [
+                'key' => 'field_luxstage_max_power',
+                'label' => 'Max Power Consumption',
+                'name' => 'max_power',
+                'type' => 'number',
+                'append' => 'W',
+            ],
+            [
+                'key' => 'field_luxstage_effect_features',
+                'label' => 'Effect Features',
+                'name' => 'effect_features',
+                'type' => 'checkbox',
+                'choices' => [
+                    'Color Wheel' => 'Color Wheel',
+                    'Gobo Wheel' => 'Gobo Wheel',
+                    'Prism' => 'Prism',
+                    'Frost' => 'Frost',
+                    'Zoom' => 'Zoom',
+                ],
+                'layout' => 'horizontal',
+            ],
+            luxstage_acf_text_field('field_luxstage_prism', 'Prism', 'prism', 'e.g. 8-facet / 16-facet'),
+            [
+                'key' => 'field_luxstage_dimming_curves',
+                'label' => 'Dimming Curves',
+                'name' => 'dimming_curves',
+                'type' => 'checkbox',
+                'choices' => [
+                    'Linear' => 'Linear',
+                    'S-Curve' => 'S-Curve',
+                    'L-Curve' => 'L-Curve',
+                ],
+                'layout' => 'horizontal',
+            ],
+            luxstage_acf_text_field('field_luxstage_refresh_rate', 'Refresh Rate', 'refresh_rate', 'e.g. 2000Hz-25000Hz adjustable'),
+            [
+                'key' => 'field_luxstage_accessories',
+                'label' => 'Standard Accessories',
+                'name' => 'accessories',
+                'type' => 'textarea',
+                'placeholder' => 'Power cable, signal cable, hanging bracket, manual...',
+            ],
+            [
+                'key' => 'field_luxstage_optional_accessories',
+                'label' => 'Optional Accessories',
+                'name' => 'optional_accessories',
+                'type' => 'textarea',
+                'placeholder' => 'Flight case, clamp, safety cable...',
+            ],
+            [
+                'key' => 'field_luxstage_certification_standards',
+                'label' => 'Certification Standards',
+                'name' => 'certification_standards',
+                'type' => 'checkbox',
+                'choices' => [
+                    'CE' => 'CE',
+                    'RoHS' => 'RoHS',
+                    'UL' => 'UL',
+                    'ETL' => 'ETL',
+                    'FCC' => 'FCC',
+                ],
+                'layout' => 'horizontal',
+            ],
+            [
+                'key' => 'field_luxstage_catalog_pdf',
+                'label' => 'Catalog PDF',
+                'name' => 'catalog_pdf',
+                'type' => 'file',
+                'return_format' => 'array',
+                'mime_types' => 'pdf',
             ],
         ],
         'location' => [
@@ -268,6 +462,34 @@ add_action('acf/init', static function (): void {
         'style' => 'default',
         'label_placement' => 'top',
         'instruction_placement' => 'label',
+        'active' => true,
+        'show_in_rest' => 1,
+    ]);
+
+    acf_add_local_field_group([
+        'key' => 'group_luxstage_catalog_file',
+        'title' => 'Catalog Download',
+        'fields' => [
+            [
+                'key' => 'field_luxstage_catalog_file',
+                'label' => 'PDF File',
+                'name' => 'pdf_file',
+                'type' => 'file',
+                'return_format' => 'array',
+                'mime_types' => 'pdf',
+                'required' => 1,
+            ],
+            luxstage_acf_text_field('field_luxstage_catalog_version', 'Version', 'catalog_version', 'e.g. 2026 EN'),
+        ],
+        'location' => [
+            [
+                [
+                    'param' => 'post_type',
+                    'operator' => '==',
+                    'value' => 'catalog',
+                ],
+            ],
+        ],
         'active' => true,
         'show_in_rest' => 1,
     ]);

@@ -14,7 +14,8 @@ services:
     volumes:
       - ./src:/var/www/html  # 依然完美挂载你的本地开发代码目录
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: mysql:8.0
@@ -26,6 +27,11 @@ services:
       MYSQL_ROOT_PASSWORD: luxstage
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 20
+      start_period: 30s
 
 volumes:
   db_data:
