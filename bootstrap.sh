@@ -33,6 +33,10 @@ DB_PASSWORD="${DB_PASSWORD:-wp_pass}"
 DB_HOST="${DB_HOST:-db}"
 WP_CORE_VERSION="${WP_CORE_VERSION:-latest}"
 
+if [[ "${DB_HOST}" == "mysql" ]]; then
+  DB_HOST="db"
+fi
+
 docker compose up -d
 sleep 12
 
@@ -56,12 +60,23 @@ if [[ ! -f "${ROOT_DIR}/src/wp-config.php" ]]; then
     --force
 fi
 
+"${WPCLI_DOCKER[@]}" config set DB_NAME "${DB_NAME}" --type=constant --raw --path=/var/www/html
+"${WPCLI_DOCKER[@]}" config set DB_USER "${DB_USER}" --type=constant --raw --path=/var/www/html
+"${WPCLI_DOCKER[@]}" config set DB_PASSWORD "${DB_PASSWORD}" --type=constant --raw --path=/var/www/html
+"${WPCLI_DOCKER[@]}" config set DB_HOST "${DB_HOST}" --type=constant --raw --path=/var/www/html
+
 for i in {1..30}; do
   if "${WPCLI_DOCKER[@]}" db check --path=/var/www/html >/dev/null 2>&1; then
     break
   fi
   sleep 2
 done
+
+if ! "${WPCLI_DOCKER[@]}" db check --path=/var/www/html >/dev/null 2>&1; then
+  echo "Database is still unreachable after waiting."
+  echo "Current DB_HOST=${DB_HOST}, DB_NAME=${DB_NAME}, DB_USER=${DB_USER}"
+  exit 1
+fi
 
 if ! "${WPCLI_DOCKER[@]}" core is-installed --path=/var/www/html >/dev/null 2>&1; then
   "${WPCLI_DOCKER[@]}" core install \
