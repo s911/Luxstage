@@ -77,13 +77,32 @@ fi
 "${WPCLI_DOCKER[@]}" config set DB_PASSWORD "${DB_PASSWORD}" --type=constant --raw --path=/var/www/html
 "${WPCLI_DOCKER[@]}" config set DB_HOST "${DB_HOST}" --type=constant --raw --path=/var/www/html
 
-if ! docker compose exec -T db mysql -uroot "-p${DB_ROOT_PASSWORD}" -e "SELECT 1;" >/dev/null 2>&1; then
-  echo "Unable to log in to MySQL as root. Check DB_ROOT_PASSWORD in .env or reset db volume."
-  echo "Quick reset command: docker compose down -v"
-  exit 1
+for i in {1..60}; do
+  if docker compose exec -T db mysqladmin ping -uroot "-p${DB_ROOT_PASSWORD}" --silent >/dev/null 2>&1; then
+    break
+  fi
+  if docker compose exec -T db mysqladmin ping -uroot --silent >/dev/null 2>&1; then
+    break
+  fi
+  sleep 2
+done
+
+MYSQL_ROOT_CMD=(docker compose exec -T db mysql -uroot "-p${DB_ROOT_PASSWORD}")
+if ! "${MYSQL_ROOT_CMD[@]}" -e "SELECT 1;" >/dev/null 2>&1; then
+  MYSQL_ROOT_CMD=(docker compose exec -T db mysql -uroot)
+  if "${MYSQL_ROOT_CMD[@]}" -e "SELECT 1;" >/dev/null 2>&1; then
+    "${MYSQL_ROOT_CMD[@]}" -e \
+      "ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASSWORD}'; FLUSH PRIVILEGES;"
+    MYSQL_ROOT_CMD=(docker compose exec -T db mysql -uroot "-p${DB_ROOT_PASSWORD}")
+  else
+    echo "Unable to log in to MySQL as root after waiting."
+    echo "Check DB_ROOT_PASSWORD in .env and ensure db container uses same value."
+    echo "Quick reset command: docker compose down -v"
+    exit 1
+  fi
 fi
 
-docker compose exec -T db mysql -uroot "-p${DB_ROOT_PASSWORD}" -e \
+"${MYSQL_ROOT_CMD[@]}" -e \
   "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; \
    CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
    ALTER USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
