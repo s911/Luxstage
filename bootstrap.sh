@@ -11,7 +11,7 @@ if command -v getenforce >/dev/null 2>&1; then
     WPCLI_VOLUME="${ROOT_DIR}/src:/var/www/html:Z"
   fi
 fi
-WPCLI_DOCKER=(docker run --rm --user 0:0 --network "${COMPOSE_PROJECT_NAME}_default" -v "${WPCLI_VOLUME}" wordpress:cli)
+WPCLI_DOCKER=(docker run --rm --user 0:0 --network "${COMPOSE_PROJECT_NAME}_default" -v "${WPCLI_VOLUME}" wordpress:cli wp --allow-root)
 WP_URL="${WP_URL:-http://localhost:8080}"
 WP_TITLE="${WP_TITLE:-Luxstage}"
 WP_ADMIN_USER="${WP_ADMIN_USER:-admin}"
