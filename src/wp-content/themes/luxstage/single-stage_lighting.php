@@ -8,9 +8,22 @@ get_header();
 <main class="fw-b2b-container">
   <?php while (have_posts()) : the_post(); ?>
     <article <?php post_class(); ?>>
+      <nav class="lux-breadcrumbs" aria-label="<?php esc_attr_e('Breadcrumb', 'luxstage'); ?>">
+        <a href="<?php echo esc_url(home_url('/')); ?>"><?php esc_html_e('Home', 'luxstage'); ?></a>
+        <span>&gt;</span>
+        <a href="<?php echo esc_url(home_url('/products/')); ?>"><?php esc_html_e('Products', 'luxstage'); ?></a>
+        <?php $categories = get_the_terms(get_the_ID(), 'product_category'); ?>
+        <?php if (!is_wp_error($categories) && $categories) : ?>
+          <span>&gt;</span>
+          <a href="<?php echo esc_url(get_term_link($categories[0])); ?>"><?php echo esc_html($categories[0]->name); ?></a>
+        <?php endif; ?>
+        <span>&gt;</span>
+        <span><?php the_title(); ?></span>
+      </nav>
+
       <h1><?php the_title(); ?></h1>
       <?php if (has_post_thumbnail()) : ?>
-        <div><?php the_post_thumbnail('large'); ?></div>
+        <div><?php the_post_thumbnail('large', ['loading' => 'eager', 'alt' => get_the_title()]); ?></div>
       <?php endif; ?>
 
       <section>
@@ -76,6 +89,51 @@ get_header();
       <section>
         <?php the_content(); ?>
       </section>
+
+      <section class="lux-product-actions">
+        <?php $sku = (string) luxstage_field('sku'); ?>
+        <a class="lux-button lux-button--primary" href="<?php echo esc_url(add_query_arg(['product_sku' => $sku], home_url('/contact/'))); ?>">
+          <?php esc_html_e('Send Inquiry', 'luxstage'); ?>
+        </a>
+        <?php
+        $catalog_pdf = luxstage_field('catalog_pdf');
+        $catalog_url = is_array($catalog_pdf) && isset($catalog_pdf['url']) ? $catalog_pdf['url'] : home_url('/downloads/catalogs/');
+        ?>
+        <a class="lux-button lux-button--secondary" href="<?php echo esc_url($catalog_url); ?>">
+          <?php esc_html_e('Download PDF', 'luxstage'); ?>
+        </a>
+      </section>
+
+      <?php
+      $related = new WP_Query([
+          'post_type' => 'stage_lighting',
+          'post__not_in' => [get_the_ID()],
+          'posts_per_page' => 3,
+          'tax_query' => (!empty($categories) && !is_wp_error($categories)) ? [
+              [
+                  'taxonomy' => 'product_category',
+                  'field' => 'term_id',
+                  'terms' => [(int) $categories[0]->term_id],
+              ],
+          ] : [],
+      ]);
+      ?>
+      <?php if ($related->have_posts()) : ?>
+        <section>
+          <h2><?php esc_html_e('Related Products', 'luxstage'); ?></h2>
+          <div class="fw-b2b-grid">
+            <?php while ($related->have_posts()) : $related->the_post(); ?>
+              <article class="lux-card">
+                <a href="<?php the_permalink(); ?>">
+                  <h3><?php the_title(); ?></h3>
+                  <p><?php echo esc_html((string) luxstage_field('wattage')); ?></p>
+                </a>
+              </article>
+            <?php endwhile; ?>
+          </div>
+        </section>
+        <?php wp_reset_postdata(); ?>
+      <?php endif; ?>
     </article>
   <?php endwhile; ?>
 </main>

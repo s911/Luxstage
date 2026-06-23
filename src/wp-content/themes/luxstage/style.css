@@ -96,6 +96,22 @@ img {
   color: var(--fw-color-accent);
 }
 
+.lux-footer__grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 24px;
+}
+
+.lux-footer__grid address {
+  font-style: normal;
+}
+
+.lux-footer__grid nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .lux-hero {
   background:
     radial-gradient(circle at 80% 20%, rgba(31, 111, 235, 0.22), transparent 30%),
@@ -335,11 +351,33 @@ img {
   padding: 34px;
 }
 
+.lux-breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 28px 0 18px;
+  color: var(--fw-color-muted);
+  font-size: 14px;
+}
+
+.lux-breadcrumbs a {
+  color: var(--fw-color-muted);
+  text-decoration: none;
+}
+
+.lux-product-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 32px 0;
+}
+
 @media (max-width: 900px) {
   .lux-hero__grid,
   .lux-trust__grid,
   .lux-rfq,
-  .fw-b2b-grid {
+  .fw-b2b-grid,
+  .lux-footer__grid {
     grid-template-columns: 1fr;
   }
 

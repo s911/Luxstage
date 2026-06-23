@@ -113,6 +113,79 @@ add_action('template_redirect', static function (): void {
     }
 });
 
+add_action('wp_head', static function (): void {
+    if (is_admin()) {
+        return;
+    }
+
+    $description = get_bloginfo('description') ?: 'Luxstage professional stage lighting manufacturer for moving heads, LED pars, strobes, effect lights, follow spots, and laser systems.';
+
+    if (is_singular('stage_lighting')) {
+        $description = wp_strip_all_tags(get_the_excerpt() ?: get_the_title());
+    }
+
+    echo '<meta name="description" content="' . esc_attr($description) . '">' . "\n";
+}, 1);
+
+add_action('wp_head', static function (): void {
+    if (is_admin()) {
+        return;
+    }
+
+    if (is_front_page()) {
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            'name' => 'Luxstage',
+            'url' => home_url('/'),
+            'description' => 'Professional stage lighting manufacturer for global B2B buyers.',
+            'sameAs' => [
+                'https://www.linkedin.com/',
+                'https://www.youtube.com/',
+                'https://www.facebook.com/',
+            ],
+        ];
+    } elseif (is_singular('stage_lighting')) {
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Product',
+            'name' => get_the_title(),
+            'sku' => (string) luxstage_field('sku'),
+            'brand' => [
+                '@type' => 'Brand',
+                'name' => 'Luxstage',
+            ],
+            'description' => wp_strip_all_tags(get_the_excerpt() ?: get_the_content()),
+        ];
+    } else {
+        return;
+    }
+
+    echo '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</script>' . "\n";
+}, 20);
+
+add_filter('robots_txt', static function (string $output, bool $public): string {
+    $lines = [
+        'User-agent: *',
+        'Disallow: /wp-admin/',
+        'Allow: /wp-admin/admin-ajax.php',
+        'Sitemap: ' . home_url('/sitemap_index.xml'),
+    ];
+
+    return implode("\n", $lines) . "\n";
+}, 10, 2);
+
+add_filter('post_type_link', static function (string $post_link, WP_Post $post): string {
+    if ($post->post_type !== 'stage_lighting') {
+        return $post_link;
+    }
+
+    $terms = get_the_terms($post, 'product_category');
+    $category_slug = (!is_wp_error($terms) && $terms) ? $terms[0]->slug : 'uncategorized';
+
+    return home_url('/products/' . $category_slug . '/' . $post->post_name . '/');
+}, 10, 2);
+
 function luxstage_register_cpt(string $post_type, string $singular, string $plural, string $slug, string $icon): void
 {
     register_post_type($post_type, [
@@ -153,6 +226,12 @@ add_action('init', static function (): void {
     luxstage_register_cpt('stage_lighting', 'Stage Lighting', 'Stage Lighting', 'products', 'dashicons-lightbulb');
     luxstage_register_cpt('application', 'Application Case', 'Application Cases', 'applications', 'dashicons-format-gallery');
     luxstage_register_cpt('catalog', 'Catalog', 'Catalogs', 'downloads/catalogs', 'dashicons-media-document');
+
+    add_rewrite_rule(
+        '^products/([^/]+)/([^/]+)/?$',
+        'index.php?post_type=stage_lighting&name=$matches[2]',
+        'top'
+    );
 }, 9);
 
 add_action('init', static function (): void {
