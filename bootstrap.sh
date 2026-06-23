@@ -37,10 +37,12 @@ docker compose up -d
 sleep 12
 
 if [[ ! -f "${ROOT_DIR}/src/wp-settings.php" ]]; then
-  "${WPCLI_DOCKER[@]}" core download \
-    --path=/var/www/html \
-    --version="${WP_CORE_VERSION}" \
-    --force
+  if ! docker compose exec -T web sh -lc "cp -an /usr/src/wordpress/. /var/www/html/"; then
+    "${WPCLI_DOCKER[@]}" core download \
+      --path=/var/www/html \
+      --version="${WP_CORE_VERSION}" \
+      --force
+  fi
 fi
 
 if [[ ! -f "${ROOT_DIR}/src/wp-config.php" ]]; then
