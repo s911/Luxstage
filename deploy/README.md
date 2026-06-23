@@ -24,11 +24,7 @@ Edit `.env` with production credentials.
 ## 3) Start app stack
 
 ```bash
-docker compose up -d --build
-docker compose exec web bash -lc "bash /usr/local/bin/install-plugins.sh"
-docker compose exec web wp theme activate fabricwarm-b2b --path=/var/www/html
-docker compose exec web wp rewrite structure '/%postname%/' --hard --path=/var/www/html
-docker compose exec web wp rewrite flush --hard --path=/var/www/html
+bash bootstrap.sh
 ```
 
 ## 4) Configure Nginx reverse proxy + SSL

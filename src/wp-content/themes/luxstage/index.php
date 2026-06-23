@@ -14,7 +14,7 @@ get_header();
       </article>
     <?php endwhile; ?>
   <?php else : ?>
-    <p><?php esc_html_e('No content available.', 'fabricwarm-b2b'); ?></p>
+    <p><?php esc_html_e('No content available.', 'luxstage'); ?></p>
   <?php endif; ?>
 </main>
 <?php

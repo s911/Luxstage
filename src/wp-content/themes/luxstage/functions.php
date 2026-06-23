@@ -1,13 +1,13 @@
 <?php
 /**
- * Core bootstrap for Fabricwarm B2B theme.
+ * Core bootstrap for Luxstage theme.
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-define('FW_B2B_THEME_VERSION', '1.0.0');
+define('LUXSTAGE_THEME_VERSION', '1.0.0');
 
 add_action('after_setup_theme', static function (): void {
     add_theme_support('title-tag');
@@ -19,35 +19,35 @@ add_action('wp_enqueue_scripts', static function (): void {
     $theme_uri = get_stylesheet_directory_uri();
 
     wp_enqueue_style(
-        'fabricwarm-b2b-style',
+        'luxstage-style',
         $theme_uri . '/style.css',
         [],
-        FW_B2B_THEME_VERSION
+        LUXSTAGE_THEME_VERSION
     );
 
     wp_enqueue_style(
-        'fabricwarm-b2b-functions',
+        'luxstage-functions',
         $theme_uri . '/functions.css',
-        ['fabricwarm-b2b-style'],
-        FW_B2B_THEME_VERSION
+        ['luxstage-style'],
+        LUXSTAGE_THEME_VERSION
     );
 
     wp_register_script(
-        'fabricwarm-b2b-main',
+        'luxstage-main',
         $theme_uri . '/assets/js/main.js',
         [],
-        FW_B2B_THEME_VERSION,
+        LUXSTAGE_THEME_VERSION,
         true
     );
 
     if (file_exists(get_stylesheet_directory() . '/assets/js/main.js')) {
-        wp_enqueue_script('fabricwarm-b2b-main');
+        wp_enqueue_script('luxstage-main');
     }
 });
 
 add_filter('script_loader_tag', static function (string $tag, string $handle, string $src): string {
     $async_handles = [
-        'fabricwarm-b2b-main',
+        'luxstage-main',
     ];
 
     if (!in_array($handle, $async_handles, true)) {
@@ -106,23 +106,23 @@ add_action('template_redirect', static function (): void {
 
 add_action('init', static function (): void {
     $labels = [
-        'name'                  => __('Stage Lighting', 'fabricwarm-b2b'),
-        'singular_name'         => __('Stage Lighting', 'fabricwarm-b2b'),
-        'menu_name'             => __('Stage Lighting', 'fabricwarm-b2b'),
-        'name_admin_bar'        => __('Stage Lighting', 'fabricwarm-b2b'),
-        'add_new'               => __('Add New', 'fabricwarm-b2b'),
-        'add_new_item'          => __('Add New Stage Lighting', 'fabricwarm-b2b'),
-        'new_item'              => __('New Stage Lighting', 'fabricwarm-b2b'),
-        'edit_item'             => __('Edit Stage Lighting', 'fabricwarm-b2b'),
-        'view_item'             => __('View Stage Lighting', 'fabricwarm-b2b'),
-        'all_items'             => __('All Stage Lighting', 'fabricwarm-b2b'),
-        'search_items'          => __('Search Stage Lighting', 'fabricwarm-b2b'),
-        'not_found'             => __('No stage lighting found.', 'fabricwarm-b2b'),
-        'not_found_in_trash'    => __('No stage lighting found in Trash.', 'fabricwarm-b2b'),
-        'featured_image'        => __('Product Image', 'fabricwarm-b2b'),
-        'set_featured_image'    => __('Set product image', 'fabricwarm-b2b'),
-        'remove_featured_image' => __('Remove product image', 'fabricwarm-b2b'),
-        'use_featured_image'    => __('Use as product image', 'fabricwarm-b2b'),
+        'name'                  => __('Stage Lighting', 'luxstage'),
+        'singular_name'         => __('Stage Lighting', 'luxstage'),
+        'menu_name'             => __('Stage Lighting', 'luxstage'),
+        'name_admin_bar'        => __('Stage Lighting', 'luxstage'),
+        'add_new'               => __('Add New', 'luxstage'),
+        'add_new_item'          => __('Add New Stage Lighting', 'luxstage'),
+        'new_item'              => __('New Stage Lighting', 'luxstage'),
+        'edit_item'             => __('Edit Stage Lighting', 'luxstage'),
+        'view_item'             => __('View Stage Lighting', 'luxstage'),
+        'all_items'             => __('All Stage Lighting', 'luxstage'),
+        'search_items'          => __('Search Stage Lighting', 'luxstage'),
+        'not_found'             => __('No stage lighting found.', 'luxstage'),
+        'not_found_in_trash'    => __('No stage lighting found in Trash.', 'luxstage'),
+        'featured_image'        => __('Product Image', 'luxstage'),
+        'set_featured_image'    => __('Set product image', 'luxstage'),
+        'remove_featured_image' => __('Remove product image', 'luxstage'),
+        'use_featured_image'    => __('Use as product image', 'luxstage'),
     ];
 
     register_post_type('stage_lighting', [
@@ -146,8 +146,8 @@ add_action('init', static function (): void {
 add_action('init', static function (): void {
     register_taxonomy('product_type', ['stage_lighting'], [
         'labels'            => [
-            'name'          => __('Product Type', 'fabricwarm-b2b'),
-            'singular_name' => __('Product Type', 'fabricwarm-b2b'),
+            'name'          => __('Product Type', 'luxstage'),
+            'singular_name' => __('Product Type', 'luxstage'),
         ],
         'public'            => true,
         'hierarchical'      => true,
@@ -161,8 +161,8 @@ add_action('init', static function (): void {
 
     register_taxonomy('lighting_source', ['stage_lighting'], [
         'labels'            => [
-            'name'          => __('Lighting Source', 'fabricwarm-b2b'),
-            'singular_name' => __('Lighting Source', 'fabricwarm-b2b'),
+            'name'          => __('Lighting Source', 'luxstage'),
+            'singular_name' => __('Lighting Source', 'luxstage'),
         ],
         'public'            => true,
         'hierarchical'      => false,

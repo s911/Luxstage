@@ -8,7 +8,7 @@ get_header();
 <main class="fw-b2b-container">
   <header>
     <h1><?php post_type_archive_title(); ?></h1>
-    <p><?php esc_html_e('Browse all stage lighting products.', 'fabricwarm-b2b'); ?></p>
+    <p><?php esc_html_e('Browse all stage lighting products.', 'luxstage'); ?></p>
   </header>
 
   <?php if (have_posts()) : ?>
@@ -28,7 +28,7 @@ get_header();
     </section>
     <?php the_posts_pagination(); ?>
   <?php else : ?>
-    <p><?php esc_html_e('No stage lighting products published yet.', 'fabricwarm-b2b'); ?></p>
+    <p><?php esc_html_e('No stage lighting products published yet.', 'luxstage'); ?></p>
   <?php endif; ?>
 </main>
 <?php
