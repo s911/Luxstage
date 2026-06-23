@@ -8,9 +8,9 @@ services:
     restart: always
     environment:
       WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: ${DB_USER:-wp_user}
-      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD:-wp_pass}
-      WORDPRESS_DB_NAME: ${DB_NAME:-wp_stage_lighting}
+      WORDPRESS_DB_USER: luxstage_user
+      WORDPRESS_DB_PASSWORD: luxstage
+      WORDPRESS_DB_NAME: luxstage_b2b
     volumes:
       - ./src:/var/www/html  # 依然完美挂载你的本地开发代码目录
     depends_on:
@@ -20,10 +20,10 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_DATABASE: ${DB_NAME:-wp_stage_lighting}
-      MYSQL_USER: ${DB_USER:-wp_user}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-wp_pass}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-wp_root_pass}
+      MYSQL_DATABASE: luxstage_b2b
+      MYSQL_USER: luxstage_user
+      MYSQL_PASSWORD: luxstage
+      MYSQL_ROOT_PASSWORD: luxstage
     volumes:
       - db_data:/var/lib/mysql
 
