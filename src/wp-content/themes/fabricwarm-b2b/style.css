@@ -1,0 +1,38 @@
+/*
+Theme Name: Fabricwarm B2B
+Theme URI: https://luxstage.com/
+Author: Luxstage Engineering
+Author URI: https://luxstage.com/
+Description: High-performance B2B WordPress theme baseline for Luxstage stage-lighting catalog and RFQ workflows.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.6
+Requires PHP: 8.2
+Text Domain: fabricwarm-b2b
+*/
+
+:root {
+  --fw-color-primary: #111827;
+  --fw-color-accent: #1f6feb;
+  --fw-color-bg: #ffffff;
+  --fw-color-text: #1f2937;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  background: var(--fw-color-bg);
+  color: var(--fw-color-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+}
