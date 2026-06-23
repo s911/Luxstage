@@ -24,6 +24,7 @@ Edit `.env` with production credentials.
 ## 3) Start app stack
 
 ```bash
+export COMPOSE_PROJECT_NAME=luxstage
 bash bootstrap.sh
 ```
 

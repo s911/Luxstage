@@ -2,8 +2,9 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_NAME="$(basename "${ROOT_DIR}" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-')"
-WPCLI_DOCKER=(docker run --rm --network "${PROJECT_NAME}_default" -v "${ROOT_DIR}/src:/var/www/html" wordpress:cli)
+PROJECT_NAME_RAW="$(basename "${ROOT_DIR}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//')"
+export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-${PROJECT_NAME_RAW}}"
+WPCLI_DOCKER=(docker run --rm --network "${COMPOSE_PROJECT_NAME}_default" -v "${ROOT_DIR}/src:/var/www/html" wordpress:cli)
 WP_URL="${WP_URL:-http://localhost:8080}"
 WP_TITLE="${WP_TITLE:-Luxstage}"
 WP_ADMIN_USER="${WP_ADMIN_USER:-admin}"
