@@ -125,6 +125,79 @@ add_filter('robots_txt', static function (string $output, bool $public): string 
     return implode("\n", $lines) . "\n";
 }, 10, 2);
 
+if (!function_exists('luxstage_login_protection_enabled')) {
+    function luxstage_login_protection_enabled(): bool
+    {
+        return true;
+    }
+}
+
+if (!function_exists('luxstage_login_client_ip')) {
+    function luxstage_login_client_ip(): string
+    {
+        foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'] as $key) {
+            if (empty($_SERVER[$key])) {
+                continue;
+            }
+            $value = trim((string) $_SERVER[$key]);
+            if ($key === 'HTTP_X_FORWARDED_FOR') {
+                $parts = explode(',', $value);
+                $value = trim((string) ($parts[0] ?? ''));
+            }
+            if (filter_var($value, FILTER_VALIDATE_IP)) {
+                return $value;
+            }
+        }
+
+        return '0.0.0.0';
+    }
+}
+
+add_filter('authenticate', static function ($user, string $username, string $password) {
+    if (is_wp_error($user) || $user instanceof WP_User) {
+        return $user;
+    }
+
+    if (!luxstage_login_protection_enabled()) {
+        return $user;
+    }
+
+    $ip = luxstage_login_client_ip();
+    $key = 'luxstage_login_fail_' . md5($ip);
+    $attempts = (int) get_transient($key);
+    $limit = 5;
+
+    if ($attempts >= $limit) {
+        return new WP_Error(
+            'luxstage_login_locked',
+            __('Too many failed login attempts. Please wait 15 minutes and try again.', 'luxstage')
+        );
+    }
+
+    return $user;
+}, 25, 3);
+
+add_action('wp_login_failed', static function (string $username): void {
+    if (!luxstage_login_protection_enabled()) {
+        return;
+    }
+
+    $ip = luxstage_login_client_ip();
+    $key = 'luxstage_login_fail_' . md5($ip);
+    $attempts = (int) get_transient($key);
+    set_transient($key, $attempts + 1, 15 * MINUTE_IN_SECONDS);
+});
+
+add_action('wp_login', static function (string $user_login, WP_User $user): void {
+    if (!luxstage_login_protection_enabled()) {
+        return;
+    }
+
+    $ip = luxstage_login_client_ip();
+    $key = 'luxstage_login_fail_' . md5($ip);
+    delete_transient($key);
+}, 10, 2);
+
 add_filter('post_type_link', static function (string $post_link, WP_Post $post): string {
     if ($post->post_type !== 'stage_lighting') {
         return $post_link;

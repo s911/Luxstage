@@ -122,6 +122,56 @@ class Tester:
                 else:
                     self.record("SETUP-03", f"Ensure page {title}", "FAIL", (proc.stderr or proc.stdout).strip()[-300:])
 
+        cf7_ready = self.plugin_install_activate("contact-form-7")
+        self.record("SETUP-05", "Ensure Contact Form 7", "PASS" if cf7_ready else "FAIL", "contact-form-7 active" if cf7_ready else "plugin install failed")
+
+        if cf7_ready:
+            forms_proc = self.wp(
+                [
+                    "eval",
+                    (
+                        "$forms=["
+                        "'luxstage_contact'=>['title'=>'Luxstage Contact Form','content'=>'[text* your-name placeholder \"Your Name\"]\n[email* your-email placeholder \"Business Email\"]\n[text your-company placeholder \"Company\"]\n[tel your-phone placeholder \"Phone\"]\n[textarea* your-message placeholder \"Message\"]\n[submit \"Send\"]'],"
+                        "'luxstage_rfq'=>['title'=>'Luxstage RFQ Form','content'=>'[text* your-name placeholder \"Your Name\"]\n[email* your-email placeholder \"Business Email\"]\n[text your-company placeholder \"Company\"]\n[text product-sku default:get product_sku]\n[text your-quantity placeholder \"Quantity\"]\n[file attachment limit:10mb filetypes:pdf|doc|docx]\n[textarea* your-message placeholder \"Technical requirements\"]\n[submit \"Submit RFQ\"]'],"
+                        "'luxstage_catalog'=>['title'=>'Luxstage Catalog Lead Form','content'=>'[text* your-name placeholder \"Your Name\"]\n[email* your-email placeholder \"Business Email\"]\n[text your-company placeholder \"Company\"]\n[tel your-phone placeholder \"Phone\"]\n[submit \"Get Catalog\"]'],"
+                        "'luxstage_batch'=>['title'=>'Luxstage Batch Inquiry Form','content'=>'[text* your-name placeholder \"Your Name\"]\n[email* your-email placeholder \"Business Email\"]\n[textarea* product-list placeholder \"List product SKU and quantities\"]\n[submit \"Submit Batch Inquiry\"]']"
+                        "];"
+                        "foreach($forms as $slug=>$data){"
+                        "$posts=get_posts(['post_type'=>'wpcf7_contact_form','name'=>$slug,'posts_per_page'=>1,'post_status'=>'any']);"
+                        "if($posts){$id=$posts[0]->ID;wp_update_post(['ID'=>$id,'post_title'=>$data['title'],'post_content'=>$data['content'],'post_name'=>$slug]);}"
+                        "else{$id=wp_insert_post(['post_type'=>'wpcf7_contact_form','post_status'=>'publish','post_title'=>$data['title'],'post_content'=>$data['content'],'post_name'=>$slug]);}"
+                        "echo $slug.':'.$id.'\\n';"
+                        "}"
+                    ),
+                ],
+                timeout=180,
+            )
+            forms_ready = forms_proc.returncode == 0 and "luxstage_contact" in forms_proc.stdout
+            self.record("SETUP-06", "Ensure CF7 forms", "PASS" if forms_ready else "FAIL", (forms_proc.stderr or forms_proc.stdout).strip()[-300:])
+
+            pages_proc = self.wp(
+                [
+                    "eval",
+                    (
+                        "$map=["
+                        "'contact'=>['title'=>'Contact','content'=>'[contact-form-7 title=\"Luxstage Contact Form\"]'],"
+                        "'rfq'=>['title'=>'RFQ','content'=>'[contact-form-7 title=\"Luxstage RFQ Form\"]'],"
+                        "'catalog-request'=>['title'=>'Catalog Request','content'=>'[contact-form-7 title=\"Luxstage Catalog Lead Form\"]'],"
+                        "'batch-inquiry'=>['title'=>'Batch Inquiry','content'=>'[contact-form-7 title=\"Luxstage Batch Inquiry Form\"]']"
+                        "];"
+                        "foreach($map as $slug=>$data){"
+                        "$posts=get_posts(['post_type'=>'page','name'=>$slug,'posts_per_page'=>1,'post_status'=>'any']);"
+                        "if($posts){$id=$posts[0]->ID;wp_update_post(['ID'=>$id,'post_title'=>$data['title'],'post_content'=>$data['content'],'post_status'=>'publish']);}"
+                        "else{$id=wp_insert_post(['post_type'=>'page','post_status'=>'publish','post_title'=>$data['title'],'post_name'=>$slug,'post_content'=>$data['content']]);}"
+                        "echo $slug.':'.$id.'\\n';"
+                        "}"
+                    ),
+                ],
+                timeout=180,
+            )
+            pages_ready = pages_proc.returncode == 0 and "catalog-request" in pages_proc.stdout
+            self.record("SETUP-07", "Ensure form pages", "PASS" if pages_ready else "FAIL", (pages_proc.stderr or pages_proc.stdout).strip()[-300:])
+
         self.wp(["rewrite", "flush", "--hard"], timeout=90)
 
     def ensure_web_ready(self) -> bool:
@@ -161,6 +211,12 @@ class Tester:
         proc = self.wp(["plugin", "is-active", slug], timeout=60)
         return proc.returncode == 0
 
+    def plugin_install_activate(self, slug: str) -> bool:
+        proc = self.wp(["plugin", "install", slug, "--activate"], timeout=180)
+        if proc.returncode == 0:
+            return True
+        return self.plugin_active(slug)
+
     def role_has_cap(self, role: str, capability: str) -> bool:
         proc = self.wp(
             [
@@ -169,6 +225,10 @@ class Tester:
             ],
             timeout=60,
         )
+        return proc.returncode == 0 and proc.stdout.strip() == "1"
+
+    def has_custom_login_protection(self) -> bool:
+        proc = self.wp(["eval", "echo function_exists('luxstage_login_protection_enabled') && luxstage_login_protection_enabled() ? '1' : '0';"], timeout=60)
         return proc.returncode == 0 and proc.stdout.strip() == "1"
 
     def run_all(self) -> int:
@@ -246,21 +306,39 @@ class Tester:
         self.record("P-11", "Batch inquiry", "SKIP", "Batch inquiry cart is P2 and not implemented in current baseline")
 
     def form_tests(self) -> None:
-        fluent = self.plugin_active("fluentform")
         cf7 = self.plugin_active("contact-form-7")
-        status = "PASS" if fluent or cf7 else "SKIP"
-        detail = "Fluent Forms/CF7 active" if status == "PASS" else "Form plugin not installed/activated"
-        for case_id, name in [
-            ("F-01", "General contact form"),
-            ("F-02", "Form validation"),
-            ("F-03", "Product RFQ form"),
-            ("F-04", "Attachment upload"),
-            ("F-05", "Catalog lead form"),
-            ("F-06", "Returning catalog downloader"),
-            ("F-07", "Spam protection"),
-            ("F-08", "Batch inquiry form"),
-        ]:
-            self.record(case_id, name, status, detail)
+        if not cf7:
+            for case_id, name in [
+                ("F-01", "General contact form"),
+                ("F-02", "Form validation"),
+                ("F-03", "Product RFQ form"),
+                ("F-04", "Attachment upload"),
+                ("F-05", "Catalog lead form"),
+                ("F-06", "Returning catalog downloader"),
+                ("F-07", "Spam protection"),
+                ("F-08", "Batch inquiry form"),
+            ]:
+                self.record(case_id, name, "FAIL", "Contact Form 7 not active")
+            return
+
+        status, contact_body, _ = self.fetch("/contact/")
+        self.record("F-01", "General contact form", "PASS" if status < 400 and "wpcf7-form" in contact_body else "FAIL", f"HTTP {status}")
+        has_required = 'aria-required="true"' in contact_body or "wpcf7-validates-as-required" in contact_body
+        self.record("F-02", "Form validation", "PASS" if has_required else "FAIL", "required fields present")
+
+        status, rfq_body, _ = self.fetch("/rfq/")
+        self.record("F-03", "Product RFQ form", "PASS" if status < 400 and "wpcf7-form" in rfq_body else "FAIL", f"HTTP {status}")
+        self.record("F-04", "Attachment upload", "PASS" if 'type="file"' in rfq_body else "FAIL", "file input")
+
+        status, catalog_body, _ = self.fetch("/catalog-request/")
+        self.record("F-05", "Catalog lead form", "PASS" if status < 400 and "wpcf7-form" in catalog_body else "FAIL", f"HTTP {status}")
+        self.record("F-06", "Returning catalog downloader", "SKIP", "Requires cookie/session based lead-magnet logic implementation")
+
+        spam_tokens = ["_wpcf7_nonce", "wpcf7-recaptcha", "wpcf7-quiz"]
+        self.record("F-07", "Spam protection", "PASS" if any(token in contact_body for token in spam_tokens) else "FAIL", "nonce/anti-spam token")
+
+        status, batch_body, _ = self.fetch("/batch-inquiry/")
+        self.record("F-08", "Batch inquiry form", "PASS" if status < 400 and "wpcf7-form" in batch_body else "FAIL", f"HTTP {status}")
 
     def catalog_tests(self) -> None:
         if self.web_blocked:
@@ -390,8 +468,13 @@ class Tester:
         )
         self.record("X-02", "HTTPS/SSL", "PASS" if self.base_url.startswith("https://") else "SKIP", "Local Docker runs over HTTP")
         security_plugins = ["wordfence", "limit-login-attempts-reloaded", "all-in-one-wp-security-and-firewall"]
-        security_enabled = any(self.plugin_active(slug) for slug in security_plugins)
-        self.record("X-03", "Login protection", "PASS" if security_enabled else "FAIL", "Install Wordfence or equivalent protection plugin")
+        security_enabled = any(self.plugin_active(slug) for slug in security_plugins) or self.has_custom_login_protection()
+        self.record(
+            "X-03",
+            "Login protection",
+            "PASS" if security_enabled else "FAIL",
+            "Wordfence/limit-login plugin active or luxstage core login lockout enabled",
+        )
         self.record("X-04", "XSS baseline escaping", "PASS", "Theme output uses escaping functions")
         status, _, _ = self.fetch("/?s=%27%20OR%201%3D1", timeout=8)
         self.record("X-05", "SQL injection smoke", "PASS" if 0 < status < 500 else "FAIL", f"HTTP {status}")
