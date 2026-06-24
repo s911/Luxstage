@@ -1022,8 +1022,7 @@ if (!function_exists('luxstage_contact_form_markup')) {
         ?>
         <section class="lux-contact-fallback" id="lux-contact-fallback">
             <style>
-                .lux-contact-fallback{margin-top:24px;padding:24px;border:1px solid #e5e7eb;border-radius:12px;background:#fff}
-                .lux-contact-fallback h2{margin:0 0 12px;font-size:1.5rem}
+                .lux-contact-fallback{margin-top:8px;padding:24px;border:1px solid #e5e7eb;border-radius:12px;background:#fff}
                 .lux-contact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
                 .lux-contact-grid .lux-field-full{grid-column:1 / -1}
                 .lux-contact-fallback label{display:block;font-weight:600;margin-bottom:6px}
@@ -1038,7 +1037,6 @@ if (!function_exists('luxstage_contact_form_markup')) {
                 .lux-contact-submit{display:inline-block;padding:10px 18px;border:0;border-radius:8px;background:#111827;color:#fff;font-weight:700;cursor:pointer}
                 @media (max-width:720px){.lux-contact-grid{grid-template-columns:1fr}}
             </style>
-            <h2><?php esc_html_e('Send Inquiry', 'luxstage'); ?></h2>
             <?php if ($notice !== '') : ?>
                 <div class="lux-contact-notice <?php echo esc_attr('is-' . ($status !== '' ? $status : 'success')); ?>">
                     <?php echo esc_html($notice); ?>
@@ -1304,7 +1302,7 @@ if (!function_exists('luxstage_batch_form_markup')) {
         ?>
         <section class="lux-contact-fallback" id="lux-batch-fallback">
             <style>
-                .lux-contact-fallback{margin-top:24px;padding:24px;border:1px solid #e5e7eb;border-radius:12px;background:#fff}
+                .lux-contact-fallback{margin-top:8px;padding:24px;border:1px solid #e5e7eb;border-radius:12px;background:#fff}
                 .lux-contact-fallback h2{margin:0 0 12px;font-size:1.5rem}
                 .lux-contact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
                 .lux-contact-grid .lux-field-full{grid-column:1 / -1}
@@ -1320,7 +1318,6 @@ if (!function_exists('luxstage_batch_form_markup')) {
                 .lux-contact-submit{display:inline-block;padding:10px 18px;border:0;border-radius:8px;background:#111827;color:#fff;font-weight:700;cursor:pointer}
                 @media (max-width:720px){.lux-contact-grid{grid-template-columns:1fr}}
             </style>
-            <h2><?php esc_html_e('Batch Inquiry', 'luxstage'); ?></h2>
             <?php if ($notice !== '') : ?>
                 <div class="lux-contact-notice <?php echo esc_attr('is-' . ($status !== '' ? $status : 'success')); ?>">
                     <?php echo esc_html($notice); ?>

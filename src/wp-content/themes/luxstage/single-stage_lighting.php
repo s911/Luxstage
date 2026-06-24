@@ -121,10 +121,10 @@ get_header();
       <section class="lux-product-actions">
         <?php $sku = (string) luxstage_field('sku'); ?>
         <a class="lux-button lux-button--primary" href="<?php echo esc_url(add_query_arg(['product_sku' => $sku], home_url('/contact/'))); ?>">
-          <?php esc_html_e('Send Inquiry', 'luxstage'); ?>
+          <?php esc_html_e('Send Inquiry (Single Product)', 'luxstage'); ?>
         </a>
         <a class="lux-button lux-button--primary" href="<?php echo esc_url(add_query_arg(['product_sku' => $sku], home_url('/batch-inquiry/'))); ?>">
-          <?php esc_html_e('Batch Inquiry', 'luxstage'); ?>
+          <?php esc_html_e('Batch Inquiry (Multiple SKUs)', 'luxstage'); ?>
         </a>
         <?php
         $catalog_pdf = luxstage_field('catalog_pdf');
