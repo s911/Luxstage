@@ -95,20 +95,6 @@ get_header();
 
   $products_query = new WP_Query($query_args);
   ?>
-  <?php if (!is_wp_error($product_categories) && $product_categories) : ?>
-    <nav aria-label="<?php esc_attr_e('Product categories', 'luxstage'); ?>">
-      <?php foreach ($product_categories as $category) : ?>
-        <?php
-        $category_link = add_query_arg(
-            ['product_category' => $category->slug],
-            home_url('/products/')
-        );
-        ?>
-        <a href="<?php echo esc_url($category_link); ?>"><?php echo esc_html($category->name); ?></a>
-      <?php endforeach; ?>
-    </nav>
-  <?php endif; ?>
-
   <section class="lux-filter-panel">
     <form method="get" action="<?php echo esc_url(get_post_type_archive_link('stage_lighting')); ?>">
       <label for="filter-product-category"><?php esc_html_e('Product Category', 'luxstage'); ?></label>
