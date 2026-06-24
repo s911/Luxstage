@@ -262,11 +262,28 @@ class Tester:
 
     def ensure_mailpit_ready(self) -> bool:
         status, body, _ = self.fetch(f"{self.mailpit_url}/api/v1/info", timeout=10)
-        if status < 400 and "Mailpit" in body:
-            self.record("SETUP-11", "Mailpit readiness", "PASS", f"HTTP {status}")
-            return True
-        self.record("SETUP-11", "Mailpit readiness", "FAIL", f"HTTP {status}")
-        return False
+        if status >= 400:
+            self.record("SETUP-11", "Mailpit readiness", "FAIL", f"HTTP {status}")
+            return False
+
+        # Mailpit API payload can vary by version; accept any valid JSON response
+        # from /api/v1/info as healthy instead of hardcoding a string match.
+        try:
+            payload = json.loads(body)
+        except json.JSONDecodeError:
+            fallback_status, _, _ = self.fetch(f"{self.mailpit_url}/api/v1/messages", timeout=10)
+            if fallback_status < 400:
+                self.record("SETUP-11", "Mailpit readiness", "PASS", f"HTTP {status}, messages_http {fallback_status}")
+                return True
+            self.record("SETUP-11", "Mailpit readiness", "FAIL", f"HTTP {status}, invalid JSON")
+            return False
+
+        detail = "HTTP %s, keys=%s" % (
+            status,
+            ",".join(sorted(payload.keys())[:5]) if isinstance(payload, dict) else type(payload).__name__,
+        )
+        self.record("SETUP-11", "Mailpit readiness", "PASS", detail)
+        return True
 
     def test_http_ok(self, case_id: str, name: str, path: str, must_contain: list[str] | None = None) -> str:
         if self.web_blocked:

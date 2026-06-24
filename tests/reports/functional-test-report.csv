@@ -10,8 +10,9 @@ SETUP-08,Ensure catalog fixtures,PASS,luxstage-catalog-01:78\nluxstage-catalog-0
 SETUP-09,Ensure application fixtures,PASS,luxstage-application-01:88\nluxstage-application-02:89\nluxstage-application-03:90\nluxstage-application-04:91\nluxstage-application-05:92\nluxstage-application-06:93\nluxstage-application-07:94\nluxstage-application-08:95\nluxstage-application-09:96\nluxstage-application-10:97\n
 SETUP-10,Ensure inquiry fixtures,PASS,existing:98\nexisting:99\nexisting:100\nexisting:101\nexisting:102\nexisting:103\nexisting:104\nexisting:105\nexisting:106\nexisting:107\n
 SETUP-04,Web readiness check,PASS,HTTP 200
+SETUP-11,Mailpit readiness,FAIL,HTTP 200
 H-01,Home page loads,PASS,/
-H-01-TIME,Home load under 3s,PASS,0.06s
+H-01-TIME,Home load under 3s,PASS,0.12s
 H-02,Responsive markup baseline,PASS,viewport meta
 H-03,Hero Banner and CTA,PASS,Hero CTA
 H-04,Featured products show 4-6 items,PASS,12 cards
@@ -29,16 +30,13 @@ P-08,Related products,PASS,related section
 P-09,Inquiry button with SKU,PASS,RFQ link
 P-10,Catalog download button,PASS,download CTA
 P-11,Batch inquiry,PASS,batch inquiry CTA
-F-01,General contact form,FAIL,"HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
-F-02,Form validation,PASS,required fields present in rendered form/template
-F-03,Product RFQ form,FAIL,"HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
-F-04,Attachment upload,FAIL,file input and submit=mail_failed:There was an error trying to send your message. Please try again later.
-F-05,Catalog lead form,FAIL,"HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
-F-06,Returning catalog downloader,PASS,cookie-based returning lead behavior
-F-07,Spam protection,PASS,CF7 hidden tokens or anti-spam plugin markers
-F-08,Batch inquiry form,FAIL,"HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
-F-09,Inquiry persistence,FAIL,inquiry_delta=0
-F-10,Email send verification,FAIL,"mail_success_delta=0, mailpit_delta=0"
+F-01,General contact form,FAIL,Mailpit is not reachable; local mail capture mode requires http://localhost:8025
+F-03,Product RFQ form,FAIL,Mailpit is not reachable; local mail capture mode requires http://localhost:8025
+F-04,Attachment upload,FAIL,Mailpit is not reachable; local mail capture mode requires http://localhost:8025
+F-05,Catalog lead form,FAIL,Mailpit is not reachable; local mail capture mode requires http://localhost:8025
+F-08,Batch inquiry form,FAIL,Mailpit is not reachable; local mail capture mode requires http://localhost:8025
+F-09,Inquiry persistence,FAIL,Mailpit is not reachable; local mail capture mode requires http://localhost:8025
+F-10,Email send verification,FAIL,Mailpit is not reachable; local mail capture mode requires http://localhost:8025
 C-01,Catalog archive exists,PASS,/downloads/catalogs/
 C-02,Category-specific catalogs,PASS,"slug=ce, cards=3"
 C-03,Admin upload catalog,PASS,catalog download links rendered
