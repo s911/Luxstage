@@ -121,18 +121,24 @@ get_header();
       <section class="lux-product-actions">
         <?php $sku = (string) luxstage_field('sku'); ?>
         <a class="lux-button lux-button--primary" href="<?php echo esc_url(add_query_arg(['product_sku' => $sku], home_url('/contact/'))); ?>">
-          <?php esc_html_e('Send Inquiry (Single Product)', 'luxstage'); ?>
-        </a>
-        <a class="lux-button lux-button--primary" href="<?php echo esc_url(add_query_arg(['product_sku' => $sku], home_url('/batch-inquiry/'))); ?>">
-          <?php esc_html_e('Batch Inquiry (Multiple SKUs)', 'luxstage'); ?>
+          <?php esc_html_e('Send Inquiry', 'luxstage'); ?>
         </a>
         <?php
         $catalog_pdf = luxstage_field('catalog_pdf');
-        $catalog_url = is_array($catalog_pdf) && isset($catalog_pdf['url']) ? $catalog_pdf['url'] : home_url('/downloads/catalogs/');
+        $catalog_url = '';
+        if (is_array($catalog_pdf) && !empty($catalog_pdf['url'])) {
+            $catalog_url = (string) $catalog_pdf['url'];
+        } elseif (is_string($catalog_pdf) && $catalog_pdf !== '') {
+            $catalog_url = $catalog_pdf;
+        } elseif (is_numeric($catalog_pdf)) {
+            $catalog_url = (string) wp_get_attachment_url((int) $catalog_pdf);
+        }
         ?>
-        <a class="lux-button lux-button--secondary" href="<?php echo esc_url($catalog_url); ?>">
-          <?php esc_html_e('Download PDF', 'luxstage'); ?>
-        </a>
+        <?php if ($catalog_url !== '') : ?>
+          <a class="lux-button lux-button--secondary" href="<?php echo esc_url($catalog_url); ?>">
+            <?php esc_html_e('Download PDF', 'luxstage'); ?>
+          </a>
+        <?php endif; ?>
       </section>
 
       <?php
