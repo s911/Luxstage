@@ -805,3 +805,312 @@ add_action('phpmailer_init', static function (PHPMailer\PHPMailer\PHPMailer $php
     $phpmailer->SMTPSecure = '';
     $phpmailer->Timeout = 15;
 });
+
+if (!function_exists('luxstage_contact_target_email')) {
+    function luxstage_contact_target_email(): string
+    {
+        $candidates = [
+            (string) getenv('LUXSTAGE_INQUIRY_TO_EMAIL'),
+            (string) getenv('LUXSTAGE_CONTACT_TO_EMAIL'),
+            (string) get_option('admin_email'),
+        ];
+
+        foreach ($candidates as $email) {
+            $email = sanitize_email($email);
+            if ($email !== '' && is_email($email)) {
+                return $email;
+            }
+        }
+
+        return 'no-reply@luxstage.local';
+    }
+}
+
+if (!function_exists('luxstage_contact_page')) {
+    function luxstage_contact_page(): bool
+    {
+        if (is_admin() || !is_page()) {
+            return false;
+        }
+
+        if (is_page(['contact', 'contact-us'])) {
+            return true;
+        }
+
+        $object = get_queried_object();
+        if (!$object instanceof WP_Post || $object->post_type !== 'page') {
+            return false;
+        }
+
+        $slug = sanitize_title((string) $object->post_name);
+        if (in_array($slug, ['contact', 'contact-us', 'lianxiwomen'], true)) {
+            return true;
+        }
+
+        return false;
+    }
+}
+
+if (!function_exists('luxstage_contact_flash_key')) {
+    function luxstage_contact_flash_key(string $token): string
+    {
+        return 'luxstage_contact_flash_' . $token;
+    }
+}
+
+if (!function_exists('luxstage_contact_store_flash')) {
+    function luxstage_contact_store_flash(array $payload): string
+    {
+        $token = wp_generate_password(16, false, false);
+        set_transient(luxstage_contact_flash_key($token), $payload, 10 * MINUTE_IN_SECONDS);
+        return $token;
+    }
+}
+
+if (!function_exists('luxstage_contact_read_flash')) {
+    function luxstage_contact_read_flash(): array
+    {
+        $token = sanitize_key((string) ($_GET['luxstage_contact_token'] ?? ''));
+        if ($token === '') {
+            return [];
+        }
+
+        $flash = get_transient(luxstage_contact_flash_key($token));
+        if (!is_array($flash)) {
+            return [];
+        }
+
+        delete_transient(luxstage_contact_flash_key($token));
+        return $flash;
+    }
+}
+
+add_action('template_redirect', static function (): void {
+    if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')) !== 'POST') {
+        return;
+    }
+    if (empty($_POST['luxstage_contact_submit']) || !luxstage_contact_page()) {
+        return;
+    }
+
+    $redirect_url = get_permalink() ?: home_url('/contact/');
+    $nonce = (string) ($_POST['luxstage_contact_nonce'] ?? '');
+    if (!wp_verify_nonce($nonce, 'luxstage_contact_submit')) {
+        $token = luxstage_contact_store_flash([
+            'status' => 'error',
+            'message' => __('Security check failed. Please submit again.', 'luxstage'),
+            'old' => [],
+        ]);
+        wp_safe_redirect(add_query_arg('luxstage_contact_token', $token, $redirect_url));
+        exit;
+    }
+
+    $trap = trim((string) ($_POST['website'] ?? ''));
+    if ($trap !== '') {
+        $token = luxstage_contact_store_flash([
+            'status' => 'error',
+            'message' => __('Submission rejected.', 'luxstage'),
+            'old' => [],
+        ]);
+        wp_safe_redirect(add_query_arg('luxstage_contact_token', $token, $redirect_url));
+        exit;
+    }
+
+    $name = sanitize_text_field((string) wp_unslash($_POST['lux_name'] ?? ''));
+    $phone = sanitize_text_field((string) wp_unslash($_POST['lux_phone'] ?? ''));
+    $email = sanitize_email((string) wp_unslash($_POST['lux_email'] ?? ''));
+    $company = sanitize_text_field((string) wp_unslash($_POST['lux_company'] ?? ''));
+    $message = sanitize_textarea_field((string) wp_unslash($_POST['lux_message'] ?? ''));
+    $product_sku = sanitize_text_field((string) wp_unslash($_POST['lux_product_sku'] ?? ''));
+
+    $old = [
+        'name' => $name,
+        'phone' => $phone,
+        'email' => $email,
+        'company' => $company,
+        'message' => $message,
+        'product_sku' => $product_sku,
+    ];
+
+    if ($name === '' || !is_email($email) || $message === '') {
+        $token = luxstage_contact_store_flash([
+            'status' => 'error',
+            'message' => __('Please fill required fields: Name, Email, Description.', 'luxstage'),
+            'old' => $old,
+        ]);
+        wp_safe_redirect(add_query_arg('luxstage_contact_token', $token, $redirect_url));
+        exit;
+    }
+
+    $content_lines = [
+        'Source: Contact page fallback form',
+        'Name: ' . $name,
+        'Phone: ' . $phone,
+        'Email: ' . $email,
+        'Company: ' . $company,
+        'Product SKU: ' . $product_sku,
+        'Description:',
+        $message,
+    ];
+
+    $inquiry_id = wp_insert_post([
+        'post_type' => 'inquiry_record',
+        'post_status' => 'publish',
+        'post_title' => sprintf('Contact - %s - %s', $name, current_time('mysql')),
+        'post_content' => implode("\n", $content_lines),
+    ], true);
+
+    $to = luxstage_contact_target_email();
+    $subject = sprintf('[Luxstage] New Contact Inquiry - %s', $name);
+    $mail_body = implode("\n", [
+        'A new inquiry is submitted from Contact page.',
+        '',
+        'Name: ' . $name,
+        'Phone: ' . $phone,
+        'Email: ' . $email,
+        'Company: ' . $company,
+        'Product SKU: ' . $product_sku,
+        '',
+        'Description:',
+        $message,
+    ]);
+    $headers = ['Content-Type: text/plain; charset=UTF-8'];
+    if ($email !== '' && is_email($email)) {
+        $headers[] = 'Reply-To: ' . $name . ' <' . $email . '>';
+    }
+
+    $mail_ok = wp_mail($to, $subject, $mail_body, $headers);
+    if (is_int($inquiry_id) && $inquiry_id > 0) {
+        update_post_meta($inquiry_id, 'mail_status', $mail_ok ? 'sent' : 'failed');
+        update_post_meta($inquiry_id, 'mail_to', $to);
+    }
+
+    $token = luxstage_contact_store_flash([
+        'status' => $mail_ok ? 'success' : 'warning',
+        'message' => $mail_ok
+            ? __('Inquiry sent successfully. Our team will contact you soon.', 'luxstage')
+            : __('Inquiry saved, but email delivery failed. Please check mail configuration.', 'luxstage'),
+        'old' => $mail_ok ? [] : $old,
+    ]);
+
+    wp_safe_redirect(add_query_arg('luxstage_contact_token', $token, $redirect_url));
+    exit;
+}, 12);
+
+if (!function_exists('luxstage_contact_form_markup')) {
+    function luxstage_contact_form_markup(): string
+    {
+        $flash = luxstage_contact_read_flash();
+        $status = (string) ($flash['status'] ?? '');
+        $notice = (string) ($flash['message'] ?? '');
+        $old = is_array($flash['old'] ?? null) ? $flash['old'] : [];
+
+        $default_sku = sanitize_text_field((string) ($_GET['product_sku'] ?? ''));
+        $values = [
+            'name' => (string) ($old['name'] ?? ''),
+            'phone' => (string) ($old['phone'] ?? ''),
+            'email' => (string) ($old['email'] ?? ''),
+            'company' => (string) ($old['company'] ?? ''),
+            'product_sku' => (string) ($old['product_sku'] ?? $default_sku),
+            'message' => (string) ($old['message'] ?? ''),
+        ];
+
+        $recipient = luxstage_contact_target_email();
+        $nonce = wp_create_nonce('luxstage_contact_submit');
+
+        ob_start();
+        ?>
+        <section class="lux-contact-fallback" id="lux-contact-fallback">
+            <style>
+                .lux-contact-fallback{margin-top:24px;padding:24px;border:1px solid #e5e7eb;border-radius:12px;background:#fff}
+                .lux-contact-fallback h2{margin:0 0 12px;font-size:1.5rem}
+                .lux-contact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+                .lux-contact-grid .lux-field-full{grid-column:1 / -1}
+                .lux-contact-fallback label{display:block;font-weight:600;margin-bottom:6px}
+                .lux-contact-fallback input,.lux-contact-fallback textarea{width:100%;border:1px solid #d1d5db;border-radius:8px;padding:10px 12px;box-sizing:border-box}
+                .lux-contact-fallback textarea{min-height:130px;resize:vertical}
+                .lux-contact-note{font-size:.875rem;color:#4b5563;margin:10px 0 14px}
+                .lux-contact-notice{padding:10px 12px;border-radius:8px;margin:0 0 12px}
+                .lux-contact-notice.is-success{background:#ecfdf5;color:#065f46}
+                .lux-contact-notice.is-warning{background:#fffbeb;color:#92400e}
+                .lux-contact-notice.is-error{background:#fef2f2;color:#991b1b}
+                .lux-contact-actions{margin-top:14px}
+                .lux-contact-submit{display:inline-block;padding:10px 18px;border:0;border-radius:8px;background:#111827;color:#fff;font-weight:700;cursor:pointer}
+                @media (max-width:720px){.lux-contact-grid{grid-template-columns:1fr}}
+            </style>
+            <h2><?php esc_html_e('Send Inquiry', 'luxstage'); ?></h2>
+            <?php if ($notice !== '') : ?>
+                <div class="lux-contact-notice <?php echo esc_attr('is-' . ($status !== '' ? $status : 'success')); ?>">
+                    <?php echo esc_html($notice); ?>
+                </div>
+            <?php endif; ?>
+            <p class="lux-contact-note">
+                <?php
+                echo esc_html(
+                    sprintf(
+                        /* translators: %s is inquiry recipient email */
+                        __('Your inquiry will be delivered to %s.', 'luxstage'),
+                        $recipient
+                    )
+                );
+                ?>
+            </p>
+            <form method="post" action="<?php echo esc_url(get_permalink() ?: home_url('/contact/')); ?>">
+                <input type="hidden" name="luxstage_contact_submit" value="1">
+                <input type="hidden" name="luxstage_contact_nonce" value="<?php echo esc_attr($nonce); ?>">
+                <div style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;">
+                    <label for="lux-website"><?php esc_html_e('Website', 'luxstage'); ?></label>
+                    <input type="text" id="lux-website" name="website" value="">
+                </div>
+                <div class="lux-contact-grid">
+                    <div>
+                        <label for="lux-name"><?php esc_html_e('Name *', 'luxstage'); ?></label>
+                        <input id="lux-name" name="lux_name" type="text" required value="<?php echo esc_attr($values['name']); ?>">
+                    </div>
+                    <div>
+                        <label for="lux-phone"><?php esc_html_e('Phone', 'luxstage'); ?></label>
+                        <input id="lux-phone" name="lux_phone" type="text" value="<?php echo esc_attr($values['phone']); ?>">
+                    </div>
+                    <div>
+                        <label for="lux-email"><?php esc_html_e('Email *', 'luxstage'); ?></label>
+                        <input id="lux-email" name="lux_email" type="email" required value="<?php echo esc_attr($values['email']); ?>">
+                    </div>
+                    <div>
+                        <label for="lux-company"><?php esc_html_e('Company', 'luxstage'); ?></label>
+                        <input id="lux-company" name="lux_company" type="text" value="<?php echo esc_attr($values['company']); ?>">
+                    </div>
+                    <div class="lux-field-full">
+                        <label for="lux-product-sku"><?php esc_html_e('Product SKU (Optional)', 'luxstage'); ?></label>
+                        <input id="lux-product-sku" name="lux_product_sku" type="text" value="<?php echo esc_attr($values['product_sku']); ?>">
+                    </div>
+                    <div class="lux-field-full">
+                        <label for="lux-message"><?php esc_html_e('Description *', 'luxstage'); ?></label>
+                        <textarea id="lux-message" name="lux_message" required><?php echo esc_textarea($values['message']); ?></textarea>
+                    </div>
+                </div>
+                <div class="lux-contact-actions">
+                    <button class="lux-contact-submit" type="submit"><?php esc_html_e('Send Inquiry', 'luxstage'); ?></button>
+                </div>
+            </form>
+        </section>
+        <?php
+        return (string) ob_get_clean();
+    }
+}
+
+add_filter('the_content', static function (string $content): string {
+    if (is_admin() || !in_the_loop() || !is_main_query() || !luxstage_contact_page()) {
+        return $content;
+    }
+
+    if (strpos($content, 'lux-contact-fallback') !== false) {
+        return $content;
+    }
+
+    $fallback = luxstage_contact_form_markup();
+    if (trim($content) === '') {
+        return $fallback;
+    }
+
+    return $content . "\n\n" . $fallback;
+}, 40);
