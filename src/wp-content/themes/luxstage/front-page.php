@@ -90,19 +90,45 @@ $product_categories = get_terms([
   </section>
 
   <section class="lux-trust">
-    <div class="fw-b2b-container lux-trust__grid">
-      <div>
-        <p class="lux-eyebrow"><?php esc_html_e('Certificates & Trust', 'luxstage'); ?></p>
-        <h2><?php esc_html_e('Built for international B2B procurement', 'luxstage'); ?></h2>
-        <p><?php esc_html_e('Support CE, UL, RoHS, ETL and FCC documentation requirements, with export-ready product catalogs and technical parameter sheets.', 'luxstage'); ?></p>
+    <div class="fw-b2b-container">
+      <div class="lux-trust__grid">
+        <div>
+          <p class="lux-eyebrow"><?php esc_html_e('Certificates & Trust', 'luxstage'); ?></p>
+          <h2><?php esc_html_e('Built for international B2B procurement', 'luxstage'); ?></h2>
+          <p><?php esc_html_e('Support CE, UL, RoHS, ETL and FCC documentation requirements, with export-ready product catalogs and technical parameter sheets.', 'luxstage'); ?></p>
+        </div>
+        <ul class="lux-badges">
+          <li>CE</li>
+          <li>RoHS</li>
+          <li>UL</li>
+          <li>ETL</li>
+          <li>FCC</li>
+        </ul>
       </div>
-      <ul class="lux-badges">
-        <li>CE</li>
-        <li>RoHS</li>
-        <li>UL</li>
-        <li>ETL</li>
-        <li>FCC</li>
-      </ul>
+
+      <div class="lux-why">
+        <div class="lux-why__head">
+          <p class="lux-eyebrow"><?php esc_html_e('Why Choose Luxstage', 'luxstage'); ?></p>
+          <h3><?php esc_html_e('Factory strength that reduces project risk', 'luxstage'); ?></h3>
+        </div>
+        <div class="lux-why__grid">
+          <article class="lux-why__card">
+            <span class="lux-why__value">20+ Years</span>
+            <h4><?php esc_html_e('R&D and manufacturing experience', 'luxstage'); ?></h4>
+            <p><?php esc_html_e('Long-term engineering accumulation for stable optics, thermal design, and control systems.', 'luxstage'); ?></p>
+          </article>
+          <article class="lux-why__card">
+            <span class="lux-why__value">100%</span>
+            <h4><?php esc_html_e('Full-load burn-in testing', 'luxstage'); ?></h4>
+            <p><?php esc_html_e('Every fixture is aged and stress-tested before shipment to improve consistency on live projects.', 'luxstage'); ?></p>
+          </article>
+          <article class="lux-why__card">
+            <span class="lux-why__value">2 Years</span>
+            <h4><?php esc_html_e('Warranty and after-sales support', 'luxstage'); ?></h4>
+            <p><?php esc_html_e('Structured support process with technical documents and response for export-market customers.', 'luxstage'); ?></p>
+          </article>
+        </div>
+      </div>
     </div>
   </section>
 
