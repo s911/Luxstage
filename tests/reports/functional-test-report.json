@@ -165,7 +165,7 @@
     "case_id": "P-05",
     "name": "Product detail URL",
     "status": "PASS",
-    "detail": "http://localhost:8080/products/uncategorized/test-product-zh-safe/"
+    "detail": "http://localhost:8080/products/beam-light/lx-ip67-beam-wash-outdoor/"
   },
   {
     "case_id": "P-06",
@@ -176,7 +176,7 @@
   {
     "case_id": "P-07",
     "name": "Technical parameters",
-    "status": "FAIL",
+    "status": "PASS",
     "detail": "PRD parameter groups"
   },
   {
@@ -188,7 +188,7 @@
   {
     "case_id": "P-09",
     "name": "Inquiry button with SKU",
-    "status": "FAIL",
+    "status": "PASS",
     "detail": "RFQ link"
   },
   {
@@ -441,7 +441,7 @@
     "case_id": "B-05",
     "name": "Inquiry records",
     "status": "PASS",
-    "detail": "31 records"
+    "detail": "35 records"
   },
   {
     "case_id": "B-06",
@@ -465,7 +465,7 @@
     "case_id": "X-01",
     "name": "Home performance smoke",
     "status": "PASS",
-    "detail": "status=200, 0.08s"
+    "detail": "status=200, 0.07s"
   },
   {
     "case_id": "X-02",

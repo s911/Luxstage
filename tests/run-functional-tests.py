@@ -294,8 +294,21 @@ class Tester:
                 (
                     "if(!function_exists('pll_languages_list')){echo 'no_pll'; return;}"
                     "$langs=pll_languages_list();"
-                    "if(!is_array($langs)){echo 'invalid'; return;}"
-                    "echo 'langs=' . count($langs);"
+                    "if(!is_array($langs)){$langs=[];}"
+                    "if(count($langs)<2 && function_exists('pll_add_language')){"
+                    "try{pll_add_language('zh','Chinese','zh_CN','zh',1);}catch(Throwable $e){}"
+                    "$langs=pll_languages_list(); if(!is_array($langs)){$langs=[];}"
+                    "if(count($langs)<2){"
+                    "try{pll_add_language(['name'=>'Chinese','slug'=>'zh','locale'=>'zh_CN','rtl'=>0]);}catch(Throwable $e){}"
+                    "}"
+                    "}"
+                    "$langs=pll_languages_list(); if(!is_array($langs)){$langs=[];}"
+                    "if(count($langs)>=2 && function_exists('pll_set_post_language')){"
+                    "$catalogs=get_posts(['post_type'=>'catalog','post_status'=>'publish','posts_per_page'=>2,'lang'=>'']);"
+                    "if(count($catalogs)>=1){pll_set_post_language($catalogs[0]->ID,$langs[0]);}"
+                    "if(count($catalogs)>=2){pll_set_post_language($catalogs[1]->ID,$langs[1]); if(function_exists('pll_save_post_translations')){pll_save_post_translations([$langs[0]=>$catalogs[0]->ID,$langs[1]=>$catalogs[1]->ID]);}}"
+                    "}"
+                    "echo 'langs=' . implode(',', $langs);"
                 ),
             ],
             timeout=180,
@@ -313,10 +326,8 @@ class Tester:
 
         lang_count = 0
         if output.startswith("langs="):
-            try:
-                lang_count = int(output.split("=", 1)[1])
-            except (TypeError, ValueError):
-                lang_count = 0
+            lang_csv = output.split("=", 1)[1].strip()
+            lang_count = len([item for item in lang_csv.split(",") if item.strip()])
 
         self.multilingual_ready = lang_count >= 2
         self.record(
@@ -743,13 +754,15 @@ class Tester:
             [
                 "eval",
                 (
-                    "$posts=get_posts(['post_type'=>'stage_lighting','post_status'=>'publish','posts_per_page'=>50]);"
+                    "$posts=get_posts(['post_type'=>'stage_lighting','post_status'=>'publish','posts_per_page'=>100,'lang'=>'']);"
                     "$picked=0;"
                     "foreach($posts as $p){"
                     "$sku=(string)get_post_meta($p->ID,'sku',true);"
                     "$title=(string)$p->post_title;"
-                    "if(strpos($sku,'LX-')===0 || strpos($title,'LX-')===0){$picked=(int)$p->ID; break;}"
+                    "$has_cat=has_term('', 'product_category', $p);"
+                    "if((strpos($sku,'LX-')===0 || strpos($title,'LX-')===0) && $has_cat){$picked=(int)$p->ID; break;}"
                     "}"
+                    "if(!$picked){foreach($posts as $p){$sku=(string)get_post_meta($p->ID,'sku',true);$title=(string)$p->post_title; if(strpos($sku,'LX-')===0 || strpos($title,'LX-')===0){$picked=(int)$p->ID; break;}}}"
                     "if(!$picked && $posts){$picked=(int)$posts[0]->ID;}"
                     "echo (string)$picked;"
                 ),

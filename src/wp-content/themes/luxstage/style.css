@@ -96,6 +96,26 @@ img {
   color: var(--fw-color-accent);
 }
 
+.lux-lang-switcher ul {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lux-lang-switcher a {
+  color: var(--fw-color-muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.lux-lang-switcher .current-lang a,
+.lux-lang-switcher a:hover {
+  color: var(--fw-color-accent);
+}
+
 .lux-footer__grid {
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr;
@@ -110,6 +130,27 @@ img {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.lux-footer__lang ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lux-footer__lang a {
+  color: var(--fw-color-muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.lux-footer__lang .current-lang a,
+.lux-footer__lang a:hover {
+  color: var(--fw-color-accent);
 }
 
 .lux-hero {

@@ -26,11 +26,11 @@ P-01,Product category navigation,PASS,"Beam Light, Effect Light, Follow Spot, La
 P-02,Product list display,PASS,/products/
 P-03,Multi-dimensional filters,PASS,"slug=beam-light, cards=2, HTTP 200"
 P-04,Product sorting,PASS,"titles=10, HTTP 200"
-P-05,Product detail URL,PASS,http://localhost:8080/products/uncategorized/test-product-zh-safe/
+P-05,Product detail URL,PASS,http://localhost:8080/products/beam-light/lx-ip67-beam-wash-outdoor/
 P-06,Product gallery/video baseline,PASS,media section with image/video/fallback
-P-07,Technical parameters,FAIL,PRD parameter groups
+P-07,Technical parameters,PASS,PRD parameter groups
 P-08,Related products,PASS,related section
-P-09,Inquiry button with SKU,FAIL,RFQ link
+P-09,Inquiry button with SKU,PASS,RFQ link
 P-10,Catalog download button,PASS,download CTA
 P-11,Batch inquiry,PASS,batch inquiry CTA
 F-01,General contact form,PASS,"HTTP 200, submit=mail_sent:Thank you for your message. It has been sent."
@@ -72,11 +72,11 @@ B-01,Product create/read,PASS,14 products
 B-02,Product edit propagation,PASS,Seed script updates products idempotently by SKU
 B-03,Product delete behavior,PASS,temp create/delete
 B-04,Category admin,PASS,product categories
-B-05,Inquiry records,PASS,31 records
+B-05,Inquiry records,PASS,35 records
 B-06,Catalog PDF upload,PASS,13 catalog pdf links
 B-08,Application fixtures,PASS,10 application posts
 B-07,User roles,PASS,"editor_manage_options=False, admin_manage_options=True"
-X-01,Home performance smoke,PASS,"status=200, 0.08s"
+X-01,Home performance smoke,PASS,"status=200, 0.07s"
 X-02,HTTPS/SSL,SKIP,Local Docker runs over HTTP
 X-03,Login protection,PASS,Wordfence/limit-login plugin active or luxstage core login lockout enabled
 X-04,XSS baseline escaping,PASS,Theme output uses escaping functions
