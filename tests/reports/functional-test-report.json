@@ -81,7 +81,7 @@
     "case_id": "H-01-TIME",
     "name": "Home load under 3s",
     "status": "PASS",
-    "detail": "0.06s"
+    "detail": "0.18s"
   },
   {
     "case_id": "H-02",

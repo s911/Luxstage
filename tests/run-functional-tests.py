@@ -199,6 +199,14 @@ class Tester:
         cf7_ready = self.plugin_install_activate("contact-form-7")
         self.record("SETUP-05", "Ensure Contact Form 7", "PASS" if cf7_ready else "FAIL", "contact-form-7 active" if cf7_ready else "plugin install failed")
 
+        admin_email_proc = self.wp(["option", "update", "admin_email", "admin@luxstage.local"], timeout=60)
+        self.record(
+            "SETUP-12",
+            "Ensure admin email",
+            "PASS" if admin_email_proc.returncode == 0 else "FAIL",
+            "admin@luxstage.local",
+        )
+
         if cf7_ready:
             forms_proc = self.wp(
                 [
@@ -214,6 +222,20 @@ class Tester:
                         "$posts=get_posts(['post_type'=>'wpcf7_contact_form','name'=>$slug,'posts_per_page'=>1,'post_status'=>'any']);"
                         "if($posts){$id=$posts[0]->ID;wp_update_post(['ID'=>$id,'post_title'=>$data['title'],'post_content'=>$data['content'],'post_name'=>$slug]);}"
                         "else{$id=wp_insert_post(['post_type'=>'wpcf7_contact_form','post_status'=>'publish','post_title'=>$data['title'],'post_content'=>$data['content'],'post_name'=>$slug]);}"
+                        "$recipient=get_option('admin_email');"
+                        "$mail=["
+                        "'active'=>true,"
+                        "'recipient'=>$recipient,"
+                        "'sender'=>'Luxstage Local <no-reply@luxstage.local>',"
+                        "'subject'=>'[Luxstage] '.$data['title'],"
+                        "'body'=>'From: [your-name] <[your-email]>\nCompany: [your-company]\nPhone: [your-phone]\nProduct SKU: [product-sku]\nQuantity: [your-quantity]\nProduct List: [product-list]\nMessage: [your-message]',"
+                        "'additional_headers'=>'Reply-To: [your-email]',"
+                        "'attachments'=>'[attachment]',"
+                        "'use_html'=>false,"
+                        "'exclude_blank'=>false"
+                        "];"
+                        "update_post_meta($id,'_mail',$mail);"
+                        "update_post_meta($id,'_mail_2',['active'=>false]);"
                         "echo $slug.':'.$id.'\\n';"
                         "}"
                     ),

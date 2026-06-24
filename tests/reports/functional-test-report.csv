@@ -12,7 +12,7 @@ SETUP-10,Ensure inquiry fixtures,PASS,existing:98\nexisting:99\nexisting:100\nex
 SETUP-04,Web readiness check,PASS,HTTP 200
 SETUP-11,Mailpit readiness,PASS,"HTTP 200, keys=Database,DatabaseSize,LatestVersion,Messages,RuntimeStats"
 H-01,Home page loads,PASS,/
-H-01-TIME,Home load under 3s,PASS,0.06s
+H-01-TIME,Home load under 3s,PASS,0.18s
 H-02,Responsive markup baseline,PASS,viewport meta
 H-03,Hero Banner and CTA,PASS,Hero CTA
 H-04,Featured products show 4-6 items,PASS,12 cards
