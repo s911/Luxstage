@@ -148,52 +148,63 @@ $rfq_nonce = wp_create_nonce('luxstage_home_rfq_submit');
       <p><?php esc_html_e('Send a product inquiry and our sales team will follow up with specifications, MOQ, delivery plan, and quotation.', 'luxstage'); ?></p>
     </div>
     <div class="lux-rfq__form-wrap">
-      <?php if ($rfq_notice !== '') : ?>
-        <div class="lux-rfq__notice <?php echo esc_attr('is-' . ($rfq_status !== '' ? $rfq_status : 'success')); ?>">
-          <?php echo esc_html($rfq_notice); ?>
+      <?php if ($rfq_status === 'success') : ?>
+        <div class="lux-rfq__success" role="status" aria-live="polite">
+          <svg class="lux-rfq__success-icon" viewBox="0 0 52 52" aria-hidden="true" focusable="false">
+            <circle class="lux-rfq__success-circle" cx="26" cy="26" r="24" fill="none"></circle>
+            <path class="lux-rfq__success-check" fill="none" d="M14 27l8 8 16-16"></path>
+          </svg>
+          <h3><?php esc_html_e('Thank You for Your Inquiry!', 'luxstage'); ?></h3>
+          <p><?php esc_html_e('Our sales team will review your specifications and contact you via email within 24 hours.', 'luxstage'); ?></p>
         </div>
-      <?php endif; ?>
-      <form class="lux-rfq__form" method="post" action="">
-        <input type="hidden" name="luxstage_home_rfq_submit" value="1">
-        <input type="hidden" name="luxstage_home_rfq_nonce" value="<?php echo esc_attr($rfq_nonce); ?>">
-        <div class="lux-rfq__honeypot">
-          <label for="lux-rfq-website"><?php esc_html_e('Website', 'luxstage'); ?></label>
-          <input id="lux-rfq-website" type="text" name="website" value="">
-        </div>
-        <label for="lux-rfq-email"><?php esc_html_e('Email', 'luxstage'); ?></label>
-        <input
-          id="lux-rfq-email"
-          class="lux-rfq__input"
-          type="email"
-          name="lux_rfq_email"
-          placeholder="<?php esc_attr_e('your@email.com', 'luxstage'); ?>"
-          required
-          value="<?php echo esc_attr($rfq_email); ?>"
-        >
-        <details class="lux-rfq__optional" <?php echo $rfq_company !== '' ? 'open' : ''; ?>>
-          <summary><?php esc_html_e('Add company (optional)', 'luxstage'); ?></summary>
-          <label for="lux-rfq-company"><?php esc_html_e('Company', 'luxstage'); ?></label>
+      <?php else : ?>
+        <?php if ($rfq_notice !== '') : ?>
+          <div class="lux-rfq__notice <?php echo esc_attr('is-' . ($rfq_status !== '' ? $rfq_status : 'warning')); ?>">
+            <?php echo esc_html($rfq_notice); ?>
+          </div>
+        <?php endif; ?>
+        <form class="lux-rfq__form" method="post" action="">
+          <input type="hidden" name="luxstage_home_rfq_submit" value="1">
+          <input type="hidden" name="luxstage_home_rfq_nonce" value="<?php echo esc_attr($rfq_nonce); ?>">
+          <div class="lux-rfq__honeypot">
+            <label for="lux-rfq-website"><?php esc_html_e('Website', 'luxstage'); ?></label>
+            <input id="lux-rfq-website" type="text" name="website" value="">
+          </div>
+          <label for="lux-rfq-email"><?php esc_html_e('Email', 'luxstage'); ?></label>
           <input
-            id="lux-rfq-company"
+            id="lux-rfq-email"
             class="lux-rfq__input"
-            type="text"
-            name="lux_rfq_company"
-            placeholder="<?php esc_attr_e('Your company name', 'luxstage'); ?>"
-            value="<?php echo esc_attr($rfq_company); ?>"
+            type="email"
+            name="lux_rfq_email"
+            placeholder="<?php esc_attr_e('your@email.com', 'luxstage'); ?>"
+            required
+            value="<?php echo esc_attr($rfq_email); ?>"
           >
-        </details>
-        <label for="lux-rfq-message"><?php esc_html_e('Your Message', 'luxstage'); ?></label>
-        <textarea
-          id="lux-rfq-message"
-          class="lux-rfq__textarea"
-          name="lux_rfq_message"
-          placeholder="<?php esc_attr_e('Tell us the products, quantity, and delivery requirements...', 'luxstage'); ?>"
-          required
-        ><?php echo esc_textarea($rfq_message); ?></textarea>
-        <button class="lux-button lux-button--primary lux-rfq__submit" type="submit">
-          <?php esc_html_e('Send Inquiry', 'luxstage'); ?>
-        </button>
-      </form>
+          <details class="lux-rfq__optional" <?php echo $rfq_company !== '' ? 'open' : ''; ?>>
+            <summary><?php esc_html_e('Add company (optional)', 'luxstage'); ?></summary>
+            <label for="lux-rfq-company"><?php esc_html_e('Company', 'luxstage'); ?></label>
+            <input
+              id="lux-rfq-company"
+              class="lux-rfq__input"
+              type="text"
+              name="lux_rfq_company"
+              placeholder="<?php esc_attr_e('Your company name', 'luxstage'); ?>"
+              value="<?php echo esc_attr($rfq_company); ?>"
+            >
+          </details>
+          <label for="lux-rfq-message"><?php esc_html_e('Your Message', 'luxstage'); ?></label>
+          <textarea
+            id="lux-rfq-message"
+            class="lux-rfq__textarea"
+            name="lux_rfq_message"
+            placeholder="<?php esc_attr_e('Tell us the products, quantity, and delivery requirements...', 'luxstage'); ?>"
+            required
+          ><?php echo esc_textarea($rfq_message); ?></textarea>
+          <button class="lux-button lux-button--primary lux-rfq__submit" type="submit">
+            <?php esc_html_e('Send Inquiry', 'luxstage'); ?>
+          </button>
+        </form>
+      <?php endif; ?>
     </div>
   </section>
 </main>
