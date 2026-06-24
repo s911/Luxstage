@@ -68,8 +68,8 @@
   {
     "case_id": "SETUP-11",
     "name": "Mailpit readiness",
-    "status": "FAIL",
-    "detail": "HTTP 200"
+    "status": "PASS",
+    "detail": "HTTP 200, keys=Database,DatabaseSize,LatestVersion,Messages,RuntimeStats"
   },
   {
     "case_id": "H-01",
@@ -81,7 +81,7 @@
     "case_id": "H-01-TIME",
     "name": "Home load under 3s",
     "status": "PASS",
-    "detail": "0.12s"
+    "detail": "0.06s"
   },
   {
     "case_id": "H-02",
@@ -189,43 +189,61 @@
     "case_id": "F-01",
     "name": "General contact form",
     "status": "FAIL",
-    "detail": "Mailpit is not reachable; local mail capture mode requires http://localhost:8025"
+    "detail": "HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
+  },
+  {
+    "case_id": "F-02",
+    "name": "Form validation",
+    "status": "PASS",
+    "detail": "required fields present in rendered form/template"
   },
   {
     "case_id": "F-03",
     "name": "Product RFQ form",
     "status": "FAIL",
-    "detail": "Mailpit is not reachable; local mail capture mode requires http://localhost:8025"
+    "detail": "HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
   },
   {
     "case_id": "F-04",
     "name": "Attachment upload",
     "status": "FAIL",
-    "detail": "Mailpit is not reachable; local mail capture mode requires http://localhost:8025"
+    "detail": "file input and submit=mail_failed:There was an error trying to send your message. Please try again later."
   },
   {
     "case_id": "F-05",
     "name": "Catalog lead form",
     "status": "FAIL",
-    "detail": "Mailpit is not reachable; local mail capture mode requires http://localhost:8025"
+    "detail": "HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
+  },
+  {
+    "case_id": "F-06",
+    "name": "Returning catalog downloader",
+    "status": "PASS",
+    "detail": "cookie-based returning lead behavior"
+  },
+  {
+    "case_id": "F-07",
+    "name": "Spam protection",
+    "status": "PASS",
+    "detail": "CF7 hidden tokens or anti-spam plugin markers"
   },
   {
     "case_id": "F-08",
     "name": "Batch inquiry form",
     "status": "FAIL",
-    "detail": "Mailpit is not reachable; local mail capture mode requires http://localhost:8025"
+    "detail": "HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
   },
   {
     "case_id": "F-09",
     "name": "Inquiry persistence",
     "status": "FAIL",
-    "detail": "Mailpit is not reachable; local mail capture mode requires http://localhost:8025"
+    "detail": "inquiry_delta=0"
   },
   {
     "case_id": "F-10",
     "name": "Email send verification",
     "status": "FAIL",
-    "detail": "Mailpit is not reachable; local mail capture mode requires http://localhost:8025"
+    "detail": "mail_success_delta=0, mailpit_delta=0"
   },
   {
     "case_id": "C-01",
