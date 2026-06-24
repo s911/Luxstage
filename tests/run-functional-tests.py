@@ -10,6 +10,7 @@ import subprocess
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
@@ -24,9 +25,10 @@ class Result:
 
 
 class Tester:
-    def __init__(self, base_url: str, project_name: str) -> None:
+    def __init__(self, base_url: str, project_name: str, mailpit_url: str) -> None:
         self.base_url = base_url.rstrip("/")
         self.project_name = project_name
+        self.mailpit_url = mailpit_url.rstrip("/")
         self.root = Path(__file__).resolve().parents[1]
         self.results: list[Result] = []
         self.web_blocked = False
@@ -82,6 +84,19 @@ class Tester:
                     continue
                 return 598, str(exc), {}
         return 598, "Unknown network failure", {}
+
+    def post(self, path: str, data: bytes, headers: dict[str, str], timeout: int = 20) -> tuple[int, str, dict[str, str]]:
+        url = path if path.startswith("http") else f"{self.base_url}{path}"
+        request_headers = {"User-Agent": "LuxstageFunctionalTest/1.0"}
+        request_headers.update(headers)
+        req = urllib.request.Request(url, data=data, headers=request_headers, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as response:
+                return response.status, response.read().decode("utf-8", errors="ignore"), dict(response.headers)
+        except urllib.error.HTTPError as exc:
+            return exc.code, exc.read().decode("utf-8", errors="ignore"), dict(exc.headers)
+        except (urllib.error.URLError, TimeoutError, socket.timeout) as exc:
+            return 598, str(exc), {}
 
     def ensure_seed_data(self) -> None:
         seed_script = self.root / "deploy" / "scripts" / "seed-demo-products.sh"
@@ -206,7 +221,8 @@ class Tester:
             self.record("SETUP-07", "Ensure form pages", "PASS" if pages_ready else "FAIL", (pages_proc.stderr or pages_proc.stdout).strip()[-300:])
 
         self.ensure_catalog_fixtures()
-        self.ensure_inquiry_fixture()
+        self.ensure_application_fixtures()
+        self.ensure_inquiry_fixtures()
         self.wp(["rewrite", "flush", "--hard"], timeout=90)
 
     def ensure_web_ready(self) -> bool:
@@ -342,16 +358,98 @@ class Tester:
         except Exception:
             return ""
 
+    def count_posts(self, post_type: str) -> int:
+        proc = self.wp(["post", "list", f"--post_type={post_type}", "--format=count"], timeout=90)
+        if proc.returncode != 0:
+            return 0
+        try:
+            return int(proc.stdout.strip() or "0")
+        except ValueError:
+            return 0
+
+    def count_mail_records(self, status: str) -> int:
+        escaped = status.replace("'", "\\'")
+        proc = self.wp(
+            [
+                "eval",
+                "global $wpdb; "
+                "echo (int)$wpdb->get_var(\"SELECT COUNT(*) FROM {$wpdb->posts} p "
+                "WHERE p.post_type='mail_record' AND p.post_status='publish' "
+                f"AND p.post_content LIKE 'Status: {escaped}%'\");",
+            ],
+            timeout=90,
+        )
+        if proc.returncode != 0:
+            return 0
+        try:
+            return int(proc.stdout.strip() or "0")
+        except ValueError:
+            return 0
+
+    def mailpit_message_count(self) -> int:
+        status, body, _ = self.fetch(f"{self.mailpit_url}/api/v1/messages", timeout=10)
+        if status >= 400:
+            return 0
+        try:
+            payload = json.loads(body)
+        except json.JSONDecodeError:
+            return 0
+        messages = payload.get("messages")
+        return len(messages) if isinstance(messages, list) else 0
+
+    def cf7_form_id_by_slug(self, slug: str) -> int:
+        proc = self.wp(
+            [
+                "post",
+                "list",
+                "--post_type=wpcf7_contact_form",
+                f"--name={slug}",
+                "--field=ID",
+            ],
+            timeout=90,
+        )
+        if proc.returncode != 0 or not proc.stdout.strip():
+            return 0
+        try:
+            return int(proc.stdout.strip().splitlines()[0])
+        except (ValueError, IndexError):
+            return 0
+
+    def submit_cf7_rest(self, slug: str, fields: dict[str, str]) -> tuple[bool, str]:
+        form_id = self.cf7_form_id_by_slug(slug)
+        if form_id <= 0:
+            return False, "form_not_found"
+
+        payload = {
+            "_wpcf7_unit_tag": f"wpcf7-f{form_id}-o1",
+            "_wpcf7_container_post": "0",
+            **fields,
+        }
+        body = urllib.parse.urlencode(payload).encode("utf-8")
+        status, response_text, _ = self.post(
+            f"/wp-json/contact-form-7/v1/contact-forms/{form_id}/feedback",
+            data=body,
+            headers={"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"},
+            timeout=25,
+        )
+        if status >= 400:
+            return False, f"http_{status}"
+        try:
+            payload_json = json.loads(response_text)
+        except json.JSONDecodeError:
+            return False, "invalid_json"
+        return payload_json.get("status") == "mail_sent", str(payload_json.get("status", "unknown"))
+
     def ensure_catalog_fixtures(self) -> None:
         proc = self.wp(
             [
                 "eval",
                 (
-                    "$items=["
-                    "['title'=>'Luxstage General Catalog 2026','slug'=>'luxstage-general-catalog-2026','cert'=>'ce'],"
-                    "['title'=>'Luxstage Outdoor Series Catalog','slug'=>'luxstage-outdoor-series-catalog','cert'=>'rohs'],"
-                    "['title'=>'Luxstage Premium Touring Catalog','slug'=>'luxstage-premium-touring-catalog','cert'=>'ul']"
-                    "];"
+                    "$certs=['ce','rohs','ul','etl','fcc'];"
+                    "$items=[];"
+                    "for($i=1;$i<=10;$i++){"
+                    "$items[]=['title'=>'Luxstage Catalog '.str_pad((string)$i,2,'0',STR_PAD_LEFT),'slug'=>'luxstage-catalog-'.str_pad((string)$i,2,'0',STR_PAD_LEFT),'cert'=>$certs[$i%count($certs)]];"
+                    "}"
                     "foreach($items as $item){"
                     "$posts=get_posts(['post_type'=>'catalog','name'=>$item['slug'],'posts_per_page'=>1,'post_status'=>'any']);"
                     "if($posts){$id=$posts[0]->ID;wp_update_post(['ID'=>$id,'post_status'=>'publish','post_title'=>$item['title']]);}"
@@ -367,22 +465,50 @@ class Tester:
             ],
             timeout=180,
         )
-        ready = proc.returncode == 0 and "luxstage-general-catalog-2026" in proc.stdout
+        ready = proc.returncode == 0 and "luxstage-catalog-01" in proc.stdout
         self.record("SETUP-08", "Ensure catalog fixtures", "PASS" if ready else "FAIL", (proc.stderr or proc.stdout).strip()[-300:])
 
-    def ensure_inquiry_fixture(self) -> None:
+    def ensure_application_fixtures(self) -> None:
         proc = self.wp(
             [
                 "eval",
                 (
-                    "$existing=get_posts(['post_type'=>'inquiry_record','name'=>'demo-inquiry-fixture','posts_per_page'=>1,'post_status'=>'any']);"
-                    "if($existing){$id=$existing[0]->ID;wp_update_post(['ID'=>$id,'post_status'=>'publish']);echo 'existing:'.$id;}"
-                    "else{$id=wp_insert_post(['post_type'=>'inquiry_record','post_status'=>'publish','post_title'=>'Demo Inquiry Fixture','post_name'=>'demo-inquiry-fixture','post_content'=>'Demo inquiry created by functional test setup']);echo 'created:'.$id;}"
+                    "$scenes=['concert','theatre','disco-club','event-rental','tv-studio','outdoor-festival'];"
+                    "for($i=1;$i<=10;$i++){"
+                    "$slug='luxstage-application-'.str_pad((string)$i,2,'0',STR_PAD_LEFT);"
+                    "$title='Luxstage Application Case '.str_pad((string)$i,2,'0',STR_PAD_LEFT);"
+                    "$posts=get_posts(['post_type'=>'application','name'=>$slug,'posts_per_page'=>1,'post_status'=>'any']);"
+                    "if($posts){$id=$posts[0]->ID;wp_update_post(['ID'=>$id,'post_status'=>'publish','post_title'=>$title,'post_content'=>'Application case fixture for functional testing.']);}"
+                    "else{$id=wp_insert_post(['post_type'=>'application','post_status'=>'publish','post_title'=>$title,'post_name'=>$slug,'post_content'=>'Application case fixture for functional testing.']);}"
+                    "$scene=get_term_by('slug',$scenes[$i%count($scenes)],'application_scene');"
+                    "if($scene){wp_set_object_terms($id,[(int)$scene->term_id],'application_scene',false);}"
+                    "echo $slug.':'.$id.'\\n';"
+                    "}"
+                ),
+            ],
+            timeout=180,
+        )
+        ready = proc.returncode == 0 and "luxstage-application-01" in proc.stdout
+        self.record("SETUP-09", "Ensure application fixtures", "PASS" if ready else "FAIL", (proc.stderr or proc.stdout).strip()[-300:])
+
+    def ensure_inquiry_fixtures(self) -> None:
+        proc = self.wp(
+            [
+                "eval",
+                (
+                    "for($i=1;$i<=10;$i++){"
+                    "$slug='demo-inquiry-fixture-'.str_pad((string)$i,2,'0',STR_PAD_LEFT);"
+                    "$title='Demo Inquiry Fixture '.str_pad((string)$i,2,'0',STR_PAD_LEFT);"
+                    "$existing=get_posts(['post_type'=>'inquiry_record','name'=>$slug,'posts_per_page'=>1,'post_status'=>'any']);"
+                    "if($existing){$id=$existing[0]->ID;wp_update_post(['ID'=>$id,'post_status'=>'publish','post_title'=>$title]);echo 'existing:'.$id.'\\n';}"
+                    "else{$id=wp_insert_post(['post_type'=>'inquiry_record','post_status'=>'publish','post_title'=>$title,'post_name'=>$slug,'post_content'=>'Demo inquiry created by functional test setup']);echo 'created:'.$id.'\\n';}"
+                    "}"
                 ),
             ],
             timeout=90,
         )
-        self.record("SETUP-09", "Ensure inquiry fixture", "PASS" if proc.returncode == 0 else "FAIL", (proc.stderr or proc.stdout).strip()[-300:])
+        ready = proc.returncode == 0 and ("demo-inquiry-fixture-01" in (proc.stderr + proc.stdout) or "existing" in proc.stdout or "created" in proc.stdout)
+        self.record("SETUP-10", "Ensure inquiry fixtures", "PASS" if ready else "FAIL", (proc.stderr or proc.stdout).strip()[-300:])
 
     def run_all(self) -> int:
         self.ensure_seed_data()
@@ -501,12 +627,33 @@ class Tester:
                 ("F-06", "Returning catalog downloader"),
                 ("F-07", "Spam protection"),
                 ("F-08", "Batch inquiry form"),
+                ("F-09", "Inquiry persistence"),
+                ("F-10", "Email send verification"),
             ]:
                 self.record(case_id, name, "FAIL", "Contact Form 7 not active")
             return
 
+        inquiry_before = self.count_posts("inquiry_record")
+        mail_success_before = self.count_mail_records("success")
+        mailpit_before = self.mailpit_message_count()
+
         status, contact_body, _ = self.fetch("/contact/")
-        self.record("F-01", "General contact form", "PASS" if status < 400 and "wpcf7-form" in contact_body else "FAIL", f"HTTP {status}")
+        contact_submit_ok, contact_submit_status = self.submit_cf7_rest(
+            "luxstage_contact",
+            {
+                "your-name": "Auto QA Contact",
+                "your-email": "qa-contact@example.com",
+                "your-company": "Luxstage QA",
+                "your-phone": "+86-13800000001",
+                "your-message": "Automated end-to-end contact inquiry submission test.",
+            },
+        )
+        self.record(
+            "F-01",
+            "General contact form",
+            "PASS" if status < 400 and "wpcf7-form" in contact_body and contact_submit_ok else "FAIL",
+            f"HTTP {status}, submit={contact_submit_status}",
+        )
 
         contact_tpl = self.cf7_form_content_by_slug("luxstage_contact")
         has_required = (
@@ -518,13 +665,49 @@ class Tester:
         self.record("F-02", "Form validation", "PASS" if has_required else "FAIL", "required fields present in rendered form/template")
 
         status, rfq_body, _ = self.fetch("/rfq/")
-        self.record("F-03", "Product RFQ form", "PASS" if status < 400 and "wpcf7-form" in rfq_body else "FAIL", f"HTTP {status}")
+        rfq_submit_ok, rfq_submit_status = self.submit_cf7_rest(
+            "luxstage_rfq",
+            {
+                "your-name": "Auto QA RFQ",
+                "your-email": "qa-rfq@example.com",
+                "your-company": "Luxstage QA",
+                "product-sku": "LX-MH350-PRO",
+                "your-quantity": "20",
+                "your-message": "Need quotation for 20 units with flight case.",
+                "attachment": "mock-spec.pdf",
+            },
+        )
+        self.record(
+            "F-03",
+            "Product RFQ form",
+            "PASS" if status < 400 and "wpcf7-form" in rfq_body and rfq_submit_ok else "FAIL",
+            f"HTTP {status}, submit={rfq_submit_status}",
+        )
         rfq_tpl = self.cf7_form_content_by_slug("luxstage_rfq")
         has_file_upload = 'type="file"' in rfq_body or "[file attachment" in rfq_tpl
-        self.record("F-04", "Attachment upload", "PASS" if has_file_upload else "FAIL", "file input in rendered form/template")
+        self.record(
+            "F-04",
+            "Attachment upload",
+            "PASS" if has_file_upload and rfq_submit_ok else "FAIL",
+            f"file input and submit={rfq_submit_status}",
+        )
 
         status, catalog_body, _ = self.fetch("/catalog-request/")
-        self.record("F-05", "Catalog lead form", "PASS" if status < 400 and "wpcf7-form" in catalog_body else "FAIL", f"HTTP {status}")
+        catalog_submit_ok, catalog_submit_status = self.submit_cf7_rest(
+            "luxstage_catalog",
+            {
+                "your-name": "Auto QA Catalog",
+                "your-email": "qa-catalog@example.com",
+                "your-company": "Luxstage QA",
+                "your-phone": "+86-13800000002",
+            },
+        )
+        self.record(
+            "F-05",
+            "Catalog lead form",
+            "PASS" if status < 400 and "wpcf7-form" in catalog_body and catalog_submit_ok else "FAIL",
+            f"HTTP {status}, submit={catalog_submit_status}",
+        )
         _, _, headers = self.fetch("/catalog-request/?luxstage_catalog_return=1")
         set_cookie_blob = " ".join(v for k, v in headers.items() if k.lower() == "set-cookie")
         cookie_match = re.search(r"(luxstage_catalog_returning=[^;]+)", set_cookie_blob)
@@ -541,7 +724,39 @@ class Tester:
         self.record("F-07", "Spam protection", "PASS" if spam_ready else "FAIL", "CF7 hidden tokens or anti-spam plugin markers")
 
         status, batch_body, _ = self.fetch("/batch-inquiry/")
-        self.record("F-08", "Batch inquiry form", "PASS" if status < 400 and "wpcf7-form" in batch_body else "FAIL", f"HTTP {status}")
+        batch_submit_ok, batch_submit_status = self.submit_cf7_rest(
+            "luxstage_batch",
+            {
+                "your-name": "Auto QA Batch",
+                "your-email": "qa-batch@example.com",
+                "product-list": "LX-MH350-PRO x10\nLX-PAR1815-IP65 x24",
+            },
+        )
+        self.record(
+            "F-08",
+            "Batch inquiry form",
+            "PASS" if status < 400 and "wpcf7-form" in batch_body and batch_submit_ok else "FAIL",
+            f"HTTP {status}, submit={batch_submit_status}",
+        )
+
+        inquiry_after = self.count_posts("inquiry_record")
+        mail_success_after = self.count_mail_records("success")
+        mailpit_after = self.mailpit_message_count()
+        inquiry_delta = inquiry_after - inquiry_before
+        mail_success_delta = mail_success_after - mail_success_before
+        mailpit_delta = mailpit_after - mailpit_before
+        self.record(
+            "F-09",
+            "Inquiry persistence",
+            "PASS" if inquiry_delta >= 4 else "FAIL",
+            f"inquiry_delta={inquiry_delta}",
+        )
+        self.record(
+            "F-10",
+            "Email send verification",
+            "PASS" if mail_success_delta >= 4 and mailpit_delta >= 4 else "FAIL",
+            f"mail_success_delta={mail_success_delta}, mailpit_delta={mailpit_delta}",
+        )
 
     def catalog_tests(self) -> None:
         if self.web_blocked:
@@ -678,7 +893,7 @@ class Tester:
         self.record("B-04", "Category admin", "PASS" if len(self.term_names("product_category")) >= 7 else "FAIL", "product categories")
         inquiry_proc = self.wp(["post", "list", "--post_type=inquiry_record", "--format=count"], timeout=90)
         inquiry_count = int(inquiry_proc.stdout.strip() or "0") if inquiry_proc.returncode == 0 else 0
-        self.record("B-05", "Inquiry records", "PASS" if inquiry_count >= 1 else "FAIL", f"{inquiry_count} records")
+        self.record("B-05", "Inquiry records", "PASS" if inquiry_count >= 10 else "FAIL", f"{inquiry_count} records")
 
         catalog_proc = self.wp(
             [
@@ -688,7 +903,10 @@ class Tester:
             timeout=90,
         )
         catalog_pdf_count = int(catalog_proc.stdout.strip() or "0") if catalog_proc.returncode == 0 else 0
-        self.record("B-06", "Catalog PDF upload", "PASS" if catalog_pdf_count >= 1 else "FAIL", f"{catalog_pdf_count} catalog pdf links")
+        self.record("B-06", "Catalog PDF upload", "PASS" if catalog_pdf_count >= 10 else "FAIL", f"{catalog_pdf_count} catalog pdf links")
+        application_proc = self.wp(["post", "list", "--post_type=application", "--format=count"], timeout=90)
+        application_count = int(application_proc.stdout.strip() or "0") if application_proc.returncode == 0 else 0
+        self.record("B-08", "Application fixtures", "PASS" if application_count >= 10 else "FAIL", f"{application_count} application posts")
         editor_blocked = not self.role_has_cap("editor", "manage_options")
         admin_allowed = self.role_has_cap("administrator", "manage_options")
         self.record(
@@ -765,9 +983,10 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--base-url", default="http://localhost:8080")
     parser.add_argument("--project-name", default="luxstage")
+    parser.add_argument("--mailpit-url", default="http://localhost:8025")
     args = parser.parse_args()
 
-    return Tester(args.base_url, args.project_name).run_all()
+    return Tester(args.base_url, args.project_name, args.mailpit_url).run_all()
 
 
 if __name__ == "__main__":

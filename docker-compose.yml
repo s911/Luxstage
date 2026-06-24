@@ -16,6 +16,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      mailpit:
+        condition: service_started
 
   db:
     image: mysql:8.0
@@ -32,6 +34,13 @@ services:
       timeout: 5s
       retries: 20
       start_period: 30s
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: always
+    ports:
+      - "8025:8025"
+      - "1025:1025"
 
 volumes:
   db_data:

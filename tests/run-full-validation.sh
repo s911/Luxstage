@@ -4,6 +4,7 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BASE_URL="${BASE_URL:-http://localhost:8080}"
 COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-luxstage}"
+MAILPIT_URL="${MAILPIT_URL:-http://localhost:8025}"
 
 cd "${PROJECT_ROOT}"
 
@@ -21,8 +22,10 @@ done
 echo "[3/3] Running unified functional tests..."
 python3 tests/run-functional-tests.py \
   --base-url "${BASE_URL}" \
-  --project-name "${COMPOSE_PROJECT_NAME}"
+  --project-name "${COMPOSE_PROJECT_NAME}" \
+  --mailpit-url "${MAILPIT_URL}"
 
 echo "Done. Reports:"
 echo " - tests/reports/functional-test-report.csv"
 echo " - tests/reports/functional-test-report.json"
+echo "Mail inbox: ${MAILPIT_URL}"

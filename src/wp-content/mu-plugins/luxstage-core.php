@@ -549,6 +549,20 @@ add_action('init', static function (): void {
         'menu_icon' => 'dashicons-email-alt',
     ]);
 
+    register_post_type('mail_record', [
+        'labels' => [
+            'name' => __('Mail Records', 'luxstage'),
+            'singular_name' => __('Mail Record', 'luxstage'),
+            'menu_name' => __('Mail Records', 'luxstage'),
+        ],
+        'public' => false,
+        'show_ui' => true,
+        'show_in_menu' => true,
+        'show_in_rest' => true,
+        'supports' => ['title', 'editor', 'custom-fields'],
+        'menu_icon' => 'dashicons-email',
+    ]);
+
     add_rewrite_rule(
         '^catalog-download/?$',
         'index.php?luxstage_catalog_download=1',
@@ -649,3 +663,54 @@ add_action('wpcf7_mail_sent', static function ($contact_form): void {
         'post_content' => implode("\n", $content_lines),
     ]);
 }, 10, 1);
+
+add_action('wp_mail_succeeded', static function (array $mail_data): void {
+    $to = $mail_data['to'] ?? '';
+    if (is_array($to)) {
+        $to = implode(',', array_map('strval', $to));
+    }
+
+    wp_insert_post([
+        'post_type' => 'mail_record',
+        'post_status' => 'publish',
+        'post_title' => 'Mail success - ' . current_time('mysql'),
+        'post_content' => implode("\n", [
+            'Status: success',
+            'To: ' . (string) $to,
+            'Subject: ' . (string) ($mail_data['subject'] ?? ''),
+            'Message: ' . (string) ($mail_data['message'] ?? ''),
+        ]),
+    ]);
+}, 10, 1);
+
+add_action('wp_mail_failed', static function (WP_Error $error): void {
+    $data = $error->get_error_data();
+    if (!is_array($data)) {
+        $data = [];
+    }
+    $to = $data['to'] ?? '';
+    if (is_array($to)) {
+        $to = implode(',', array_map('strval', $to));
+    }
+
+    wp_insert_post([
+        'post_type' => 'mail_record',
+        'post_status' => 'publish',
+        'post_title' => 'Mail failed - ' . current_time('mysql'),
+        'post_content' => implode("\n", [
+            'Status: failed',
+            'To: ' . (string) $to,
+            'Subject: ' . (string) ($data['subject'] ?? ''),
+            'Error: ' . $error->get_error_message(),
+        ]),
+    ]);
+}, 10, 1);
+
+add_action('phpmailer_init', static function (PHPMailer\PHPMailer\PHPMailer $phpmailer): void {
+    $phpmailer->isSMTP();
+    $phpmailer->Host = 'mailpit';
+    $phpmailer->Port = 1025;
+    $phpmailer->SMTPAuth = false;
+    $phpmailer->SMTPSecure = '';
+    $phpmailer->Timeout = 15;
+});

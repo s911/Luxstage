@@ -15,13 +15,13 @@
     "case_id": "SETUP-03",
     "name": "Ensure page Contact",
     "status": "PASS",
-    "detail": "contact"
+    "detail": "updated:contact"
   },
   {
     "case_id": "SETUP-03",
     "name": "Ensure page About Us",
     "status": "PASS",
-    "detail": "about-us"
+    "detail": "updated:about-us"
   },
   {
     "case_id": "SETUP-05",
@@ -69,7 +69,7 @@
     "case_id": "H-01-TIME",
     "name": "Home load under 3s",
     "status": "PASS",
-    "detail": "0.06s"
+    "detail": "0.07s"
   },
   {
     "case_id": "H-02",
@@ -206,7 +206,7 @@
   {
     "case_id": "F-06",
     "name": "Returning catalog downloader",
-    "status": "FAIL",
+    "status": "PASS",
     "detail": "cookie-based returning lead behavior"
   },
   {
@@ -254,25 +254,25 @@
   {
     "case_id": "A-01",
     "name": "Brand story",
-    "status": "FAIL",
+    "status": "PASS",
     "detail": "about-us content"
   },
   {
     "case_id": "A-02",
     "name": "Factory capability",
-    "status": "FAIL",
+    "status": "PASS",
     "detail": "about-us content"
   },
   {
     "case_id": "A-03",
     "name": "Certificates",
-    "status": "FAIL",
+    "status": "PASS",
     "detail": "about-us content"
   },
   {
     "case_id": "A-04",
     "name": "Video embed",
-    "status": "FAIL",
+    "status": "PASS",
     "detail": "video iframe"
   },
   {
