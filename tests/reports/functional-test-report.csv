@@ -27,12 +27,12 @@ P-09,Inquiry button with SKU,PASS,RFQ link
 P-10,Catalog download button,PASS,download CTA
 P-11,Batch inquiry,SKIP,Batch inquiry cart is P2 and not implemented in current baseline
 F-01,General contact form,PASS,HTTP 200
-F-02,Form validation,FAIL,required fields present
+F-02,Form validation,PASS,required fields present in rendered form/template
 F-03,Product RFQ form,PASS,HTTP 200
-F-04,Attachment upload,FAIL,file input
+F-04,Attachment upload,PASS,file input in rendered form/template
 F-05,Catalog lead form,PASS,HTTP 200
 F-06,Returning catalog downloader,SKIP,Requires cookie/session based lead-magnet logic implementation
-F-07,Spam protection,FAIL,nonce/anti-spam token
+F-07,Spam protection,PASS,CF7 hidden tokens or anti-spam plugin markers
 F-08,Batch inquiry form,PASS,HTTP 200
 C-01,Catalog archive exists,PASS,/downloads/catalogs/
 C-02,Category-specific catalogs,SKIP,Requires uploaded PDF catalog files

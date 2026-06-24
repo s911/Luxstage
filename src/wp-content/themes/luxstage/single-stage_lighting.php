@@ -26,6 +26,34 @@ get_header();
         <div><?php the_post_thumbnail('large', ['loading' => 'eager', 'alt' => get_the_title()]); ?></div>
       <?php endif; ?>
 
+      <section class="lux-media-gallery">
+        <h2><?php esc_html_e('Media Gallery', 'luxstage'); ?></h2>
+        <?php
+        $video_url = (string) luxstage_field('video_url');
+        $gallery_images = luxstage_field('gallery_images');
+        $has_gallery_images = is_array($gallery_images) && !empty($gallery_images);
+        ?>
+        <?php if ($video_url !== '') : ?>
+          <p><a href="<?php echo esc_url($video_url); ?>" target="_blank" rel="noopener"><?php esc_html_e('Watch Product Video', 'luxstage'); ?></a></p>
+        <?php endif; ?>
+        <?php if ($has_gallery_images) : ?>
+          <div class="fw-b2b-grid">
+            <?php foreach ($gallery_images as $image) : ?>
+              <?php
+              $img_url = is_array($image) && isset($image['url']) ? (string) $image['url'] : '';
+              $img_alt = is_array($image) && isset($image['alt']) ? (string) $image['alt'] : get_the_title();
+              if ($img_url === '') {
+                  continue;
+              }
+              ?>
+              <img src="<?php echo esc_url($img_url); ?>" alt="<?php echo esc_attr($img_alt); ?>" loading="lazy" />
+            <?php endforeach; ?>
+          </div>
+        <?php elseif (!has_post_thumbnail()) : ?>
+          <p><?php esc_html_e('Product media is available on request.', 'luxstage'); ?></p>
+        <?php endif; ?>
+      </section>
+
       <section>
         <h2><?php esc_html_e('Specifications', 'luxstage'); ?></h2>
         <?php
@@ -94,6 +122,9 @@ get_header();
         <?php $sku = (string) luxstage_field('sku'); ?>
         <a class="lux-button lux-button--primary" href="<?php echo esc_url(add_query_arg(['product_sku' => $sku], home_url('/contact/'))); ?>">
           <?php esc_html_e('Send Inquiry', 'luxstage'); ?>
+        </a>
+        <a class="lux-button lux-button--primary" href="<?php echo esc_url(add_query_arg(['product_sku' => $sku], home_url('/batch-inquiry/'))); ?>">
+          <?php esc_html_e('Batch Inquiry', 'luxstage'); ?>
         </a>
         <?php
         $catalog_pdf = luxstage_field('catalog_pdf');

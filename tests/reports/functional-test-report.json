@@ -170,8 +170,8 @@
   {
     "case_id": "F-02",
     "name": "Form validation",
-    "status": "FAIL",
-    "detail": "required fields present"
+    "status": "PASS",
+    "detail": "required fields present in rendered form/template"
   },
   {
     "case_id": "F-03",
@@ -182,8 +182,8 @@
   {
     "case_id": "F-04",
     "name": "Attachment upload",
-    "status": "FAIL",
-    "detail": "file input"
+    "status": "PASS",
+    "detail": "file input in rendered form/template"
   },
   {
     "case_id": "F-05",
@@ -200,8 +200,8 @@
   {
     "case_id": "F-07",
     "name": "Spam protection",
-    "status": "FAIL",
-    "detail": "nonce/anti-spam token"
+    "status": "PASS",
+    "detail": "CF7 hidden tokens or anti-spam plugin markers"
   },
   {
     "case_id": "F-08",

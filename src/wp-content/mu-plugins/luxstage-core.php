@@ -490,3 +490,162 @@ add_action('acf/init', static function (): void {
         'show_in_rest' => 1,
     ]);
 });
+
+if (!function_exists('luxstage_get_catalog_pdf_url')) {
+    function luxstage_get_catalog_pdf_url(int $post_id): string
+    {
+        $acf_file = luxstage_field('pdf_file', $post_id);
+        if (is_array($acf_file) && !empty($acf_file['url'])) {
+            return (string) $acf_file['url'];
+        }
+        if (is_string($acf_file) && filter_var($acf_file, FILTER_VALIDATE_URL)) {
+            return $acf_file;
+        }
+
+        $meta_url = (string) get_post_meta($post_id, 'pdf_url', true);
+        if ($meta_url !== '' && filter_var($meta_url, FILTER_VALIDATE_URL)) {
+            return $meta_url;
+        }
+
+        return '';
+    }
+}
+
+if (!function_exists('luxstage_catalog_signature')) {
+    function luxstage_catalog_signature(int $catalog_id, int $expires): string
+    {
+        return hash_hmac('sha256', $catalog_id . '|' . $expires, wp_salt('auth'));
+    }
+}
+
+if (!function_exists('luxstage_catalog_secure_download_url')) {
+    function luxstage_catalog_secure_download_url(int $catalog_id, int $ttl = DAY_IN_SECONDS): string
+    {
+        $expires = time() + max(300, $ttl);
+        $signature = luxstage_catalog_signature($catalog_id, $expires);
+        return add_query_arg(
+            [
+                'catalog_id' => $catalog_id,
+                'expires' => $expires,
+                'sig' => $signature,
+            ],
+            home_url('/catalog-download/')
+        );
+    }
+}
+
+add_action('init', static function (): void {
+    register_post_type('inquiry_record', [
+        'labels' => [
+            'name' => __('Inquiry Records', 'luxstage'),
+            'singular_name' => __('Inquiry Record', 'luxstage'),
+            'menu_name' => __('Inquiry Records', 'luxstage'),
+        ],
+        'public' => false,
+        'show_ui' => true,
+        'show_in_menu' => true,
+        'show_in_rest' => true,
+        'supports' => ['title', 'editor', 'custom-fields'],
+        'menu_icon' => 'dashicons-email-alt',
+    ]);
+
+    add_rewrite_rule(
+        '^catalog-download/?$',
+        'index.php?luxstage_catalog_download=1',
+        'top'
+    );
+}, 30);
+
+add_filter('query_vars', static function (array $vars): array {
+    $vars[] = 'luxstage_catalog_download';
+    return $vars;
+});
+
+add_action('template_redirect', static function (): void {
+    if ((string) get_query_var('luxstage_catalog_download') !== '1') {
+        return;
+    }
+
+    $catalog_id = isset($_GET['catalog_id']) ? (int) $_GET['catalog_id'] : 0;
+    $expires = isset($_GET['expires']) ? (int) $_GET['expires'] : 0;
+    $signature = sanitize_text_field((string) ($_GET['sig'] ?? ''));
+
+    if ($catalog_id <= 0 || $expires <= 0 || $signature === '') {
+        status_header(400);
+        wp_die(esc_html__('Invalid download request.', 'luxstage'));
+    }
+
+    if (time() > $expires) {
+        status_header(410);
+        wp_die(esc_html__('Download link expired. Please request a new catalog link.', 'luxstage'));
+    }
+
+    $expected = luxstage_catalog_signature($catalog_id, $expires);
+    if (!hash_equals($expected, $signature)) {
+        status_header(403);
+        wp_die(esc_html__('Invalid download signature.', 'luxstage'));
+    }
+
+    $pdf_url = luxstage_get_catalog_pdf_url($catalog_id);
+    if ($pdf_url === '') {
+        status_header(404);
+        wp_die(esc_html__('Catalog file not found.', 'luxstage'));
+    }
+
+    wp_safe_redirect($pdf_url);
+    exit;
+});
+
+add_action('init', static function (): void {
+    if (empty($_GET['luxstage_catalog_return'])) {
+        return;
+    }
+
+    setcookie('luxstage_catalog_returning', '1', time() + (30 * DAY_IN_SECONDS), COOKIEPATH ?: '/', COOKIE_DOMAIN ?: '', is_ssl(), true);
+});
+
+add_shortcode('luxstage_catalog_returning', static function (): string {
+    $is_returning = !empty($_COOKIE['luxstage_catalog_returning']);
+    $archive_url = home_url('/downloads/catalogs/');
+    $set_cookie_url = add_query_arg('luxstage_catalog_return', '1', home_url('/catalog-request/'));
+
+    if ($is_returning) {
+        return '<p><strong>' . esc_html__('Returning visitor: download catalog directly.', 'luxstage') . '</strong></p><p><a href="' . esc_url($archive_url) . '">' . esc_html__('Go to catalog downloads', 'luxstage') . '</a></p>';
+    }
+
+    return '<p>' . esc_html__('Already submitted before?', 'luxstage') . ' <a href="' . esc_url($set_cookie_url) . '">' . esc_html__('Mark as returning visitor', 'luxstage') . '</a></p>';
+});
+
+add_action('wpcf7_mail_sent', static function ($contact_form): void {
+    if (!class_exists('WPCF7_Submission')) {
+        return;
+    }
+
+    $submission = WPCF7_Submission::get_instance();
+    if (!$submission) {
+        return;
+    }
+
+    $data = $submission->get_posted_data();
+    if (!is_array($data)) {
+        $data = [];
+    }
+
+    $name = sanitize_text_field((string) ($data['your-name'] ?? 'Unknown'));
+    $email = sanitize_email((string) ($data['your-email'] ?? ''));
+    $form_title = method_exists($contact_form, 'title') ? (string) $contact_form->title() : 'CF7 Form';
+
+    $content_lines = [
+        'Form: ' . $form_title,
+        'Name: ' . $name,
+        'Email: ' . $email,
+        'Data: ' . wp_json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+    ];
+
+    wp_insert_post([
+        'post_type' => 'inquiry_record',
+        'post_status' => 'publish',
+        'post_title' => sprintf('%s - %s', $form_title, $name ?: current_time('mysql')),
+        'post_content' => implode("\n", $content_lines),
+    ]);
+}, 10, 1);
