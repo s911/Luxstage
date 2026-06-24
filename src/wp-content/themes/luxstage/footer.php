@@ -20,7 +20,6 @@
       <a href="https://www.linkedin.com/" rel="noopener" target="_blank">LinkedIn</a>
       <a href="https://www.youtube.com/" rel="noopener" target="_blank">YouTube</a>
     </nav>
-    <?php echo luxstage_language_switcher_html('lux-footer__lang'); ?>
   </div>
 </footer>
 <?php wp_footer(); ?>

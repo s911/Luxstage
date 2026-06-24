@@ -28,6 +28,5 @@
       ]);
       ?>
     </nav>
-    <?php echo luxstage_language_switcher_html('lux-lang-switcher'); ?>
   </div>
 </header>
