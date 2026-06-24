@@ -24,6 +24,12 @@
     "detail": "about-us"
   },
   {
+    "case_id": "SETUP-05",
+    "name": "Ensure Contact Form 7",
+    "status": "FAIL",
+    "detail": "plugin install failed"
+  },
+  {
     "case_id": "SETUP-04",
     "name": "Web readiness check",
     "status": "PASS",
@@ -39,7 +45,7 @@
     "case_id": "H-01-TIME",
     "name": "Home load under 3s",
     "status": "PASS",
-    "detail": "0.11s"
+    "detail": "0.05s"
   },
   {
     "case_id": "H-02",
@@ -146,50 +152,50 @@
   {
     "case_id": "F-01",
     "name": "General contact form",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
+    "status": "FAIL",
+    "detail": "Contact Form 7 not active"
   },
   {
     "case_id": "F-02",
     "name": "Form validation",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
+    "status": "FAIL",
+    "detail": "Contact Form 7 not active"
   },
   {
     "case_id": "F-03",
     "name": "Product RFQ form",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
+    "status": "FAIL",
+    "detail": "Contact Form 7 not active"
   },
   {
     "case_id": "F-04",
     "name": "Attachment upload",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
+    "status": "FAIL",
+    "detail": "Contact Form 7 not active"
   },
   {
     "case_id": "F-05",
     "name": "Catalog lead form",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
+    "status": "FAIL",
+    "detail": "Contact Form 7 not active"
   },
   {
     "case_id": "F-06",
     "name": "Returning catalog downloader",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
+    "status": "FAIL",
+    "detail": "Contact Form 7 not active"
   },
   {
     "case_id": "F-07",
     "name": "Spam protection",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
+    "status": "FAIL",
+    "detail": "Contact Form 7 not active"
   },
   {
     "case_id": "F-08",
     "name": "Batch inquiry form",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
+    "status": "FAIL",
+    "detail": "Contact Form 7 not active"
   },
   {
     "case_id": "C-01",
@@ -398,8 +404,8 @@
   {
     "case_id": "X-03",
     "name": "Login protection",
-    "status": "FAIL",
-    "detail": "Install Wordfence or equivalent protection plugin"
+    "status": "PASS",
+    "detail": "Wordfence/limit-login plugin active or luxstage core login lockout enabled"
   },
   {
     "case_id": "X-04",

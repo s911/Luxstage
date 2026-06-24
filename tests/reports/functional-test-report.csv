@@ -3,9 +3,10 @@ SETUP-01,Seed demo data,PASS,10 product records prepared
 SETUP-02,Activate Luxstage theme,PASS,luxstage active
 SETUP-03,Ensure page Contact,PASS,contact
 SETUP-03,Ensure page About Us,PASS,about-us
+SETUP-05,Ensure Contact Form 7,FAIL,plugin install failed
 SETUP-04,Web readiness check,PASS,HTTP 200
 H-01,Home page loads,PASS,/
-H-01-TIME,Home load under 3s,PASS,0.11s
+H-01-TIME,Home load under 3s,PASS,0.05s
 H-02,Responsive markup baseline,PASS,viewport meta
 H-03,Hero Banner and CTA,PASS,Hero CTA
 H-04,Featured products show 4-6 items,PASS,12 cards
@@ -23,14 +24,14 @@ P-08,Related products,PASS,related section
 P-09,Inquiry button with SKU,PASS,RFQ link
 P-10,Catalog download button,PASS,download CTA
 P-11,Batch inquiry,SKIP,Batch inquiry cart is P2 and not implemented in current baseline
-F-01,General contact form,SKIP,Form plugin not installed/activated
-F-02,Form validation,SKIP,Form plugin not installed/activated
-F-03,Product RFQ form,SKIP,Form plugin not installed/activated
-F-04,Attachment upload,SKIP,Form plugin not installed/activated
-F-05,Catalog lead form,SKIP,Form plugin not installed/activated
-F-06,Returning catalog downloader,SKIP,Form plugin not installed/activated
-F-07,Spam protection,SKIP,Form plugin not installed/activated
-F-08,Batch inquiry form,SKIP,Form plugin not installed/activated
+F-01,General contact form,FAIL,Contact Form 7 not active
+F-02,Form validation,FAIL,Contact Form 7 not active
+F-03,Product RFQ form,FAIL,Contact Form 7 not active
+F-04,Attachment upload,FAIL,Contact Form 7 not active
+F-05,Catalog lead form,FAIL,Contact Form 7 not active
+F-06,Returning catalog downloader,FAIL,Contact Form 7 not active
+F-07,Spam protection,FAIL,Contact Form 7 not active
+F-08,Batch inquiry form,FAIL,Contact Form 7 not active
 C-01,Catalog archive exists,PASS,/downloads/catalogs/
 C-02,Category-specific catalogs,SKIP,Requires uploaded PDF catalog files
 C-03,Admin upload catalog,PASS,catalog CPT archive
@@ -65,7 +66,7 @@ B-06,Catalog PDF upload,SKIP,Requires uploaded PDF fixture
 B-07,User roles,PASS,"editor_manage_options=False, admin_manage_options=True"
 X-01,Home performance smoke,PASS,"status=200, 0.06s"
 X-02,HTTPS/SSL,SKIP,Local Docker runs over HTTP
-X-03,Login protection,FAIL,Install Wordfence or equivalent protection plugin
+X-03,Login protection,PASS,Wordfence/limit-login plugin active or luxstage core login lockout enabled
 X-04,XSS baseline escaping,PASS,Theme output uses escaping functions
 X-05,SQL injection smoke,PASS,HTTP 200
 X-06,Image lazy loading,PASS,Depends on product images

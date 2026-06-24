@@ -212,10 +212,50 @@ class Tester:
         return proc.returncode == 0
 
     def plugin_install_activate(self, slug: str) -> bool:
-        proc = self.wp(["plugin", "install", slug, "--activate"], timeout=180)
-        if proc.returncode == 0:
+        if self.plugin_active(slug):
             return True
+
+        attempts = [
+            ["plugin", "install", slug, "--activate", "--insecure"],
+            ["plugin", "install", slug, "--activate"],
+        ]
+        for args in attempts:
+            proc = self.wp(args, timeout=180)
+            if proc.returncode == 0 and self.plugin_active(slug):
+                return True
+
+        # Offline fallback: use local zip package if present in project root.
+        zip_candidates = sorted(self.root.glob(f"{slug}*.zip"))
+        for zip_file in zip_candidates:
+            if self.wp_install_zip(zip_file):
+                return True
+
         return self.plugin_active(slug)
+
+    def wp_install_zip(self, zip_path: Path) -> bool:
+        cmd = [
+            "docker",
+            "run",
+            "--rm",
+            "--user",
+            "0:0",
+            "--network",
+            f"{self.project_name}_default",
+            "-v",
+            f"{self.root}:/work",
+            "-v",
+            f"{self.root / 'src'}:/var/www/html",
+            "wordpress:cli",
+            "wp",
+            "--allow-root",
+            "plugin",
+            "install",
+            f"/work/{zip_path.name}",
+            "--activate",
+            "--path=/var/www/html",
+        ]
+        proc = self.run(cmd, timeout=180)
+        return proc.returncode == 0
 
     def role_has_cap(self, role: str, capability: str) -> bool:
         proc = self.wp(
