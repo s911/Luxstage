@@ -223,6 +223,16 @@ img {
   color: var(--fw-color-primary);
 }
 
+.lux-button--whatsapp {
+  background: #25d366;
+  color: #fff;
+}
+
+.lux-button--whatsapp:hover {
+  background: #1fb85a;
+  color: #fff;
+}
+
 .lux-hero__panel {
   display: grid;
   gap: 14px;

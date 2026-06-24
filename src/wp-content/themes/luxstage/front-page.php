@@ -15,6 +15,10 @@ $product_categories = get_terms([
     'taxonomy'   => 'product_category',
     'hide_empty' => false,
 ]);
+
+$whatsapp_url = function_exists('luxstage_whatsapp_url')
+    ? luxstage_whatsapp_url('Hello Luxstage, I would like to discuss stage lighting requirements.')
+    : '';
 ?>
 <main>
   <section class="lux-hero">
@@ -32,6 +36,11 @@ $product_categories = get_terms([
           <a class="lux-button lux-button--secondary" href="<?php echo esc_url(home_url('/downloads/catalogs/')); ?>">
             <?php esc_html_e('Get Catalog', 'luxstage'); ?>
           </a>
+          <?php if ($whatsapp_url !== '') : ?>
+            <a class="lux-button lux-button--whatsapp" href="<?php echo esc_url($whatsapp_url); ?>" target="_blank" rel="noopener">
+              <?php esc_html_e('WhatsApp Us', 'luxstage'); ?>
+            </a>
+          <?php endif; ?>
         </div>
       </div>
       <div class="lux-hero__panel" aria-label="<?php esc_attr_e('Key advantages', 'luxstage'); ?>">

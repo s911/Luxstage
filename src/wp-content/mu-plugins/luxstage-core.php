@@ -20,6 +20,85 @@ if (!function_exists('luxstage_field')) {
     }
 }
 
+if (!function_exists('luxstage_normalize_phone_number')) {
+    function luxstage_normalize_phone_number(string $raw): string
+    {
+        $value = trim($raw);
+        if ($value === '') {
+            return '';
+        }
+
+        // Keep leading + if present, remove spaces/dashes/parentheses and non-digit chars.
+        $has_plus = str_starts_with($value, '+');
+        $digits = preg_replace('/\D+/', '', $value);
+        if (!is_string($digits) || $digits === '') {
+            return '';
+        }
+
+        return $has_plus ? '+' . $digits : $digits;
+    }
+}
+
+if (!function_exists('luxstage_whatsapp_number')) {
+    function luxstage_whatsapp_number(): string
+    {
+        $configured = (string) get_option('luxstage_whatsapp_number', '');
+        if ($configured === '') {
+            $configured = (string) getenv('LUXSTAGE_WHATSAPP_NUMBER');
+        }
+
+        return luxstage_normalize_phone_number($configured);
+    }
+}
+
+if (!function_exists('luxstage_whatsapp_url')) {
+    function luxstage_whatsapp_url(string $prefill_text = ''): string
+    {
+        $number = luxstage_whatsapp_number();
+        if ($number === '') {
+            return '';
+        }
+
+        $number_for_url = ltrim($number, '+');
+        $url = 'https://wa.me/' . rawurlencode($number_for_url);
+        if ($prefill_text !== '') {
+            $url = add_query_arg('text', rawurlencode($prefill_text), $url);
+        }
+
+        return $url;
+    }
+}
+
+add_action('admin_init', static function (): void {
+    register_setting('general', 'luxstage_whatsapp_number', [
+        'type' => 'string',
+        'sanitize_callback' => static fn($value): string => luxstage_normalize_phone_number((string) $value),
+        'default' => '',
+    ]);
+
+    add_settings_field(
+        'luxstage_whatsapp_number',
+        __('Luxstage WhatsApp Number', 'luxstage'),
+        static function (): void {
+            $value = (string) get_option('luxstage_whatsapp_number', '');
+            ?>
+            <input
+                type="text"
+                id="luxstage_whatsapp_number"
+                name="luxstage_whatsapp_number"
+                value="<?php echo esc_attr($value); ?>"
+                class="regular-text"
+                placeholder="+8613800000000"
+            />
+            <p class="description">
+                <?php esc_html_e('Used by homepage WhatsApp contact button. Example: +8613800000000', 'luxstage'); ?>
+            </p>
+            <?php
+        },
+        'general'
+    );
+});
+
 add_filter('upload_mimes', static function (array $mimes): array {
     $mimes['webp'] = 'image/webp';
     return $mimes;
