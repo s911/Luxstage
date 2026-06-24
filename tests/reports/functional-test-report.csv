@@ -8,7 +8,7 @@ SETUP-06,Ensure CF7 forms,PASS,luxstage_contact:42\nluxstage_rfq:43\nluxstage_ca
 SETUP-07,Ensure form pages,PASS,contact:33\nrfq:47\ncatalog-request:48\nbatch-inquiry:49\n
 SETUP-04,Web readiness check,PASS,HTTP 200
 H-01,Home page loads,PASS,/
-H-01-TIME,Home load under 3s,PASS,0.07s
+H-01-TIME,Home load under 3s,PASS,0.06s
 H-02,Responsive markup baseline,PASS,viewport meta
 H-03,Hero Banner and CTA,PASS,Hero CTA
 H-04,Featured products show 4-6 items,PASS,12 cards
