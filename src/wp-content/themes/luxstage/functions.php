@@ -68,6 +68,62 @@ add_filter('wp_nav_menu_items', static function (string $items, stdClass $args):
     return $home_item . $items;
 }, 10, 2);
 
+if (!function_exists('luxstage_language_switcher_html')) {
+    function luxstage_language_switcher_html(string $wrapper_class = 'lux-lang-switcher'): string
+    {
+        if (!function_exists('pll_the_languages')) {
+            return '';
+        }
+
+        $languages = pll_the_languages([
+            'raw' => 1,
+            'hide_if_no_translation' => 0,
+            'hide_if_empty' => 0,
+        ]);
+
+        if (!is_array($languages) || !$languages) {
+            return '';
+        }
+
+        $items = [];
+        foreach ($languages as $lang) {
+            if (!is_array($lang)) {
+                continue;
+            }
+
+            $slug = (string) ($lang['slug'] ?? '');
+            $name = (string) ($lang['name'] ?? $slug);
+            $url = (string) ($lang['url'] ?? '');
+            $is_current = !empty($lang['current_lang']);
+
+            if ($url === '' && function_exists('pll_home_url') && $slug !== '') {
+                $url = (string) pll_home_url($slug);
+            }
+            if ($url === '') {
+                $url = home_url('/');
+            }
+
+            $items[] = sprintf(
+                '<li class="lux-lang-switcher-item%s"><a class="lux-lang-switcher-link" href="%s">%s</a></li>',
+                $is_current ? ' is-current' : '',
+                esc_url($url),
+                esc_html($name)
+            );
+        }
+
+        if (!$items) {
+            return '';
+        }
+
+        return sprintf(
+            '<div class="%s" aria-label="%s"><ul class="lux-lang-switcher-list">%s</ul></div>',
+            esc_attr($wrapper_class),
+            esc_attr__('Language switcher', 'luxstage'),
+            implode('', $items)
+        );
+    }
+}
+
 add_action('wp_enqueue_scripts', static function (): void {
     $theme_uri = get_stylesheet_directory_uri();
 

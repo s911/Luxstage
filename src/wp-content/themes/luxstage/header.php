@@ -28,19 +28,6 @@
       ]);
       ?>
     </nav>
-    <?php if (function_exists('pll_the_languages')) : ?>
-      <div class="lux-lang-switcher" aria-label="<?php esc_attr_e('Language switcher', 'luxstage'); ?>">
-        <?php
-        $language_links = pll_the_languages([
-            'dropdown' => 0,
-            'show_flags' => 0,
-            'show_names' => 1,
-            'hide_if_no_translation' => 0,
-            'echo' => 0,
-        ]);
-        echo is_string($language_links) ? $language_links : '';
-        ?>
-      </div>
-    <?php endif; ?>
+    <?php echo luxstage_language_switcher_html('lux-lang-switcher'); ?>
   </div>
 </header>

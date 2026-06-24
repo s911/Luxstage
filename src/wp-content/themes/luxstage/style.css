@@ -61,7 +61,7 @@ img {
   margin-top: 56px;
 }
 
-.fw-b2b-header a {
+.lux-logo {
   color: var(--fw-color-primary);
   font-size: 20px;
   font-weight: 800;
@@ -104,15 +104,16 @@ img {
   list-style: none;
 }
 
-.lux-lang-switcher a {
+.lux-lang-switcher .lux-lang-switcher-link {
   color: var(--fw-color-muted);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 500;
   text-decoration: none;
+  white-space: nowrap;
 }
 
-.lux-lang-switcher .current-lang a,
-.lux-lang-switcher a:hover {
+.lux-lang-switcher .is-current .lux-lang-switcher-link,
+.lux-lang-switcher .lux-lang-switcher-link:hover {
   color: var(--fw-color-accent);
 }
 
@@ -141,15 +142,16 @@ img {
   list-style: none;
 }
 
-.lux-footer__lang a {
+.lux-footer__lang .lux-lang-switcher-link {
   color: var(--fw-color-muted);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 500;
   text-decoration: none;
+  white-space: nowrap;
 }
 
-.lux-footer__lang .current-lang a,
-.lux-footer__lang a:hover {
+.lux-footer__lang .is-current .lux-lang-switcher-link,
+.lux-footer__lang .lux-lang-switcher-link:hover {
   color: var(--fw-color-accent);
 }
 
