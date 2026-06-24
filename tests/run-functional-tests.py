@@ -273,6 +273,7 @@ class Tester:
         self.ensure_catalog_fixtures()
         self.ensure_application_fixtures()
         self.ensure_inquiry_fixtures()
+        self.ensure_product_category_coverage()
         self.ensure_multilingual_baseline()
         self.wp(["rewrite", "flush", "--hard"], timeout=90)
 
@@ -609,7 +610,11 @@ class Tester:
                     "$posts=get_posts(['post_type'=>'catalog','name'=>$item['slug'],'posts_per_page'=>1,'post_status'=>'any']);"
                     "if($posts){$id=$posts[0]->ID;wp_update_post(['ID'=>$id,'post_status'=>'publish','post_title'=>$item['title']]);}"
                     "else{$id=wp_insert_post(['post_type'=>'catalog','post_status'=>'publish','post_title'=>$item['title'],'post_name'=>$item['slug'],'post_excerpt'=>'Official product catalog for B2B buyers.']);}"
-                    "$url=home_url('/wp-content/uploads/'.$item['slug'].'.pdf');"
+                    "$upload=wp_upload_dir();"
+                    "$file=trailingslashit((string)$upload['basedir']).$item['slug'].'.pdf';"
+                    "if(!is_dir(dirname($file))){wp_mkdir_p(dirname($file));}"
+                    "if(!file_exists($file)){file_put_contents($file,'Luxstage catalog file for '.$item['title']);}"
+                    "$url=trailingslashit((string)$upload['baseurl']).$item['slug'].'.pdf';"
                     "update_post_meta($id,'pdf_url',$url);"
                     "if(function_exists('update_field')){update_field('pdf_file',$url,$id);}"
                     "$term=get_term_by('slug',$item['cert'],'certification');"
@@ -665,6 +670,37 @@ class Tester:
         ready = proc.returncode == 0 and ("demo-inquiry-fixture-01" in (proc.stderr + proc.stdout) or "existing" in proc.stdout or "created" in proc.stdout)
         self.record("SETUP-10", "Ensure inquiry fixtures", "PASS" if ready else "FAIL", (proc.stderr or proc.stdout).strip()[-300:])
 
+    def ensure_product_category_coverage(self) -> None:
+        proc = self.wp(
+            [
+                "eval",
+                (
+                    "$required=['Moving Head','LED Par','Strobe','Effect Light','Follow Spot','Laser Light','Beam Light'];"
+                    "$seed=get_posts(['post_type'=>'stage_lighting','post_status'=>'publish','posts_per_page'=>1]);"
+                    "$created=0;"
+                    "foreach($required as $name){"
+                    "$term=get_term_by('name',$name,'product_category');"
+                    "if(!$term){continue;}"
+                    "$posts=get_posts(['post_type'=>'stage_lighting','post_status'=>'publish','posts_per_page'=>1,'tax_query'=>[['taxonomy'=>'product_category','field'=>'term_id','terms'=>[(int)$term->term_id]]]]);"
+                    "if($posts){continue;}"
+                    "$title='LX-AUTO '.strtoupper(str_replace(' ','-',$name));"
+                    "$id=wp_insert_post(['post_type'=>'stage_lighting','post_status'=>'publish','post_title'=>$title,'post_content'=>'Auto generated product for category coverage test.']);"
+                    "if(is_wp_error($id)){continue;}"
+                    "update_post_meta($id,'sku','LX-AUTO-'.strtoupper(str_replace([' ','/'],'-',$name)));"
+                    "update_post_meta($id,'wattage','300W');"
+                    "update_post_meta($id,'light_source_type','LED');"
+                    "update_post_meta($id,'channels','16CH');"
+                    "wp_set_object_terms($id,[(int)$term->term_id],'product_category',false);"
+                    "$created++;"
+                    "}"
+                    "echo 'created='.$created;"
+                ),
+            ],
+            timeout=180,
+        )
+        ok = proc.returncode == 0 and "created=" in proc.stdout
+        self.record("SETUP-15", "Ensure product category coverage", "PASS" if ok else "FAIL", (proc.stderr or proc.stdout).strip()[-300:])
+
     def run_all(self) -> int:
         self.ensure_seed_data()
         self.ensure_test_baseline()
@@ -717,6 +753,7 @@ class Tester:
                 ("P-09", "Inquiry button with SKU"),
                 ("P-10", "Catalog download button"),
                 ("P-11", "Batch inquiry"),
+                ("P-12", "Category page has product content"),
             ]:
                 self.record(case_id, name, "SKIP", "Skipped due to web infrastructure failure")
             return
@@ -788,6 +825,26 @@ class Tester:
         self.record("P-09", "Inquiry button with SKU", "PASS" if "Send Inquiry" in detail_body and "product_sku=" in detail_body else "FAIL", "RFQ link")
         self.record("P-10", "Catalog download button", "PASS" if "Download PDF" in detail_body else "FAIL", "download CTA")
         self.record("P-11", "Batch inquiry", "PASS" if "Batch Inquiry" in detail_body else "FAIL", "batch inquiry CTA")
+        category_links_ok = True
+        category_results: list[str] = []
+        category_slugs_proc = self.wp(["term", "list", "product_category", "--field=slug"], timeout=90)
+        category_slugs = [line.strip() for line in category_slugs_proc.stdout.splitlines() if line.strip()] if category_slugs_proc.returncode == 0 else []
+        for slug in category_slugs:
+            status, cat_body, _ = self.fetch(f"/products/category/{slug}/")
+            has_content = (
+                status < 400
+                and "No content available." not in cat_body
+                and "No stage lighting products published yet." not in cat_body
+            )
+            if not has_content:
+                category_links_ok = False
+                category_results.append(f"{slug}:{status}")
+        self.record(
+            "P-12",
+            "Category page has product content",
+            "PASS" if category_links_ok else "FAIL",
+            ", ".join(category_results) if category_results else f"{len(category_slugs)} categories",
+        )
 
     def form_tests(self, mailpit_ready: bool = True) -> None:
         cf7 = self.plugin_active("contact-form-7")

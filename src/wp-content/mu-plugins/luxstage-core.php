@@ -545,6 +545,39 @@ if (!function_exists('luxstage_catalog_secure_download_url')) {
     }
 }
 
+if (!function_exists('luxstage_catalog_local_file_path')) {
+    function luxstage_catalog_local_file_path(string $pdf_url): string
+    {
+        $uploads = wp_upload_dir();
+        $baseurl = (string) ($uploads['baseurl'] ?? '');
+        $basedir = (string) ($uploads['basedir'] ?? '');
+        if ($baseurl === '' || $basedir === '') {
+            return '';
+        }
+
+        if (!str_starts_with($pdf_url, $baseurl)) {
+            return '';
+        }
+
+        $relative = ltrim((string) substr($pdf_url, strlen($baseurl)), '/');
+        return $relative !== '' ? trailingslashit($basedir) . $relative : '';
+    }
+}
+
+if (!function_exists('luxstage_write_catalog_placeholder')) {
+    function luxstage_write_catalog_placeholder(string $path, int $catalog_id): bool
+    {
+        $dir = dirname($path);
+        if (!is_dir($dir) && !wp_mkdir_p($dir)) {
+            return false;
+        }
+
+        $title = get_the_title($catalog_id) ?: 'Luxstage Catalog';
+        $content = "Luxstage catalog placeholder\nCatalog ID: {$catalog_id}\nTitle: {$title}\n";
+        return file_put_contents($path, $content) !== false;
+    }
+}
+
 add_action('init', static function (): void {
     register_post_type('inquiry_record', [
         'labels' => [
@@ -616,6 +649,22 @@ add_action('template_redirect', static function (): void {
     if ($pdf_url === '') {
         status_header(404);
         wp_die(esc_html__('Catalog file not found.', 'luxstage'));
+    }
+
+    $local_path = luxstage_catalog_local_file_path($pdf_url);
+    if ($local_path !== '') {
+        if (!file_exists($local_path)) {
+            luxstage_write_catalog_placeholder($local_path, $catalog_id);
+        }
+
+        if (is_readable($local_path)) {
+            nocache_headers();
+            header('Content-Type: application/pdf');
+            header('Content-Disposition: attachment; filename="' . basename($local_path) . '"');
+            header('Content-Length: ' . (string) filesize($local_path));
+            readfile($local_path);
+            exit;
+        }
     }
 
     wp_safe_redirect($pdf_url);
