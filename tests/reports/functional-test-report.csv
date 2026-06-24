@@ -4,6 +4,7 @@ SETUP-02,Activate Luxstage theme,PASS,luxstage active
 SETUP-03,Ensure page Contact,PASS,updated:contact
 SETUP-03,Ensure page About Us,PASS,updated:about-us
 SETUP-05,Ensure Contact Form 7,PASS,contact-form-7 active
+SETUP-12,Ensure admin email,PASS,admin@luxstage.local
 SETUP-06,Ensure CF7 forms,PASS,luxstage_contact:42\nluxstage_rfq:43\nluxstage_catalog:44\nluxstage_batch:45\n
 SETUP-07,Ensure form pages,PASS,contact:33\nrfq:47\ncatalog-request:48\nbatch-inquiry:49\n
 SETUP-08,Ensure catalog fixtures,PASS,luxstage-catalog-01:78\nluxstage-catalog-02:79\nluxstage-catalog-03:80\nluxstage-catalog-04:81\nluxstage-catalog-05:82\nluxstage-catalog-06:83\nluxstage-catalog-07:84\nluxstage-catalog-08:85\nluxstage-catalog-09:86\nluxstage-catalog-10:87\n
@@ -12,7 +13,7 @@ SETUP-10,Ensure inquiry fixtures,PASS,existing:98\nexisting:99\nexisting:100\nex
 SETUP-04,Web readiness check,PASS,HTTP 200
 SETUP-11,Mailpit readiness,PASS,"HTTP 200, keys=Database,DatabaseSize,LatestVersion,Messages,RuntimeStats"
 H-01,Home page loads,PASS,/
-H-01-TIME,Home load under 3s,PASS,0.18s
+H-01-TIME,Home load under 3s,PASS,0.06s
 H-02,Responsive markup baseline,PASS,viewport meta
 H-03,Hero Banner and CTA,PASS,Hero CTA
 H-04,Featured products show 4-6 items,PASS,12 cards
@@ -30,16 +31,16 @@ P-08,Related products,PASS,related section
 P-09,Inquiry button with SKU,PASS,RFQ link
 P-10,Catalog download button,PASS,download CTA
 P-11,Batch inquiry,PASS,batch inquiry CTA
-F-01,General contact form,FAIL,"HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
+F-01,General contact form,PASS,"HTTP 200, submit=mail_sent:Thank you for your message. It has been sent."
 F-02,Form validation,PASS,required fields present in rendered form/template
-F-03,Product RFQ form,FAIL,"HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
-F-04,Attachment upload,FAIL,file input and submit=mail_failed:There was an error trying to send your message. Please try again later.
-F-05,Catalog lead form,FAIL,"HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
+F-03,Product RFQ form,PASS,"HTTP 200, submit=mail_sent:Thank you for your message. It has been sent."
+F-04,Attachment upload,PASS,file input and submit=mail_sent:Thank you for your message. It has been sent.
+F-05,Catalog lead form,PASS,"HTTP 200, submit=mail_sent:Thank you for your message. It has been sent."
 F-06,Returning catalog downloader,PASS,cookie-based returning lead behavior
 F-07,Spam protection,PASS,CF7 hidden tokens or anti-spam plugin markers
-F-08,Batch inquiry form,FAIL,"HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
-F-09,Inquiry persistence,FAIL,inquiry_delta=0
-F-10,Email send verification,FAIL,"mail_success_delta=0, mailpit_delta=0"
+F-08,Batch inquiry form,PASS,"HTTP 200, submit=mail_sent:Thank you for your message. It has been sent."
+F-09,Inquiry persistence,PASS,inquiry_delta=4
+F-10,Email send verification,PASS,"mail_success_delta=4, mailpit_delta=4"
 C-01,Catalog archive exists,PASS,/downloads/catalogs/
 C-02,Category-specific catalogs,PASS,"slug=ce, cards=3"
 C-03,Admin upload catalog,PASS,catalog download links rendered
@@ -69,7 +70,7 @@ B-01,Product create/read,PASS,11 products
 B-02,Product edit propagation,PASS,Seed script updates products idempotently by SKU
 B-03,Product delete behavior,PASS,temp create/delete
 B-04,Category admin,PASS,product categories
-B-05,Inquiry records,PASS,11 records
+B-05,Inquiry records,PASS,15 records
 B-06,Catalog PDF upload,PASS,13 catalog pdf links
 B-08,Application fixtures,PASS,10 application posts
 B-07,User roles,PASS,"editor_manage_options=False, admin_manage_options=True"

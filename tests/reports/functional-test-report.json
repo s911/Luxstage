@@ -30,6 +30,12 @@
     "detail": "contact-form-7 active"
   },
   {
+    "case_id": "SETUP-12",
+    "name": "Ensure admin email",
+    "status": "PASS",
+    "detail": "admin@luxstage.local"
+  },
+  {
     "case_id": "SETUP-06",
     "name": "Ensure CF7 forms",
     "status": "PASS",
@@ -81,7 +87,7 @@
     "case_id": "H-01-TIME",
     "name": "Home load under 3s",
     "status": "PASS",
-    "detail": "0.18s"
+    "detail": "0.06s"
   },
   {
     "case_id": "H-02",
@@ -188,8 +194,8 @@
   {
     "case_id": "F-01",
     "name": "General contact form",
-    "status": "FAIL",
-    "detail": "HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
+    "status": "PASS",
+    "detail": "HTTP 200, submit=mail_sent:Thank you for your message. It has been sent."
   },
   {
     "case_id": "F-02",
@@ -200,20 +206,20 @@
   {
     "case_id": "F-03",
     "name": "Product RFQ form",
-    "status": "FAIL",
-    "detail": "HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
+    "status": "PASS",
+    "detail": "HTTP 200, submit=mail_sent:Thank you for your message. It has been sent."
   },
   {
     "case_id": "F-04",
     "name": "Attachment upload",
-    "status": "FAIL",
-    "detail": "file input and submit=mail_failed:There was an error trying to send your message. Please try again later."
+    "status": "PASS",
+    "detail": "file input and submit=mail_sent:Thank you for your message. It has been sent."
   },
   {
     "case_id": "F-05",
     "name": "Catalog lead form",
-    "status": "FAIL",
-    "detail": "HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
+    "status": "PASS",
+    "detail": "HTTP 200, submit=mail_sent:Thank you for your message. It has been sent."
   },
   {
     "case_id": "F-06",
@@ -230,20 +236,20 @@
   {
     "case_id": "F-08",
     "name": "Batch inquiry form",
-    "status": "FAIL",
-    "detail": "HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
+    "status": "PASS",
+    "detail": "HTTP 200, submit=mail_sent:Thank you for your message. It has been sent."
   },
   {
     "case_id": "F-09",
     "name": "Inquiry persistence",
-    "status": "FAIL",
-    "detail": "inquiry_delta=0"
+    "status": "PASS",
+    "detail": "inquiry_delta=4"
   },
   {
     "case_id": "F-10",
     "name": "Email send verification",
-    "status": "FAIL",
-    "detail": "mail_success_delta=0, mailpit_delta=0"
+    "status": "PASS",
+    "detail": "mail_success_delta=4, mailpit_delta=4"
   },
   {
     "case_id": "C-01",
@@ -423,7 +429,7 @@
     "case_id": "B-05",
     "name": "Inquiry records",
     "status": "PASS",
-    "detail": "11 records"
+    "detail": "15 records"
   },
   {
     "case_id": "B-06",

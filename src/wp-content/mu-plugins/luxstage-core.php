@@ -125,6 +125,16 @@ add_filter('robots_txt', static function (string $output, bool $public): string 
     return implode("\n", $lines) . "\n";
 }, 10, 2);
 
+add_action('send_headers', static function (): void {
+    if (headers_sent()) {
+        return;
+    }
+
+    // Baseline cache policy for local/staging verification.
+    // Static asset cache can still be overridden by web server rules.
+    header('Cache-Control: public, max-age=300, stale-while-revalidate=60');
+});
+
 if (!function_exists('luxstage_login_protection_enabled')) {
     function luxstage_login_protection_enabled(): bool
     {

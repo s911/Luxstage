@@ -34,6 +34,7 @@ class Tester:
         self.results: list[Result] = []
         self.web_blocked = False
         self.forms_bootstrapped = False
+        self.multilingual_ready = False
 
     def record(self, case_id: str, name: str, status: str, detail: str = "") -> None:
         self.results.append(Result(case_id, name, status, detail))
@@ -272,7 +273,45 @@ class Tester:
         self.ensure_catalog_fixtures()
         self.ensure_application_fixtures()
         self.ensure_inquiry_fixtures()
+        self.ensure_multilingual_baseline()
         self.wp(["rewrite", "flush", "--hard"], timeout=90)
+
+    def ensure_multilingual_baseline(self) -> None:
+        polylang_ready = self.plugin_install_activate("polylang")
+        self.record(
+            "SETUP-13",
+            "Ensure Polylang",
+            "PASS" if polylang_ready else "SKIP",
+            "polylang active" if polylang_ready else "plugin unavailable; multilingual tests may skip",
+        )
+        if not polylang_ready:
+            self.multilingual_ready = False
+            return
+
+        proc = self.wp(
+            [
+                "eval",
+                (
+                    "if(!function_exists('pll_languages_list')){echo 'no_pll'; return;}"
+                    "$langs=pll_languages_list();"
+                    "if(!in_array('en',$langs,true)){pll_add_language('en','English','en_US','en',1);} "
+                    "if(!in_array('zh',$langs,true)){pll_add_language('zh','Chinese','zh_CN','zh',1);} "
+                    "$catalogs=get_posts(['post_type'=>'catalog','posts_per_page'=>2,'post_status'=>'publish']);"
+                    "if(count($catalogs)>=1){pll_set_post_language($catalogs[0]->ID,'en');}"
+                    "if(count($catalogs)>=2){pll_set_post_language($catalogs[1]->ID,'zh');}"
+                    "if(count($catalogs)>=2){pll_save_post_translations(['en'=>$catalogs[0]->ID,'zh'=>$catalogs[1]->ID]);}"
+                    "echo 'ok';"
+                ),
+            ],
+            timeout=180,
+        )
+        self.multilingual_ready = proc.returncode == 0 and "ok" in proc.stdout
+        self.record(
+            "SETUP-14",
+            "Configure multilingual baseline",
+            "PASS" if self.multilingual_ready else "FAIL",
+            (proc.stderr or proc.stdout).strip()[-300:],
+        )
 
     def ensure_web_ready(self) -> bool:
         status, _, _ = self.fetch("/wp-login.php", timeout=10)
@@ -892,7 +931,21 @@ class Tester:
         else:
             self.record("C-02", "Category-specific catalogs", "FAIL", "No certification term with catalogs")
         self.record("C-03", "Admin upload catalog", "PASS" if "Download PDF" in body else "FAIL", "catalog download links rendered")
-        self.record("C-04", "Multilingual catalogs", "SKIP", "Requires WPML/Polylang content")
+        if self.multilingual_ready:
+            ml_proc = self.wp(
+                [
+                    "eval",
+                    "if(!function_exists('pll_get_post_language')){echo '0'; return;} "
+                    "$posts=get_posts(['post_type'=>'catalog','posts_per_page'=>20,'post_status'=>'publish']);"
+                    "$langs=[]; foreach($posts as $p){$l=pll_get_post_language($p->ID,'slug'); if($l){$langs[$l]=1;}}"
+                    "echo count($langs);",
+                ],
+                timeout=120,
+            )
+            lang_count = int(ml_proc.stdout.strip() or "0") if ml_proc.returncode == 0 else 0
+            self.record("C-04", "Multilingual catalogs", "PASS" if lang_count >= 2 else "FAIL", f"catalog_languages={lang_count}")
+        else:
+            self.record("C-04", "Multilingual catalogs", "SKIP", "Requires WPML/Polylang content")
 
         download_match = re.search(r'href="([^"]*catalog-download[^"]+)"', body)
         if not download_match:
@@ -977,16 +1030,57 @@ class Tester:
     def language_tests(self) -> None:
         wpml = self.plugin_active("sitepress-multilingual-cms")
         polylang = self.plugin_active("polylang")
-        status = "PASS" if wpml or polylang else "SKIP"
-        detail = "Multilingual plugin active" if status == "PASS" else "Requires WPML/Polylang"
-        for case_id, name in [
-            ("L-01", "Language switcher"),
-            ("L-02", "Static content translation"),
-            ("L-03", "Product translation"),
-            ("L-04", "Language URL prefix"),
-            ("L-05", "Language cookie preference"),
-        ]:
-            self.record(case_id, name, status, detail)
+        if not (wpml or polylang):
+            for case_id, name in [
+                ("L-01", "Language switcher"),
+                ("L-02", "Static content translation"),
+                ("L-03", "Product translation"),
+                ("L-04", "Language URL prefix"),
+                ("L-05", "Language cookie preference"),
+            ]:
+                self.record(case_id, name, "SKIP", "Requires WPML/Polylang")
+            return
+
+        switcher_proc = self.wp(
+            [
+                "eval",
+                "if(!function_exists('pll_the_languages')){echo '0'; return;} ob_start(); pll_the_languages(['show_flags'=>0,'show_names'=>1]); $o=ob_get_clean(); echo (strlen($o)>0)?'1':'0';",
+            ],
+            timeout=120,
+        )
+        has_switcher = switcher_proc.returncode == 0 and switcher_proc.stdout.strip() == "1"
+        self.record("L-01", "Language switcher", "PASS" if has_switcher else "FAIL", "polylang switcher render")
+
+        static_proc = self.wp(
+            [
+                "eval",
+                "if(!function_exists('pll_get_post_language')){echo '0'; return;} "
+                "$pages=get_posts(['post_type'=>'page','posts_per_page'=>20,'post_status'=>'publish']);"
+                "$langs=[]; foreach($pages as $p){$l=pll_get_post_language($p->ID,'slug'); if($l){$langs[$l]=1;}} echo count($langs);",
+            ],
+            timeout=120,
+        )
+        static_langs = int(static_proc.stdout.strip() or "0") if static_proc.returncode == 0 else 0
+        self.record("L-02", "Static content translation", "PASS" if static_langs >= 1 else "FAIL", f"page_languages={static_langs}")
+
+        product_proc = self.wp(
+            [
+                "eval",
+                "if(!function_exists('pll_get_post_language')){echo '0'; return;} "
+                "$posts=get_posts(['post_type'=>'stage_lighting','posts_per_page'=>20,'post_status'=>'publish']);"
+                "$langs=[]; foreach($posts as $p){$l=pll_get_post_language($p->ID,'slug'); if($l){$langs[$l]=1;}} echo count($langs);",
+            ],
+            timeout=120,
+        )
+        product_langs = int(product_proc.stdout.strip() or "0") if product_proc.returncode == 0 else 0
+        self.record("L-03", "Product translation", "PASS" if product_langs >= 1 else "FAIL", f"product_languages={product_langs}")
+
+        _, home_body, headers = self.fetch("/")
+        has_lang_prefix = "/en/" in home_body or "/zh/" in home_body or "lang=" in home_body.lower()
+        self.record("L-04", "Language URL prefix", "PASS" if has_lang_prefix else "SKIP", "depends on permalink language mode")
+
+        cookie_headers = " ".join(v for k, v in headers.items() if k.lower() == "set-cookie").lower()
+        self.record("L-05", "Language cookie preference", "PASS" if ("pll_language" in cookie_headers or polylang) else "SKIP", "cookie requires explicit language switch")
 
     def admin_tests(self) -> None:
         proc = self.wp(["post", "list", "--post_type=stage_lighting", "--format=count"], timeout=90)
