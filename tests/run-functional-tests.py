@@ -739,7 +739,23 @@ class Tester:
             f"titles={len(product_titles)}, HTTP {status}",
         )
 
-        proc = self.wp(["post", "list", "--post_type=stage_lighting", "--posts_per_page=1", "--field=ID"], timeout=90)
+        proc = self.wp(
+            [
+                "eval",
+                (
+                    "$posts=get_posts(['post_type'=>'stage_lighting','post_status'=>'publish','posts_per_page'=>50]);"
+                    "$picked=0;"
+                    "foreach($posts as $p){"
+                    "$sku=(string)get_post_meta($p->ID,'sku',true);"
+                    "$title=(string)$p->post_title;"
+                    "if(strpos($sku,'LX-')===0 || strpos($title,'LX-')===0){$picked=(int)$p->ID; break;}"
+                    "}"
+                    "if(!$picked && $posts){$picked=(int)$posts[0]->ID;}"
+                    "echo (string)$picked;"
+                ),
+            ],
+            timeout=90,
+        )
         post_id = proc.stdout.strip().splitlines()[0] if proc.returncode == 0 and proc.stdout.strip() else ""
         if not post_id:
             self.record("P-05", "Product detail link", "FAIL", "No product found")
@@ -960,9 +976,9 @@ class Tester:
         else:
             self.record("C-04", "Multilingual catalogs", "SKIP", "Requires WPML/Polylang content")
 
-        download_match = re.search(r'href="([^"]*catalog-download[^"]+)"', body)
+        download_match = re.search(r'href="([^"]*(?:catalog-download|luxstage_catalog_download=1)[^"]+)"', body)
         if not download_match:
-            self.record("C-05", "Download link expiry", "FAIL", "No secure catalog-download link found")
+            self.record("C-05", "Download link expiry", "FAIL", "No secure catalog download link found")
         else:
             expired = re.sub(r"expires=\d+", "expires=1", download_match.group(1))
             expired = re.sub(r"sig=[^&\"]+", "sig=invalid", expired)

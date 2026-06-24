@@ -535,11 +535,12 @@ if (!function_exists('luxstage_catalog_secure_download_url')) {
         $signature = luxstage_catalog_signature($catalog_id, $expires);
         return add_query_arg(
             [
+                'luxstage_catalog_download' => 1,
                 'catalog_id' => $catalog_id,
                 'expires' => $expires,
                 'sig' => $signature,
             ],
-            home_url('/catalog-download/')
+            home_url('/')
         );
     }
 }
@@ -586,7 +587,8 @@ add_filter('query_vars', static function (array $vars): array {
 });
 
 add_action('template_redirect', static function (): void {
-    if ((string) get_query_var('luxstage_catalog_download') !== '1') {
+    $download_flag = (string) get_query_var('luxstage_catalog_download');
+    if ($download_flag !== '1' && empty($_GET['luxstage_catalog_download'])) {
         return;
     }
 
