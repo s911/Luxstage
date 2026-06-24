@@ -58,9 +58,12 @@ class Tester:
         ]
         return self.run(cmd, timeout=timeout)
 
-    def fetch(self, path: str, timeout: int = 15) -> tuple[int, str, dict[str, str]]:
+    def fetch(self, path: str, timeout: int = 15, extra_headers: dict[str, str] | None = None) -> tuple[int, str, dict[str, str]]:
         url = path if path.startswith("http") else f"{self.base_url}{path}"
-        req = urllib.request.Request(url, headers={"User-Agent": "LuxstageFunctionalTest/1.0"})
+        headers = {"User-Agent": "LuxstageFunctionalTest/1.0"}
+        if extra_headers:
+            headers.update(extra_headers)
+        req = urllib.request.Request(url, headers=headers)
         attempts = 4
         for attempt in range(1, attempts + 1):
             try:
@@ -120,28 +123,36 @@ class Tester:
                 ),
             ),
         ]:
-            proc = self.wp(
-                [
-                    "post",
-                    "create",
-                    f"--post_type=page",
-                    f"--post_status=publish",
-                    f"--post_title={title}",
-                    f"--post_name={slug}",
-                    f"--post_content={content}",
-                    "--porcelain",
-                ],
-                timeout=90,
-            )
-            if proc.returncode == 0:
-                self.record("SETUP-03", f"Ensure page {title}", "PASS", slug)
+            exists = self.wp(["post", "list", "--post_type=page", f"--name={slug}", "--field=ID"], timeout=60)
+            page_id = exists.stdout.strip().splitlines()[0] if exists.returncode == 0 and exists.stdout.strip() else ""
+            if page_id:
+                proc = self.wp(
+                    [
+                        "post",
+                        "update",
+                        page_id,
+                        f"--post_title={title}",
+                        f"--post_status=publish",
+                        f"--post_content={content}",
+                    ],
+                    timeout=90,
+                )
+                self.record("SETUP-03", f"Ensure page {title}", "PASS" if proc.returncode == 0 else "FAIL", f"updated:{slug}")
             else:
-                # Page may already exist due duplicate slug constraints.
-                exists = self.wp(["post", "list", "--post_type=page", f"--name={slug}", "--field=ID"], timeout=60)
-                if exists.returncode == 0 and exists.stdout.strip():
-                    self.record("SETUP-03", f"Ensure page {title}", "PASS", "already exists")
-                else:
-                    self.record("SETUP-03", f"Ensure page {title}", "FAIL", (proc.stderr or proc.stdout).strip()[-300:])
+                proc = self.wp(
+                    [
+                        "post",
+                        "create",
+                        "--post_type=page",
+                        "--post_status=publish",
+                        f"--post_title={title}",
+                        f"--post_name={slug}",
+                        f"--post_content={content}",
+                        "--porcelain",
+                    ],
+                    timeout=90,
+                )
+                self.record("SETUP-03", f"Ensure page {title}", "PASS" if proc.returncode == 0 else "FAIL", slug)
 
         cf7_ready = self.plugin_install_activate("contact-form-7")
         self.record("SETUP-05", "Ensure Contact Form 7", "PASS" if cf7_ready else "FAIL", "contact-form-7 active" if cf7_ready else "plugin install failed")
@@ -514,7 +525,14 @@ class Tester:
 
         status, catalog_body, _ = self.fetch("/catalog-request/")
         self.record("F-05", "Catalog lead form", "PASS" if status < 400 and "wpcf7-form" in catalog_body else "FAIL", f"HTTP {status}")
-        _, catalog_return_body, _ = self.fetch("/catalog-request/?luxstage_catalog_return=1")
+        _, _, headers = self.fetch("/catalog-request/?luxstage_catalog_return=1")
+        set_cookie_blob = " ".join(v for k, v in headers.items() if k.lower() == "set-cookie")
+        cookie_match = re.search(r"(luxstage_catalog_returning=[^;]+)", set_cookie_blob)
+        cookie_header = cookie_match.group(1) if cookie_match else ""
+        _, catalog_return_body, _ = self.fetch(
+            "/catalog-request/",
+            extra_headers={"Cookie": cookie_header} if cookie_header else None,
+        )
         has_returning_entry = "Returning visitor" in catalog_return_body or "Go to catalog downloads" in catalog_return_body
         self.record("F-06", "Returning catalog downloader", "PASS" if has_returning_entry else "FAIL", "cookie-based returning lead behavior")
 

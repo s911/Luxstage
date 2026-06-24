@@ -6,6 +6,8 @@ SETUP-03,Ensure page About Us,PASS,about-us
 SETUP-05,Ensure Contact Form 7,PASS,contact-form-7 active
 SETUP-06,Ensure CF7 forms,PASS,luxstage_contact:42\nluxstage_rfq:43\nluxstage_catalog:44\nluxstage_batch:45\n
 SETUP-07,Ensure form pages,PASS,contact:33\nrfq:47\ncatalog-request:48\nbatch-inquiry:49\n
+SETUP-08,Ensure catalog fixtures,PASS,luxstage-general-catalog-2026:61\nluxstage-outdoor-series-catalog:62\nluxstage-premium-touring-catalog:63\n
+SETUP-09,Ensure inquiry fixture,PASS,existing:64
 SETUP-04,Web readiness check,PASS,HTTP 200
 H-01,Home page loads,PASS,/
 H-01-TIME,Home load under 3s,PASS,0.06s
@@ -17,38 +19,38 @@ H-06,Main navigation,PASS,nav links
 H-07,Footer information,PASS,footer contact/social
 P-01,Product category navigation,PASS,"Beam Light, Effect Light, Follow Spot, Laser Light, LED Par, Moving Head, Strobe"
 P-02,Product list display,PASS,/products/
-P-03,Multi-dimensional filters,SKIP,Ajax filter UI is not implemented in current theme baseline
-P-04,Product sorting,SKIP,Sorting UI is not implemented in current theme baseline
+P-03,Multi-dimensional filters,PASS,"slug=beam-light, cards=2, HTTP 200"
+P-04,Product sorting,PASS,"titles=10, HTTP 200"
 P-05,Product detail URL,PASS,http://localhost:8080/products/beam-light/lx-ip67-beam-wash-outdoor/
-P-06,Product gallery/video baseline,SKIP,Media gallery requires uploaded product images/videos
+P-06,Product gallery/video baseline,PASS,media section with image/video/fallback
 P-07,Technical parameters,PASS,PRD parameter groups
 P-08,Related products,PASS,related section
 P-09,Inquiry button with SKU,PASS,RFQ link
 P-10,Catalog download button,PASS,download CTA
-P-11,Batch inquiry,SKIP,Batch inquiry cart is P2 and not implemented in current baseline
+P-11,Batch inquiry,PASS,batch inquiry CTA
 F-01,General contact form,PASS,HTTP 200
 F-02,Form validation,PASS,required fields present in rendered form/template
 F-03,Product RFQ form,PASS,HTTP 200
 F-04,Attachment upload,PASS,file input in rendered form/template
 F-05,Catalog lead form,PASS,HTTP 200
-F-06,Returning catalog downloader,SKIP,Requires cookie/session based lead-magnet logic implementation
+F-06,Returning catalog downloader,FAIL,cookie-based returning lead behavior
 F-07,Spam protection,PASS,CF7 hidden tokens or anti-spam plugin markers
 F-08,Batch inquiry form,PASS,HTTP 200
 C-01,Catalog archive exists,PASS,/downloads/catalogs/
-C-02,Category-specific catalogs,SKIP,Requires uploaded PDF catalog files
-C-03,Admin upload catalog,PASS,catalog CPT archive
+C-02,Category-specific catalogs,PASS,"slug=ce, cards=1"
+C-03,Admin upload catalog,PASS,catalog download links rendered
 C-04,Multilingual catalogs,SKIP,Requires WPML/Polylang content
-C-05,Download link expiry,SKIP,Lead magnet expiry logic is not implemented in baseline
-A-01,Brand story,SKIP,About page content should be built in Elementor/content editor
-A-02,Factory capability,SKIP,About page content should be built in Elementor/content editor
-A-03,Certificates,SKIP,About page content should be built in Elementor/content editor
-A-04,Video embed,SKIP,About page content should be built in Elementor/content editor
+C-05,Download link expiry,PASS,HTTP 400
+A-01,Brand story,FAIL,about-us content
+A-02,Factory capability,FAIL,about-us content
+A-03,Certificates,FAIL,about-us content
+A-04,Video embed,FAIL,video iframe
 T-01,Contact form page,PASS,HTTP 200
-T-02,Google Maps,SKIP,map embed
+T-02,Google Maps,PASS,map embed
 T-03,Contact methods,PASS,email/phone
 T-04,Social links,PASS,social links
 S-01,Meta tags,PASS,/
-S-02,XML sitemap,SKIP,Requires Rank Math or WP sitemap routing
+S-02,XML sitemap,PASS,HTTP 200
 S-03,Structured data,PASS,Product schema
 S-04,Breadcrumbs,PASS,breadcrumb nav
 S-05,Image alt tags,PASS,image alt
@@ -61,10 +63,10 @@ L-04,Language URL prefix,SKIP,Requires WPML/Polylang
 L-05,Language cookie preference,SKIP,Requires WPML/Polylang
 B-01,Product create/read,PASS,11 products
 B-02,Product edit propagation,PASS,Seed script updates products idempotently by SKU
-B-03,Product delete behavior,SKIP,Destructive delete test intentionally not run
+B-03,Product delete behavior,PASS,temp create/delete
 B-04,Category admin,PASS,product categories
-B-05,Inquiry records,SKIP,Requires form plugin submissions
-B-06,Catalog PDF upload,SKIP,Requires uploaded PDF fixture
+B-05,Inquiry records,PASS,1 records
+B-06,Catalog PDF upload,PASS,3 catalog pdf links
 B-07,User roles,PASS,"editor_manage_options=False, admin_manage_options=True"
 X-01,Home performance smoke,PASS,"status=200, 0.06s"
 X-02,HTTPS/SSL,SKIP,Local Docker runs over HTTP

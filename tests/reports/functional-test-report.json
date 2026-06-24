@@ -42,6 +42,18 @@
     "detail": "contact:33\\nrfq:47\\ncatalog-request:48\\nbatch-inquiry:49\\n"
   },
   {
+    "case_id": "SETUP-08",
+    "name": "Ensure catalog fixtures",
+    "status": "PASS",
+    "detail": "luxstage-general-catalog-2026:61\\nluxstage-outdoor-series-catalog:62\\nluxstage-premium-touring-catalog:63\\n"
+  },
+  {
+    "case_id": "SETUP-09",
+    "name": "Ensure inquiry fixture",
+    "status": "PASS",
+    "detail": "existing:64"
+  },
+  {
     "case_id": "SETUP-04",
     "name": "Web readiness check",
     "status": "PASS",
@@ -110,14 +122,14 @@
   {
     "case_id": "P-03",
     "name": "Multi-dimensional filters",
-    "status": "SKIP",
-    "detail": "Ajax filter UI is not implemented in current theme baseline"
+    "status": "PASS",
+    "detail": "slug=beam-light, cards=2, HTTP 200"
   },
   {
     "case_id": "P-04",
     "name": "Product sorting",
-    "status": "SKIP",
-    "detail": "Sorting UI is not implemented in current theme baseline"
+    "status": "PASS",
+    "detail": "titles=10, HTTP 200"
   },
   {
     "case_id": "P-05",
@@ -128,8 +140,8 @@
   {
     "case_id": "P-06",
     "name": "Product gallery/video baseline",
-    "status": "SKIP",
-    "detail": "Media gallery requires uploaded product images/videos"
+    "status": "PASS",
+    "detail": "media section with image/video/fallback"
   },
   {
     "case_id": "P-07",
@@ -158,8 +170,8 @@
   {
     "case_id": "P-11",
     "name": "Batch inquiry",
-    "status": "SKIP",
-    "detail": "Batch inquiry cart is P2 and not implemented in current baseline"
+    "status": "PASS",
+    "detail": "batch inquiry CTA"
   },
   {
     "case_id": "F-01",
@@ -194,8 +206,8 @@
   {
     "case_id": "F-06",
     "name": "Returning catalog downloader",
-    "status": "SKIP",
-    "detail": "Requires cookie/session based lead-magnet logic implementation"
+    "status": "FAIL",
+    "detail": "cookie-based returning lead behavior"
   },
   {
     "case_id": "F-07",
@@ -218,14 +230,14 @@
   {
     "case_id": "C-02",
     "name": "Category-specific catalogs",
-    "status": "SKIP",
-    "detail": "Requires uploaded PDF catalog files"
+    "status": "PASS",
+    "detail": "slug=ce, cards=1"
   },
   {
     "case_id": "C-03",
     "name": "Admin upload catalog",
     "status": "PASS",
-    "detail": "catalog CPT archive"
+    "detail": "catalog download links rendered"
   },
   {
     "case_id": "C-04",
@@ -236,32 +248,32 @@
   {
     "case_id": "C-05",
     "name": "Download link expiry",
-    "status": "SKIP",
-    "detail": "Lead magnet expiry logic is not implemented in baseline"
+    "status": "PASS",
+    "detail": "HTTP 400"
   },
   {
     "case_id": "A-01",
     "name": "Brand story",
-    "status": "SKIP",
-    "detail": "About page content should be built in Elementor/content editor"
+    "status": "FAIL",
+    "detail": "about-us content"
   },
   {
     "case_id": "A-02",
     "name": "Factory capability",
-    "status": "SKIP",
-    "detail": "About page content should be built in Elementor/content editor"
+    "status": "FAIL",
+    "detail": "about-us content"
   },
   {
     "case_id": "A-03",
     "name": "Certificates",
-    "status": "SKIP",
-    "detail": "About page content should be built in Elementor/content editor"
+    "status": "FAIL",
+    "detail": "about-us content"
   },
   {
     "case_id": "A-04",
     "name": "Video embed",
-    "status": "SKIP",
-    "detail": "About page content should be built in Elementor/content editor"
+    "status": "FAIL",
+    "detail": "video iframe"
   },
   {
     "case_id": "T-01",
@@ -272,7 +284,7 @@
   {
     "case_id": "T-02",
     "name": "Google Maps",
-    "status": "SKIP",
+    "status": "PASS",
     "detail": "map embed"
   },
   {
@@ -296,8 +308,8 @@
   {
     "case_id": "S-02",
     "name": "XML sitemap",
-    "status": "SKIP",
-    "detail": "Requires Rank Math or WP sitemap routing"
+    "status": "PASS",
+    "detail": "HTTP 200"
   },
   {
     "case_id": "S-03",
@@ -374,8 +386,8 @@
   {
     "case_id": "B-03",
     "name": "Product delete behavior",
-    "status": "SKIP",
-    "detail": "Destructive delete test intentionally not run"
+    "status": "PASS",
+    "detail": "temp create/delete"
   },
   {
     "case_id": "B-04",
@@ -386,14 +398,14 @@
   {
     "case_id": "B-05",
     "name": "Inquiry records",
-    "status": "SKIP",
-    "detail": "Requires form plugin submissions"
+    "status": "PASS",
+    "detail": "1 records"
   },
   {
     "case_id": "B-06",
     "name": "Catalog PDF upload",
-    "status": "SKIP",
-    "detail": "Requires uploaded PDF fixture"
+    "status": "PASS",
+    "detail": "3 catalog pdf links"
   },
   {
     "case_id": "B-07",
