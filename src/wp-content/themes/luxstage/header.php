@@ -17,10 +17,16 @@
       <?php bloginfo('name'); ?>
     </a>
     <nav class="lux-nav" aria-label="<?php esc_attr_e('Primary navigation', 'luxstage'); ?>">
-      <a href="<?php echo esc_url(home_url('/products/')); ?>"><?php esc_html_e('Products', 'luxstage'); ?></a>
-      <a href="<?php echo esc_url(home_url('/applications/')); ?>"><?php esc_html_e('Applications', 'luxstage'); ?></a>
-      <a href="<?php echo esc_url(home_url('/downloads/catalogs/')); ?>"><?php esc_html_e('Downloads', 'luxstage'); ?></a>
-      <a href="<?php echo esc_url(home_url('/contact/')); ?>"><?php esc_html_e('Contact', 'luxstage'); ?></a>
+      <?php
+      wp_nav_menu([
+          'theme_location' => 'primary',
+          'container' => false,
+          'menu_class' => false,
+          'fallback_cb' => 'luxstage_primary_menu_fallback',
+          'items_wrap' => '%3$s',
+          'depth' => 1,
+      ]);
+      ?>
     </nav>
   </div>
 </header>

@@ -4,14 +4,15 @@ import base64
 import csv
 import html
 import json
+import mimetypes
 import re
 import socket
 import subprocess
 import sys
 import time
 import urllib.error
-import urllib.parse
 import urllib.request
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -97,6 +98,32 @@ class Tester:
             return exc.code, exc.read().decode("utf-8", errors="ignore"), dict(exc.headers)
         except (urllib.error.URLError, TimeoutError, socket.timeout) as exc:
             return 598, str(exc), {}
+
+    def build_multipart_form_data(
+        self,
+        fields: dict[str, str],
+        files: dict[str, tuple[str, bytes, str]] | None = None,
+    ) -> tuple[bytes, str]:
+        boundary = f"----LuxstageBoundary{uuid.uuid4().hex}"
+        body = bytearray()
+
+        for name, value in fields.items():
+            body.extend(f"--{boundary}\r\n".encode("utf-8"))
+            body.extend(f'Content-Disposition: form-data; name="{name}"\r\n\r\n'.encode("utf-8"))
+            body.extend(str(value).encode("utf-8"))
+            body.extend(b"\r\n")
+
+        for field_name, (filename, content, content_type) in (files or {}).items():
+            body.extend(f"--{boundary}\r\n".encode("utf-8"))
+            body.extend(
+                f'Content-Disposition: form-data; name="{field_name}"; filename="{filename}"\r\n'.encode("utf-8")
+            )
+            body.extend(f"Content-Type: {content_type}\r\n\r\n".encode("utf-8"))
+            body.extend(content)
+            body.extend(b"\r\n")
+
+        body.extend(f"--{boundary}--\r\n".encode("utf-8"))
+        return bytes(body), boundary
 
     def ensure_seed_data(self) -> None:
         seed_script = self.root / "deploy" / "scripts" / "seed-demo-products.sh"
@@ -415,30 +442,48 @@ class Tester:
         except (ValueError, IndexError):
             return 0
 
-    def submit_cf7_rest(self, slug: str, fields: dict[str, str]) -> tuple[bool, str]:
+    def submit_cf7_rest(
+        self,
+        slug: str,
+        fields: dict[str, str],
+        file_payload: tuple[str, bytes, str] | None = None,
+    ) -> tuple[bool, str]:
         form_id = self.cf7_form_id_by_slug(slug)
         if form_id <= 0:
             return False, "form_not_found"
 
         payload = {
+            "_wpcf7": str(form_id),
             "_wpcf7_unit_tag": f"wpcf7-f{form_id}-o1",
             "_wpcf7_container_post": "0",
             **fields,
         }
-        body = urllib.parse.urlencode(payload).encode("utf-8")
+        files = {}
+        if file_payload is not None:
+            files["attachment"] = file_payload
+        body, boundary = self.build_multipart_form_data(payload, files=files)
         status, response_text, _ = self.post(
             f"/wp-json/contact-form-7/v1/contact-forms/{form_id}/feedback",
             data=body,
-            headers={"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"},
+            headers={
+                "Content-Type": f"multipart/form-data; boundary={boundary}",
+                "Accept": "application/json",
+                "Referer": f"{self.base_url}/",
+                "Origin": self.base_url,
+            },
             timeout=25,
         )
         if status >= 400:
-            return False, f"http_{status}"
+            snippet = response_text.strip().replace("\n", " ")[:180]
+            return False, f"http_{status}:{snippet}"
         try:
             payload_json = json.loads(response_text)
         except json.JSONDecodeError:
-            return False, "invalid_json"
-        return payload_json.get("status") == "mail_sent", str(payload_json.get("status", "unknown"))
+            snippet = response_text.strip().replace("\n", " ")[:180]
+            return False, f"invalid_json:{snippet}"
+        status_text = str(payload_json.get("status", "unknown"))
+        message = str(payload_json.get("message", ""))
+        return status_text == "mail_sent", f"{status_text}:{message[:120]}"
 
     def ensure_catalog_fixtures(self) -> None:
         proc = self.wp(
@@ -674,8 +719,12 @@ class Tester:
                 "product-sku": "LX-MH350-PRO",
                 "your-quantity": "20",
                 "your-message": "Need quotation for 20 units with flight case.",
-                "attachment": "mock-spec.pdf",
             },
+            file_payload=(
+                "mock-spec.txt",
+                b"Luxstage RFQ mock attachment for automated testing.",
+                mimetypes.guess_type("mock-spec.txt")[0] or "text/plain",
+            ),
         )
         self.record(
             "F-03",

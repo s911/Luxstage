@@ -27,7 +27,27 @@ add_action('after_setup_theme', static function (): void {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
     add_theme_support('html5', ['search-form', 'gallery', 'caption', 'style', 'script']);
+    register_nav_menus([
+        'primary' => __('Primary Menu', 'luxstage'),
+    ]);
 });
+
+if (!function_exists('luxstage_primary_menu_fallback')) {
+    function luxstage_primary_menu_fallback(array $args = []): void
+    {
+        $links = [
+            [home_url('/products/'), __('Products', 'luxstage')],
+            [home_url('/applications/'), __('Applications', 'luxstage')],
+            [home_url('/downloads/catalogs/'), __('Downloads', 'luxstage')],
+            [home_url('/about-us/'), __('About Us', 'luxstage')],
+            [home_url('/contact/'), __('Contact', 'luxstage')],
+        ];
+
+        foreach ($links as [$url, $label]) {
+            echo '<a href="' . esc_url($url) . '">' . esc_html($label) . '</a>';
+        }
+    }
+}
 
 add_action('wp_enqueue_scripts', static function (): void {
     $theme_uri = get_stylesheet_directory_uri();

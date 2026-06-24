@@ -45,13 +45,19 @@
     "case_id": "SETUP-08",
     "name": "Ensure catalog fixtures",
     "status": "PASS",
-    "detail": "luxstage-general-catalog-2026:61\\nluxstage-outdoor-series-catalog:62\\nluxstage-premium-touring-catalog:63\\n"
+    "detail": "luxstage-catalog-01:78\\nluxstage-catalog-02:79\\nluxstage-catalog-03:80\\nluxstage-catalog-04:81\\nluxstage-catalog-05:82\\nluxstage-catalog-06:83\\nluxstage-catalog-07:84\\nluxstage-catalog-08:85\\nluxstage-catalog-09:86\\nluxstage-catalog-10:87\\n"
   },
   {
     "case_id": "SETUP-09",
-    "name": "Ensure inquiry fixture",
+    "name": "Ensure application fixtures",
     "status": "PASS",
-    "detail": "existing:64"
+    "detail": "luxstage-application-01:88\\nluxstage-application-02:89\\nluxstage-application-03:90\\nluxstage-application-04:91\\nluxstage-application-05:92\\nluxstage-application-06:93\\nluxstage-application-07:94\\nluxstage-application-08:95\\nluxstage-application-09:96\\nluxstage-application-10:97\\n"
+  },
+  {
+    "case_id": "SETUP-10",
+    "name": "Ensure inquiry fixtures",
+    "status": "PASS",
+    "detail": "existing:98\\nexisting:99\\nexisting:100\\nexisting:101\\nexisting:102\\nexisting:103\\nexisting:104\\nexisting:105\\nexisting:106\\nexisting:107\\n"
   },
   {
     "case_id": "SETUP-04",
@@ -69,7 +75,7 @@
     "case_id": "H-01-TIME",
     "name": "Home load under 3s",
     "status": "PASS",
-    "detail": "0.07s"
+    "detail": "0.06s"
   },
   {
     "case_id": "H-02",
@@ -176,8 +182,8 @@
   {
     "case_id": "F-01",
     "name": "General contact form",
-    "status": "PASS",
-    "detail": "HTTP 200"
+    "status": "FAIL",
+    "detail": "HTTP 200, submit=http_415"
   },
   {
     "case_id": "F-02",
@@ -188,20 +194,20 @@
   {
     "case_id": "F-03",
     "name": "Product RFQ form",
-    "status": "PASS",
-    "detail": "HTTP 200"
+    "status": "FAIL",
+    "detail": "HTTP 200, submit=http_415"
   },
   {
     "case_id": "F-04",
     "name": "Attachment upload",
-    "status": "PASS",
-    "detail": "file input in rendered form/template"
+    "status": "FAIL",
+    "detail": "file input and submit=http_415"
   },
   {
     "case_id": "F-05",
     "name": "Catalog lead form",
-    "status": "PASS",
-    "detail": "HTTP 200"
+    "status": "FAIL",
+    "detail": "HTTP 200, submit=http_415"
   },
   {
     "case_id": "F-06",
@@ -218,8 +224,20 @@
   {
     "case_id": "F-08",
     "name": "Batch inquiry form",
-    "status": "PASS",
-    "detail": "HTTP 200"
+    "status": "FAIL",
+    "detail": "HTTP 200, submit=http_415"
+  },
+  {
+    "case_id": "F-09",
+    "name": "Inquiry persistence",
+    "status": "FAIL",
+    "detail": "inquiry_delta=0"
+  },
+  {
+    "case_id": "F-10",
+    "name": "Email send verification",
+    "status": "FAIL",
+    "detail": "mail_success_delta=0, mailpit_delta=0"
   },
   {
     "case_id": "C-01",
@@ -231,7 +249,7 @@
     "case_id": "C-02",
     "name": "Category-specific catalogs",
     "status": "PASS",
-    "detail": "slug=ce, cards=1"
+    "detail": "slug=ce, cards=3"
   },
   {
     "case_id": "C-03",
@@ -399,13 +417,19 @@
     "case_id": "B-05",
     "name": "Inquiry records",
     "status": "PASS",
-    "detail": "1 records"
+    "detail": "11 records"
   },
   {
     "case_id": "B-06",
     "name": "Catalog PDF upload",
     "status": "PASS",
-    "detail": "3 catalog pdf links"
+    "detail": "13 catalog pdf links"
+  },
+  {
+    "case_id": "B-08",
+    "name": "Application fixtures",
+    "status": "PASS",
+    "detail": "10 application posts"
   },
   {
     "case_id": "B-07",
@@ -417,7 +441,7 @@
     "case_id": "X-01",
     "name": "Home performance smoke",
     "status": "PASS",
-    "detail": "status=200, 0.06s"
+    "detail": "status=200, 0.07s"
   },
   {
     "case_id": "X-02",
