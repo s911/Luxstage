@@ -26,8 +26,20 @@
   {
     "case_id": "SETUP-05",
     "name": "Ensure Contact Form 7",
-    "status": "FAIL",
-    "detail": "plugin install failed"
+    "status": "PASS",
+    "detail": "contact-form-7 active"
+  },
+  {
+    "case_id": "SETUP-06",
+    "name": "Ensure CF7 forms",
+    "status": "PASS",
+    "detail": "luxstage_contact:42\\nluxstage_rfq:43\\nluxstage_catalog:44\\nluxstage_batch:45\\n"
+  },
+  {
+    "case_id": "SETUP-07",
+    "name": "Ensure form pages",
+    "status": "PASS",
+    "detail": "contact:33\\nrfq:47\\ncatalog-request:48\\nbatch-inquiry:49\\n"
   },
   {
     "case_id": "SETUP-04",
@@ -45,7 +57,7 @@
     "case_id": "H-01-TIME",
     "name": "Home load under 3s",
     "status": "PASS",
-    "detail": "0.05s"
+    "detail": "0.07s"
   },
   {
     "case_id": "H-02",
@@ -152,50 +164,50 @@
   {
     "case_id": "F-01",
     "name": "General contact form",
-    "status": "FAIL",
-    "detail": "Contact Form 7 not active"
+    "status": "PASS",
+    "detail": "HTTP 200"
   },
   {
     "case_id": "F-02",
     "name": "Form validation",
     "status": "FAIL",
-    "detail": "Contact Form 7 not active"
+    "detail": "required fields present"
   },
   {
     "case_id": "F-03",
     "name": "Product RFQ form",
-    "status": "FAIL",
-    "detail": "Contact Form 7 not active"
+    "status": "PASS",
+    "detail": "HTTP 200"
   },
   {
     "case_id": "F-04",
     "name": "Attachment upload",
     "status": "FAIL",
-    "detail": "Contact Form 7 not active"
+    "detail": "file input"
   },
   {
     "case_id": "F-05",
     "name": "Catalog lead form",
-    "status": "FAIL",
-    "detail": "Contact Form 7 not active"
+    "status": "PASS",
+    "detail": "HTTP 200"
   },
   {
     "case_id": "F-06",
     "name": "Returning catalog downloader",
-    "status": "FAIL",
-    "detail": "Contact Form 7 not active"
+    "status": "SKIP",
+    "detail": "Requires cookie/session based lead-magnet logic implementation"
   },
   {
     "case_id": "F-07",
     "name": "Spam protection",
     "status": "FAIL",
-    "detail": "Contact Form 7 not active"
+    "detail": "nonce/anti-spam token"
   },
   {
     "case_id": "F-08",
     "name": "Batch inquiry form",
-    "status": "FAIL",
-    "detail": "Contact Form 7 not active"
+    "status": "PASS",
+    "detail": "HTTP 200"
   },
   {
     "case_id": "C-01",

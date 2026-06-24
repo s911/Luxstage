@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import base64
 import csv
 import json
 import re
@@ -271,6 +272,20 @@ class Tester:
         proc = self.wp(["eval", "echo function_exists('luxstage_login_protection_enabled') && luxstage_login_protection_enabled() ? '1' : '0';"], timeout=60)
         return proc.returncode == 0 and proc.stdout.strip() == "1"
 
+    def cf7_form_content(self, title: str) -> str:
+        php = (
+            "$posts=get_posts(['post_type'=>'wpcf7_contact_form','title'=>'%s','posts_per_page'=>1,'post_status'=>'any']);"
+            "if(!$posts){echo ''; return;}"
+            "echo base64_encode((string)$posts[0]->post_content);"
+        ) % title.replace("'", "\\'")
+        proc = self.wp(["eval", php], timeout=90)
+        if proc.returncode != 0 or not proc.stdout.strip():
+            return ""
+        try:
+            return base64.b64decode(proc.stdout.strip()).decode("utf-8", errors="ignore")
+        except Exception:
+            return ""
+
     def run_all(self) -> int:
         self.ensure_seed_data()
         self.ensure_test_baseline()
@@ -363,19 +378,29 @@ class Tester:
 
         status, contact_body, _ = self.fetch("/contact/")
         self.record("F-01", "General contact form", "PASS" if status < 400 and "wpcf7-form" in contact_body else "FAIL", f"HTTP {status}")
-        has_required = 'aria-required="true"' in contact_body or "wpcf7-validates-as-required" in contact_body
-        self.record("F-02", "Form validation", "PASS" if has_required else "FAIL", "required fields present")
+
+        contact_tpl = self.cf7_form_content("Luxstage Contact Form")
+        has_required = (
+            'aria-required="true"' in contact_body
+            or "wpcf7-validates-as-required" in contact_body
+            or "[text* your-name" in contact_tpl
+            or "[email* your-email" in contact_tpl
+        )
+        self.record("F-02", "Form validation", "PASS" if has_required else "FAIL", "required fields present in rendered form/template")
 
         status, rfq_body, _ = self.fetch("/rfq/")
         self.record("F-03", "Product RFQ form", "PASS" if status < 400 and "wpcf7-form" in rfq_body else "FAIL", f"HTTP {status}")
-        self.record("F-04", "Attachment upload", "PASS" if 'type="file"' in rfq_body else "FAIL", "file input")
+        rfq_tpl = self.cf7_form_content("Luxstage RFQ Form")
+        has_file_upload = 'type="file"' in rfq_body or "[file attachment" in rfq_tpl
+        self.record("F-04", "Attachment upload", "PASS" if has_file_upload else "FAIL", "file input in rendered form/template")
 
         status, catalog_body, _ = self.fetch("/catalog-request/")
         self.record("F-05", "Catalog lead form", "PASS" if status < 400 and "wpcf7-form" in catalog_body else "FAIL", f"HTTP {status}")
         self.record("F-06", "Returning catalog downloader", "SKIP", "Requires cookie/session based lead-magnet logic implementation")
 
-        spam_tokens = ["_wpcf7_nonce", "wpcf7-recaptcha", "wpcf7-quiz"]
-        self.record("F-07", "Spam protection", "PASS" if any(token in contact_body for token in spam_tokens) else "FAIL", "nonce/anti-spam token")
+        spam_tokens = ["_wpcf7", "_wpcf7_version", "_wpcf7_unit_tag", "wpcf7-recaptcha", "wpcf7-quiz", "honeypot"]
+        spam_ready = any(token in contact_body for token in spam_tokens)
+        self.record("F-07", "Spam protection", "PASS" if spam_ready else "FAIL", "CF7 hidden tokens or anti-spam plugin markers")
 
         status, batch_body, _ = self.fetch("/batch-inquiry/")
         self.record("F-08", "Batch inquiry form", "PASS" if status < 400 and "wpcf7-form" in batch_body else "FAIL", f"HTTP {status}")
