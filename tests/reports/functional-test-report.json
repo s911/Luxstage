@@ -183,7 +183,7 @@
     "case_id": "F-01",
     "name": "General contact form",
     "status": "FAIL",
-    "detail": "HTTP 200, submit=http_415"
+    "detail": "HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
   },
   {
     "case_id": "F-02",
@@ -195,19 +195,19 @@
     "case_id": "F-03",
     "name": "Product RFQ form",
     "status": "FAIL",
-    "detail": "HTTP 200, submit=http_415"
+    "detail": "HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
   },
   {
     "case_id": "F-04",
     "name": "Attachment upload",
     "status": "FAIL",
-    "detail": "file input and submit=http_415"
+    "detail": "file input and submit=mail_failed:There was an error trying to send your message. Please try again later."
   },
   {
     "case_id": "F-05",
     "name": "Catalog lead form",
     "status": "FAIL",
-    "detail": "HTTP 200, submit=http_415"
+    "detail": "HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
   },
   {
     "case_id": "F-06",
@@ -225,7 +225,7 @@
     "case_id": "F-08",
     "name": "Batch inquiry form",
     "status": "FAIL",
-    "detail": "HTTP 200, submit=http_415"
+    "detail": "HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
   },
   {
     "case_id": "F-09",
@@ -441,7 +441,7 @@
     "case_id": "X-01",
     "name": "Home performance smoke",
     "status": "PASS",
-    "detail": "status=200, 0.07s"
+    "detail": "status=200, 0.06s"
   },
   {
     "case_id": "X-02",

@@ -29,14 +29,14 @@ P-08,Related products,PASS,related section
 P-09,Inquiry button with SKU,PASS,RFQ link
 P-10,Catalog download button,PASS,download CTA
 P-11,Batch inquiry,PASS,batch inquiry CTA
-F-01,General contact form,FAIL,"HTTP 200, submit=http_415"
+F-01,General contact form,FAIL,"HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
 F-02,Form validation,PASS,required fields present in rendered form/template
-F-03,Product RFQ form,FAIL,"HTTP 200, submit=http_415"
-F-04,Attachment upload,FAIL,file input and submit=http_415
-F-05,Catalog lead form,FAIL,"HTTP 200, submit=http_415"
+F-03,Product RFQ form,FAIL,"HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
+F-04,Attachment upload,FAIL,file input and submit=mail_failed:There was an error trying to send your message. Please try again later.
+F-05,Catalog lead form,FAIL,"HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
 F-06,Returning catalog downloader,PASS,cookie-based returning lead behavior
 F-07,Spam protection,PASS,CF7 hidden tokens or anti-spam plugin markers
-F-08,Batch inquiry form,FAIL,"HTTP 200, submit=http_415"
+F-08,Batch inquiry form,FAIL,"HTTP 200, submit=mail_failed:There was an error trying to send your message. Please try again later."
 F-09,Inquiry persistence,FAIL,inquiry_delta=0
 F-10,Email send verification,FAIL,"mail_success_delta=0, mailpit_delta=0"
 C-01,Catalog archive exists,PASS,/downloads/catalogs/
@@ -72,7 +72,7 @@ B-05,Inquiry records,PASS,11 records
 B-06,Catalog PDF upload,PASS,13 catalog pdf links
 B-08,Application fixtures,PASS,10 application posts
 B-07,User roles,PASS,"editor_manage_options=False, admin_manage_options=True"
-X-01,Home performance smoke,PASS,"status=200, 0.07s"
+X-01,Home performance smoke,PASS,"status=200, 0.06s"
 X-02,HTTPS/SSL,SKIP,Local Docker runs over HTTP
 X-03,Login protection,PASS,Wordfence/limit-login plugin active or luxstage core login lockout enabled
 X-04,XSS baseline escaping,PASS,Theme output uses escaping functions

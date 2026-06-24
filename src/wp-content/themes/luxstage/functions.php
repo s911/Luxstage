@@ -36,6 +36,7 @@ if (!function_exists('luxstage_primary_menu_fallback')) {
     function luxstage_primary_menu_fallback(array $args = []): void
     {
         $links = [
+            [home_url('/'), __('Home', 'luxstage')],
             [home_url('/products/'), __('Products', 'luxstage')],
             [home_url('/applications/'), __('Applications', 'luxstage')],
             [home_url('/downloads/catalogs/'), __('Downloads', 'luxstage')],
@@ -48,6 +49,24 @@ if (!function_exists('luxstage_primary_menu_fallback')) {
         }
     }
 }
+
+add_filter('wp_nav_menu_items', static function (string $items, stdClass $args): string {
+    if (($args->theme_location ?? '') !== 'primary') {
+        return $items;
+    }
+
+    if (str_contains($items, 'href="' . esc_url(home_url('/')) . '"')) {
+        return $items;
+    }
+
+    $home_item = sprintf(
+        '<li class="menu-item menu-item-home"><a href="%s">%s</a></li>',
+        esc_url(home_url('/')),
+        esc_html__('Home', 'luxstage')
+    );
+
+    return $home_item . $items;
+}, 10, 2);
 
 add_action('wp_enqueue_scripts', static function (): void {
     $theme_uri = get_stylesheet_directory_uri();

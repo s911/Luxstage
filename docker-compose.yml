@@ -11,6 +11,11 @@ services:
       WORDPRESS_DB_USER: luxstage_user
       WORDPRESS_DB_PASSWORD: luxstage
       WORDPRESS_DB_NAME: luxstage_b2b
+      LUXSTAGE_MAIL_MODE: mailpit
+      LUXSTAGE_SMTP_HOST: mailpit
+      LUXSTAGE_SMTP_PORT: 1025
+      LUXSTAGE_MAIL_FROM: no-reply@luxstage.local
+      LUXSTAGE_MAIL_FROM_NAME: Luxstage Local
     volumes:
       - ./src:/var/www/html  # 依然完美挂载你的本地开发代码目录
     depends_on:

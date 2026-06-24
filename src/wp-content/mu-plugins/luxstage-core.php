@@ -707,10 +707,26 @@ add_action('wp_mail_failed', static function (WP_Error $error): void {
 }, 10, 1);
 
 add_action('phpmailer_init', static function (PHPMailer\PHPMailer\PHPMailer $phpmailer): void {
+    $mail_mode = (string) getenv('LUXSTAGE_MAIL_MODE');
+    if ($mail_mode !== 'mailpit') {
+        return;
+    }
+
+    $smtp_host = (string) getenv('LUXSTAGE_SMTP_HOST');
+    $smtp_port_raw = (string) getenv('LUXSTAGE_SMTP_PORT');
+    $from_email = (string) getenv('LUXSTAGE_MAIL_FROM');
+    $from_name = (string) getenv('LUXSTAGE_MAIL_FROM_NAME');
+
+    $smtp_host = $smtp_host !== '' ? $smtp_host : 'mailpit';
+    $smtp_port = (int) ($smtp_port_raw !== '' ? $smtp_port_raw : '1025');
+    $from_email = $from_email !== '' ? $from_email : 'no-reply@luxstage.local';
+    $from_name = $from_name !== '' ? $from_name : 'Luxstage Local';
+
     $phpmailer->isSMTP();
-    $phpmailer->Host = 'mailpit';
-    $phpmailer->Port = 1025;
+    $phpmailer->Host = $smtp_host;
+    $phpmailer->Port = $smtp_port;
     $phpmailer->SMTPAuth = false;
     $phpmailer->SMTPSecure = '';
     $phpmailer->Timeout = 15;
+    $phpmailer->setFrom($from_email, $from_name, false);
 });

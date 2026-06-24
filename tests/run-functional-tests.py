@@ -260,6 +260,14 @@ class Tester:
         self.record("SETUP-04", "Web readiness check", "FAIL", f"HTTP {status}")
         return False
 
+    def ensure_mailpit_ready(self) -> bool:
+        status, body, _ = self.fetch(f"{self.mailpit_url}/api/v1/info", timeout=10)
+        if status < 400 and "Mailpit" in body:
+            self.record("SETUP-11", "Mailpit readiness", "PASS", f"HTTP {status}")
+            return True
+        self.record("SETUP-11", "Mailpit readiness", "FAIL", f"HTTP {status}")
+        return False
+
     def test_http_ok(self, case_id: str, name: str, path: str, must_contain: list[str] | None = None) -> str:
         if self.web_blocked:
             self.record(case_id, name, "SKIP", "Skipped due to web infrastructure failure")
@@ -561,9 +569,10 @@ class Tester:
         if not self.ensure_web_ready():
             self.write_report()
             return 1
+        mailpit_ready = self.ensure_mailpit_ready()
         self.home_tests()
         self.product_tests()
-        self.form_tests()
+        self.form_tests(mailpit_ready=mailpit_ready)
         self.catalog_tests()
         self.about_tests()
         self.contact_tests()
@@ -660,7 +669,7 @@ class Tester:
         self.record("P-10", "Catalog download button", "PASS" if "Download PDF" in detail_body else "FAIL", "download CTA")
         self.record("P-11", "Batch inquiry", "PASS" if "Batch Inquiry" in detail_body else "FAIL", "batch inquiry CTA")
 
-    def form_tests(self) -> None:
+    def form_tests(self, mailpit_ready: bool = True) -> None:
         cf7 = self.plugin_active("contact-form-7")
         if not cf7:
             for case_id, name in [
@@ -676,6 +685,19 @@ class Tester:
                 ("F-10", "Email send verification"),
             ]:
                 self.record(case_id, name, "FAIL", "Contact Form 7 not active")
+            return
+
+        if not mailpit_ready:
+            for case_id, name in [
+                ("F-01", "General contact form"),
+                ("F-03", "Product RFQ form"),
+                ("F-04", "Attachment upload"),
+                ("F-05", "Catalog lead form"),
+                ("F-08", "Batch inquiry form"),
+                ("F-09", "Inquiry persistence"),
+                ("F-10", "Email send verification"),
+            ]:
+                self.record(case_id, name, "FAIL", "Mailpit is not reachable; local mail capture mode requires http://localhost:8025")
             return
 
         inquiry_before = self.count_posts("inquiry_record")
