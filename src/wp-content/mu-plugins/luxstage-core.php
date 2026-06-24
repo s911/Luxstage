@@ -1103,14 +1103,6 @@ add_filter('the_content', static function (string $content): string {
         return $content;
     }
 
-    if (strpos($content, 'lux-contact-fallback') !== false) {
-        return $content;
-    }
-
     $fallback = luxstage_contact_form_markup();
-    if (trim($content) === '') {
-        return $fallback;
-    }
-
-    return $content . "\n\n" . $fallback;
+    return $fallback !== '' ? $fallback : $content;
 }, 40);
