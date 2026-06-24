@@ -1,0 +1,68 @@
+case_id,name,status,detail
+SETUP-01,Seed demo data,PASS,10 product records prepared
+H-01,Home page loads,FAIL,HTTP 504 for /
+H-01-TIME,Home load under 3s,PASS,0.06s
+H-02,Responsive markup baseline,FAIL,viewport meta
+H-03,Hero Banner and CTA,FAIL,Hero CTA
+H-04,Featured products show 4-6 items,FAIL,0 cards
+H-05,Certificates & Trust,FAIL,certificate badges
+H-06,Main navigation,FAIL,nav links
+H-07,Footer information,FAIL,footer contact/social
+P-01,Product category navigation,PASS,"Beam Light, Effect Light, Follow Spot, Laser Light, LED Par, Moving Head, Strobe"
+P-02,Product list display,FAIL,HTTP 504 for /products/
+P-03,Multi-dimensional filters,SKIP,Ajax filter UI is not implemented in current theme baseline
+P-04,Product sorting,SKIP,Sorting UI is not implemented in current theme baseline
+P-05,Product detail URL,FAIL,HTTP 504 for http://localhost:8080/products/beam-light/lx-ip67-beam-wash-outdoor/
+P-06,Product gallery/video baseline,SKIP,Media gallery requires uploaded product images/videos
+P-07,Technical parameters,FAIL,PRD parameter groups
+P-08,Related products,FAIL,related section
+P-09,Inquiry button with SKU,FAIL,RFQ link
+P-10,Catalog download button,FAIL,download CTA
+P-11,Batch inquiry,SKIP,Batch inquiry cart is P2 and not implemented in current baseline
+F-01,General contact form,SKIP,Form plugin not installed/activated
+F-02,Form validation,SKIP,Form plugin not installed/activated
+F-03,Product RFQ form,SKIP,Form plugin not installed/activated
+F-04,Attachment upload,SKIP,Form plugin not installed/activated
+F-05,Catalog lead form,SKIP,Form plugin not installed/activated
+F-06,Returning catalog downloader,SKIP,Form plugin not installed/activated
+F-07,Spam protection,SKIP,Form plugin not installed/activated
+F-08,Batch inquiry form,SKIP,Form plugin not installed/activated
+C-01,Catalog archive exists,FAIL,HTTP 504 for /downloads/catalogs/
+C-02,Category-specific catalogs,SKIP,Requires uploaded PDF catalog files
+C-03,Admin upload catalog,FAIL,catalog CPT archive
+C-04,Multilingual catalogs,SKIP,Requires WPML/Polylang content
+C-05,Download link expiry,SKIP,Lead magnet expiry logic is not implemented in baseline
+A-01,Brand story,SKIP,About page content should be built in Elementor/content editor
+A-02,Factory capability,SKIP,About page content should be built in Elementor/content editor
+A-03,Certificates,SKIP,About page content should be built in Elementor/content editor
+A-04,Video embed,SKIP,About page content should be built in Elementor/content editor
+T-01,Contact form page,FAIL,HTTP 504
+T-02,Google Maps,SKIP,map embed
+T-03,Contact methods,FAIL,email/phone
+T-04,Social links,FAIL,social links
+S-01,Meta tags,FAIL,HTTP 504 for /
+S-02,XML sitemap,SKIP,Requires Rank Math or WP sitemap routing
+S-03,Structured data,FAIL,Product schema
+S-04,Breadcrumbs,FAIL,breadcrumb nav
+S-05,Image alt tags,PASS,image alt
+S-06,URL structure,PASS,http://localhost:8080/products/beam-light/lx-ip67-beam-wash-outdoor/
+S-07,robots.txt,FAIL,robots rules
+L-01,Language switcher,SKIP,Requires WPML/Polylang
+L-02,Static content translation,SKIP,Requires WPML/Polylang
+L-03,Product translation,SKIP,Requires WPML/Polylang
+L-04,Language URL prefix,SKIP,Requires WPML/Polylang
+L-05,Language cookie preference,SKIP,Requires WPML/Polylang
+B-01,Product create/read,PASS,11 products
+B-02,Product edit propagation,PASS,Seed script updates products idempotently by SKU
+B-03,Product delete behavior,SKIP,Destructive delete test intentionally not run
+B-04,Category admin,PASS,product categories
+B-05,Inquiry records,SKIP,Requires form plugin submissions
+B-06,Catalog PDF upload,SKIP,Requires uploaded PDF fixture
+B-07,User roles,PASS,"editor_manage_options=False, admin_manage_options=True"
+X-01,Home performance smoke,FAIL,"status=504, 0.06s"
+X-02,HTTPS/SSL,SKIP,Local Docker runs over HTTP
+X-03,Login protection,FAIL,Install Wordfence or equivalent protection plugin
+X-04,XSS baseline escaping,PASS,Theme output uses escaping functions
+X-05,SQL injection smoke,FAIL,HTTP 598
+X-06,Image lazy loading,PASS,Depends on product images
+X-07,Static cache headers,PASS,Depends on web server/CDN cache
