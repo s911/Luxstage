@@ -349,6 +349,18 @@ add_action('init', static function (): void {
 }, 9);
 
 add_action('init', static function (): void {
+    $rewrite_version = '2026-06-24-1';
+    $option_key = 'luxstage_rewrite_rules_version';
+    $current = (string) get_option($option_key, '');
+    if ($current === $rewrite_version) {
+        return;
+    }
+
+    flush_rewrite_rules(false);
+    update_option($option_key, $rewrite_version, false);
+}, 99);
+
+add_action('init', static function (): void {
     register_taxonomy('product_type', ['stage_lighting'], [
         'public'            => false,
         'show_ui'           => false,

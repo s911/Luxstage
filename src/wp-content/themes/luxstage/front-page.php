@@ -61,7 +61,13 @@ $whatsapp_url = function_exists('luxstage_whatsapp_url')
     <?php if (!is_wp_error($product_categories) && $product_categories) : ?>
       <div class="lux-chip-grid">
         <?php foreach ($product_categories as $category) : ?>
-          <a class="lux-chip" href="<?php echo esc_url(get_term_link($category)); ?>">
+          <?php
+          $category_link = add_query_arg(
+              ['product_category' => $category->slug],
+              home_url('/products/')
+          );
+          ?>
+          <a class="lux-chip" href="<?php echo esc_url($category_link); ?>">
             <?php echo esc_html($category->name); ?>
           </a>
         <?php endforeach; ?>

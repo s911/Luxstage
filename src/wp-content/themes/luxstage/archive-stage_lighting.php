@@ -98,7 +98,13 @@ get_header();
   <?php if (!is_wp_error($product_categories) && $product_categories) : ?>
     <nav aria-label="<?php esc_attr_e('Product categories', 'luxstage'); ?>">
       <?php foreach ($product_categories as $category) : ?>
-        <a href="<?php echo esc_url(get_term_link($category)); ?>"><?php echo esc_html($category->name); ?></a>
+        <?php
+        $category_link = add_query_arg(
+            ['product_category' => $category->slug],
+            home_url('/products/')
+        );
+        ?>
+        <a href="<?php echo esc_url($category_link); ?>"><?php echo esc_html($category->name); ?></a>
       <?php endforeach; ?>
     </nav>
   <?php endif; ?>
