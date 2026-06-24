@@ -1104,3 +1104,140 @@ add_filter('the_content', static function (string $content): string {
     $fallback = luxstage_contact_form_markup();
     return $fallback !== '' ? $fallback : $content;
 }, 40);
+
+if (!function_exists('luxstage_home_rfq_flash_key')) {
+    function luxstage_home_rfq_flash_key(string $token): string
+    {
+        return 'luxstage_home_rfq_flash_' . $token;
+    }
+}
+
+if (!function_exists('luxstage_home_rfq_store_flash')) {
+    function luxstage_home_rfq_store_flash(array $payload): string
+    {
+        $token = wp_generate_password(16, false, false);
+        set_transient(luxstage_home_rfq_flash_key($token), $payload, 10 * MINUTE_IN_SECONDS);
+        return $token;
+    }
+}
+
+if (!function_exists('luxstage_home_rfq_read_flash')) {
+    function luxstage_home_rfq_read_flash(): array
+    {
+        $token = sanitize_key((string) ($_GET['luxstage_home_rfq_token'] ?? ''));
+        if ($token === '') {
+            return [];
+        }
+
+        $flash = get_transient(luxstage_home_rfq_flash_key($token));
+        if (!is_array($flash)) {
+            return [];
+        }
+
+        delete_transient(luxstage_home_rfq_flash_key($token));
+        return $flash;
+    }
+}
+
+add_action('template_redirect', static function (): void {
+    if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')) !== 'POST') {
+        return;
+    }
+
+    if (empty($_POST['luxstage_home_rfq_submit']) || !is_front_page()) {
+        return;
+    }
+
+    $referrer = wp_get_referer();
+    $redirect_url = is_string($referrer) && $referrer !== '' ? $referrer : home_url('/');
+    $redirect_url = remove_query_arg('luxstage_home_rfq_token', $redirect_url);
+
+    $nonce = (string) ($_POST['luxstage_home_rfq_nonce'] ?? '');
+    if (!wp_verify_nonce($nonce, 'luxstage_home_rfq_submit')) {
+        $token = luxstage_home_rfq_store_flash([
+            'status' => 'error',
+            'message' => __('Security check failed. Please submit again.', 'luxstage'),
+            'old' => [],
+        ]);
+        wp_safe_redirect(add_query_arg('luxstage_home_rfq_token', $token, $redirect_url));
+        exit;
+    }
+
+    $trap = trim((string) ($_POST['website'] ?? ''));
+    if ($trap !== '') {
+        $token = luxstage_home_rfq_store_flash([
+            'status' => 'error',
+            'message' => __('Submission rejected.', 'luxstage'),
+            'old' => [],
+        ]);
+        wp_safe_redirect(add_query_arg('luxstage_home_rfq_token', $token, $redirect_url));
+        exit;
+    }
+
+    $email = sanitize_email((string) wp_unslash($_POST['lux_rfq_email'] ?? ''));
+    $company = sanitize_text_field((string) wp_unslash($_POST['lux_rfq_company'] ?? ''));
+    $message = sanitize_textarea_field((string) wp_unslash($_POST['lux_rfq_message'] ?? ''));
+    $old = [
+        'email' => $email,
+        'company' => $company,
+        'message' => $message,
+    ];
+
+    if (!is_email($email) || $message === '') {
+        $token = luxstage_home_rfq_store_flash([
+            'status' => 'error',
+            'message' => __('Please enter a valid Email and Your Message.', 'luxstage'),
+            'old' => $old,
+        ]);
+        wp_safe_redirect(add_query_arg('luxstage_home_rfq_token', $token, $redirect_url));
+        exit;
+    }
+
+    $content_lines = [
+        'Source: Home RFQ inline form',
+        'Email: ' . $email,
+        'Company: ' . $company,
+        'Message:',
+        $message,
+    ];
+
+    $inquiry_id = wp_insert_post([
+        'post_type' => 'inquiry_record',
+        'post_status' => 'publish',
+        'post_title' => sprintf('Homepage RFQ - %s - %s', $email, current_time('mysql')),
+        'post_content' => implode("\n", $content_lines),
+    ], true);
+
+    $to = luxstage_contact_target_email();
+    $subject = sprintf('[Luxstage] Homepage RFQ - %s', $email);
+    $mail_body = implode("\n", [
+        'A new inquiry is submitted from the Homepage RFQ block.',
+        '',
+        'Email: ' . $email,
+        'Company: ' . $company,
+        '',
+        'Message:',
+        $message,
+    ]);
+    $headers = [
+        'Content-Type: text/plain; charset=UTF-8',
+        'Reply-To: <' . $email . '>',
+    ];
+
+    $mail_ok = wp_mail($to, $subject, $mail_body, $headers);
+    if (is_int($inquiry_id) && $inquiry_id > 0) {
+        update_post_meta($inquiry_id, 'mail_status', $mail_ok ? 'sent' : 'failed');
+        update_post_meta($inquiry_id, 'mail_to', $to);
+    }
+
+    $token = luxstage_home_rfq_store_flash([
+        'status' => $mail_ok ? 'success' : 'warning',
+        'message' => $mail_ok
+            ? __('Inquiry sent successfully. We will contact you soon.', 'luxstage')
+            : __('Inquiry saved, but email delivery failed. Please check mail configuration.', 'luxstage'),
+        'old' => $mail_ok ? [] : $old,
+    ]);
+
+    wp_safe_redirect(add_query_arg('luxstage_home_rfq_token', $token, $redirect_url));
+    exit;
+}, 14);

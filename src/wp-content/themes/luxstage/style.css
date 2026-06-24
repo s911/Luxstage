@@ -441,6 +441,121 @@ img {
   padding: 34px;
 }
 
+.lux-rfq__copy h2 {
+  margin-bottom: 12px;
+}
+
+.lux-rfq__form-wrap {
+  border: 1px solid var(--fw-color-line);
+  border-radius: 18px;
+  background: #fff;
+  padding: 16px;
+}
+
+.lux-rfq__notice {
+  margin-bottom: 10px;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.lux-rfq__notice.is-success {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.lux-rfq__notice.is-warning {
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.lux-rfq__notice.is-error {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.lux-rfq__form {
+  display: grid;
+  gap: 8px;
+}
+
+.lux-rfq__form label {
+  color: var(--fw-color-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.lux-rfq__optional {
+  border: 1px dashed var(--fw-color-line);
+  border-radius: 10px;
+  padding: 8px 10px 10px;
+}
+
+.lux-rfq__optional summary {
+  cursor: pointer;
+  color: var(--fw-color-muted);
+  font-size: 13px;
+  font-weight: 700;
+  list-style: none;
+}
+
+.lux-rfq__optional summary::-webkit-details-marker {
+  display: none;
+}
+
+.lux-rfq__optional summary::before {
+  content: "+ ";
+  color: var(--fw-color-accent);
+  font-weight: 800;
+}
+
+.lux-rfq__optional[open] summary::before {
+  content: "- ";
+}
+
+.lux-rfq__optional label {
+  display: block;
+  margin-top: 8px;
+}
+
+.lux-rfq__input,
+.lux-rfq__textarea {
+  width: 100%;
+  border: 1px solid var(--fw-color-line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--fw-color-text);
+  font-size: 15px;
+  line-height: 1.4;
+  padding: 10px 12px;
+}
+
+.lux-rfq__textarea {
+  min-height: 112px;
+  resize: vertical;
+}
+
+.lux-rfq__input:focus,
+.lux-rfq__textarea:focus {
+  border-color: var(--fw-color-accent);
+  box-shadow: 0 0 0 2px rgba(31, 111, 235, 0.15);
+  outline: none;
+}
+
+.lux-rfq__submit {
+  justify-self: start;
+  margin-top: 2px;
+}
+
+.lux-rfq__honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .lux-breadcrumbs {
   display: flex;
   flex-wrap: wrap;
