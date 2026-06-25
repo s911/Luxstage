@@ -740,7 +740,16 @@ add_action('add_meta_boxes', static function (): void {
                     <?php foreach ($ids as $id) : ?>
                         <?php $thumb = (string) wp_get_attachment_image_url($id, 'thumbnail'); ?>
                         <?php if ($thumb === '') { continue; } ?>
-                        <img src="<?php echo esc_url($thumb); ?>" alt="" style="width:100%;height:78px;object-fit:cover;border:1px solid #dcdcde;border-radius:6px;">
+                        <div data-id="<?php echo esc_attr((string) $id); ?>" style="position:relative;">
+                            <img src="<?php echo esc_url($thumb); ?>" alt="" style="width:100%;height:78px;object-fit:cover;border:1px solid #dcdcde;border-radius:6px;">
+                            <button
+                                type="button"
+                                class="luxstage-gallery-remove"
+                                data-id="<?php echo esc_attr((string) $id); ?>"
+                                aria-label="<?php esc_attr_e('Remove image', 'luxstage'); ?>"
+                                style="position:absolute;top:4px;right:4px;width:20px;height:20px;border:none;border-radius:999px;background:#dc2626;color:#fff;line-height:20px;font-weight:700;cursor:pointer;"
+                            >×</button>
+                        </div>
                     <?php endforeach; ?>
                 </div>
                 <p class="description"><?php esc_html_e('Choose multiple images for product detail gallery thumbnails.', 'luxstage'); ?></p>
@@ -787,7 +796,11 @@ add_action('admin_enqueue_scripts', static function ($hook): void {
         if (!thumb) {
           return;
         }
-        preview.append($('<img>', {
+        var item = $('<div>', {
+          'data-id': id,
+          css: { position: 'relative' }
+        });
+        item.append($('<img>', {
           src: thumb,
           alt: '',
           css: {
@@ -798,6 +811,27 @@ add_action('admin_enqueue_scripts', static function ($hook): void {
             borderRadius: '6px'
           }
         }));
+        item.append($('<button>', {
+          type: 'button',
+          class: 'luxstage-gallery-remove',
+          'data-id': id,
+          text: '×',
+          css: {
+            position: 'absolute',
+            top: '4px',
+            right: '4px',
+            width: '20px',
+            height: '20px',
+            border: 'none',
+            borderRadius: '999px',
+            background: '#dc2626',
+            color: '#fff',
+            lineHeight: '20px',
+            fontWeight: '700',
+            cursor: 'pointer'
+          }
+        }));
+        preview.append(item);
       });
     }
 
@@ -826,8 +860,18 @@ add_action('admin_enqueue_scripts', static function ($hook): void {
         frame.on('select', function(){
           var selection = frame.state().get('selection').toArray();
           var selectedIds = selection.map(function(item){ return item.get('id'); });
-          input.val(selectedIds.join(','));
-          render(selectedIds);
+          var existingIds = (input.val() || '')
+            .split(',')
+            .map(function(v){ return parseInt(v, 10); })
+            .filter(Boolean);
+          var mergedIds = existingIds.slice();
+          selectedIds.forEach(function(id){
+            if (mergedIds.indexOf(id) === -1) {
+              mergedIds.push(id);
+            }
+          });
+          input.val(mergedIds.join(','));
+          render(mergedIds);
         });
       }
 
@@ -838,6 +882,21 @@ add_action('admin_enqueue_scripts', static function ($hook): void {
       e.preventDefault();
       input.val('');
       render([]);
+    });
+
+    preview.on('click', '.luxstage-gallery-remove', function(e){
+      e.preventDefault();
+      var removeId = parseInt($(this).data('id'), 10);
+      if (!removeId) {
+        return;
+      }
+      var current = (input.val() || '')
+        .split(',')
+        .map(function(v){ return parseInt(v, 10); })
+        .filter(Boolean)
+        .filter(function(id){ return id !== removeId; });
+      input.val(current.join(','));
+      render(current);
     });
   });
 })(jQuery);
