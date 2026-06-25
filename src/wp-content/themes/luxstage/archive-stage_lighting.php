@@ -105,28 +105,39 @@ get_header();
   </section>
 
   <?php if ($products_query->have_posts()) : ?>
-    <section class="fw-b2b-grid">
+    <section class="fw-b2b-grid lux-product-grid lux-archive-products">
       <?php while ($products_query->have_posts()) : $products_query->the_post(); ?>
         <?php
+        $product_id = get_the_ID();
         $category_slugs = wp_get_post_terms(get_the_ID(), 'product_category', ['fields' => 'slugs']);
         if (is_wp_error($category_slugs)) {
             $category_slugs = [];
         }
+        $wattage = (string) luxstage_field('wattage', $product_id);
+        $light_source = (string) luxstage_field('light_source_type', $product_id);
+        $channels = (string) luxstage_field('channels', $product_id);
+        $specs = array_values(array_filter([$wattage, $light_source, $channels], static fn ($value) => $value !== ''));
         ?>
         <article
-          <?php post_class('fw-b2b-card'); ?>
+          <?php post_class('lux-card lux-archive-product-card'); ?>
           data-product-title="<?php echo esc_attr(get_the_title()); ?>"
           data-product-category-slugs="<?php echo esc_attr(implode(',', $category_slugs)); ?>"
         >
-          <a href="<?php the_permalink(); ?>">
+          <a class="lux-archive-product-card__media" href="<?php the_permalink(); ?>" aria-label="<?php echo esc_attr(get_the_title()); ?>">
             <?php if (has_post_thumbnail()) : ?>
               <?php the_post_thumbnail('medium'); ?>
+            <?php else : ?>
+              <span class="lux-card__placeholder"><?php esc_html_e('Luxstage', 'luxstage'); ?></span>
             <?php endif; ?>
-            <h2><?php the_title(); ?></h2>
           </a>
-          <p><?php echo esc_html((string) luxstage_field('wattage')); ?></p>
-          <p><?php echo esc_html((string) luxstage_field('light_source_type')); ?></p>
-          <p><?php echo esc_html((string) luxstage_field('channels')); ?></p>
+          <h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
+          <?php if ($specs) : ?>
+            <div class="lux-archive-product-card__specs">
+              <?php foreach ($specs as $spec) : ?>
+                <p><?php echo esc_html($spec); ?></p>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
         </article>
       <?php endwhile; ?>
     </section>

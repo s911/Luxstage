@@ -1,0 +1,19 @@
+<svg width="960" height="720" viewBox="0 0 960 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="960" y2="720" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="220" y1="168" x2="744" y2="536" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60A5FA" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#A5F3FC" stop-opacity="0.05"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="720" rx="40" fill="url(#bg)"/>
+  <circle cx="174" cy="146" r="56" fill="#93C5FD" fill-opacity="0.25"/>
+  <circle cx="174" cy="146" r="28" fill="#BFDBFE" fill-opacity="0.45"/>
+  <path d="M132 182L798 564" stroke="url(#beam)" stroke-width="36" stroke-linecap="round"/>
+  <rect x="112" y="520" width="736" height="84" rx="14" fill="#0B1224" fill-opacity="0.45"/>
+  <text x="144" y="575" fill="#E0ECFF" font-size="42" font-family="Arial, sans-serif" font-weight="700">Luxstage Product Image</text>
+  <text x="144" y="617" fill="#93C5FD" font-size="24" font-family="Arial, sans-serif">No media uploaded yet</text>
+</svg>

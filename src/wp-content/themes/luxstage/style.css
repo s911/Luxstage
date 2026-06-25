@@ -348,6 +348,28 @@ img {
   background: var(--fw-color-soft);
 }
 
+.lux-archive-products .lux-archive-product-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.lux-archive-product-card__media {
+  display: block;
+}
+
+.lux-archive-product-card__specs {
+  display: grid;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.lux-archive-product-card__specs p {
+  margin: 0;
+  color: var(--fw-color-muted);
+  font-size: 15px;
+}
+
 .lux-card h2,
 .lux-card h3 {
   margin: 16px 0 10px;
@@ -360,9 +382,13 @@ img {
   min-height: 180px;
   place-items: center;
   border-radius: 18px;
-  background: linear-gradient(135deg, #111827, #1f6feb);
-  color: #fff;
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.1), rgba(29, 78, 216, 0.12)),
+    url("./assets/images/product-placeholder.svg") center / cover no-repeat;
+  color: #e8f0ff;
   font-weight: 900;
+  letter-spacing: 0.03em;
+  text-shadow: 0 6px 18px rgba(15, 23, 42, 0.45);
 }
 
 .lux-spec-strip {
