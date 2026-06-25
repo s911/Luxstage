@@ -837,17 +837,20 @@ add_action('admin_enqueue_scripts', static function ($hook): void {
 
     $('#luxstage-gallery-open').on('click', function(e){
       e.preventDefault();
-      var ids = (input.val() || '').split(',').map(function(v){ return parseInt(v, 10); }).filter(Boolean);
 
       if (!frame) {
         frame = wp.media({
           title: 'Select Gallery Images',
           button: { text: 'Use selected images' },
           library: { type: 'image' },
-          multiple: true
+          multiple: 'add'
         });
 
         frame.on('open', function(){
+          var ids = (input.val() || '')
+            .split(',')
+            .map(function(v){ return parseInt(v, 10); })
+            .filter(Boolean);
           var selection = frame.state().get('selection');
           selection.reset();
           ids.forEach(function(id){
