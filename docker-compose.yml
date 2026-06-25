@@ -17,7 +17,7 @@ services:
       LUXSTAGE_MAIL_FROM: no-reply@luxstage.local
       LUXSTAGE_MAIL_FROM_NAME: Luxstage Local
     volumes:
-      - ./src:/var/www/html  # 依然完美挂载你的本地开发代码目录
+      - ./src:/var/www/html:Z  # 在 SELinux 环境允许容器写入挂载目录
       - ./deploy/php/custom.ini:/usr/local/etc/php/conf.d/zz-luxstage-custom.ini:ro
     depends_on:
       db:
