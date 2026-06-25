@@ -785,8 +785,6 @@ add_action('admin_enqueue_scripts', static function ($hook): void {
 
     var input = $('#' + box.data('target-input-id'));
     var preview = $('#luxstage-gallery-preview');
-    var frame;
-
     function render(ids){
       preview.empty();
       ids.forEach(function(id){
@@ -837,48 +835,18 @@ add_action('admin_enqueue_scripts', static function ($hook): void {
 
     $('#luxstage-gallery-open').on('click', function(e){
       e.preventDefault();
+      var ids = (input.val() || '')
+        .split(',')
+        .map(function(v){ return parseInt(v, 10); })
+        .filter(Boolean);
+      var shortcode = ids.length ? '[gallery ids="' + ids.join(',') + '"]' : '[gallery]';
+      var frame = wp.media.gallery.edit(shortcode);
 
-      if (!frame) {
-        frame = wp.media({
-          title: 'Select Gallery Images',
-          button: { text: 'Use selected images' },
-          library: { type: 'image' },
-          multiple: 'add'
-        });
-
-        frame.on('open', function(){
-          var ids = (input.val() || '')
-            .split(',')
-            .map(function(v){ return parseInt(v, 10); })
-            .filter(Boolean);
-          var selection = frame.state().get('selection');
-          selection.reset();
-          ids.forEach(function(id){
-            var attachment = wp.media.attachment(id);
-            attachment.fetch();
-            selection.add(attachment);
-          });
-        });
-
-        frame.on('select', function(){
-          var selection = frame.state().get('selection').toArray();
-          var selectedIds = selection.map(function(item){ return item.get('id'); });
-          var existingIds = (input.val() || '')
-            .split(',')
-            .map(function(v){ return parseInt(v, 10); })
-            .filter(Boolean);
-          var mergedIds = existingIds.slice();
-          selectedIds.forEach(function(id){
-            if (mergedIds.indexOf(id) === -1) {
-              mergedIds.push(id);
-            }
-          });
-          input.val(mergedIds.join(','));
-          render(mergedIds);
-        });
-      }
-
-      frame.open();
+      frame.on('update', function(selection){
+        var selectedIds = selection.pluck('id').map(function(id){ return parseInt(id, 10); }).filter(Boolean);
+        input.val(selectedIds.join(','));
+        render(selectedIds);
+      });
     });
 
     $('#luxstage-gallery-clear').on('click', function(e){
