@@ -472,6 +472,48 @@ img {
   margin: 32px 0;
 }
 
+.lux-filter-panel {
+  margin: 14px 0 26px;
+}
+
+.lux-filter-panel form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+.lux-filter-panel label {
+  color: var(--fw-color-primary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.lux-filter-panel input[type="text"],
+.lux-filter-panel select {
+  min-height: 36px;
+  border: 1px solid var(--fw-color-line);
+  border-radius: 8px;
+  padding: 0 10px;
+  background: #fff;
+}
+
+.lux-filter-panel button[type="submit"] {
+  min-height: 36px;
+  border: 1px solid var(--fw-color-line);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: var(--fw-color-soft);
+  color: var(--fw-color-primary);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lux-filter-panel a {
+  margin-left: 2px;
+  font-weight: 600;
+}
+
 .lux-whatsapp-float {
   position: fixed;
   right: 20px;
