@@ -20,6 +20,52 @@ if (!function_exists('luxstage_field')) {
     }
 }
 
+if (!function_exists('luxstage_ini_bytes')) {
+    function luxstage_ini_bytes(string $value): int
+    {
+        $value = trim($value);
+        if ($value === '') {
+            return 0;
+        }
+
+        $last = strtolower(substr($value, -1));
+        $num = (float) $value;
+        return match ($last) {
+            'g' => (int) ($num * 1024 * 1024 * 1024),
+            'm' => (int) ($num * 1024 * 1024),
+            'k' => (int) ($num * 1024),
+            default => (int) $num,
+        };
+    }
+}
+
+if (!function_exists('luxstage_ensure_image_memory_limit')) {
+    function luxstage_ensure_image_memory_limit(): void
+    {
+        $target = '256M';
+        $current = (string) ini_get('memory_limit');
+        $current_bytes = luxstage_ini_bytes($current);
+        $target_bytes = luxstage_ini_bytes($target);
+
+        // -1 means unlimited. Otherwise raise limit for media processing tasks.
+        if ($current === '-1' || $current_bytes >= $target_bytes) {
+            return;
+        }
+
+        @ini_set('memory_limit', $target);
+    }
+}
+
+add_action('init', 'luxstage_ensure_image_memory_limit', 1);
+add_action('admin_init', 'luxstage_ensure_image_memory_limit', 1);
+
+add_filter('wp_image_editors', static function (array $editors): array {
+    // Prefer GD first for containerized environments where Imagick may be unstable.
+    $preferred = ['WP_Image_Editor_GD', 'WP_Image_Editor_Imagick'];
+    $merged = array_values(array_unique(array_merge($preferred, $editors)));
+    return $merged;
+}, 20);
+
 if (!function_exists('luxstage_normalize_phone_number')) {
     function luxstage_normalize_phone_number(string $raw): string
     {
