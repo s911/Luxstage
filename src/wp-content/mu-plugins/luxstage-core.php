@@ -766,7 +766,83 @@ add_action('admin_enqueue_scripts', static function ($hook): void {
     }
 
     wp_enqueue_media();
-    wp_add_inline_script('jquery-core', "(function($){$(function(){var box=$('#luxstage-gallery-metabox');if(!box.length){return;}var input=$('#'+box.data('target-input-id'));var preview=$('#luxstage-gallery-preview');var frame;function render(ids){preview.empty();ids.forEach(function(id){var a=wp.media.attachment(id);a.fetch();var thumb=(a.get('sizes')&&a.get('sizes').thumbnail)?a.get('sizes').thumbnail.url:a.get('url');if(!thumb){return;}preview.append($('<img>',{src:thumb,alt:'',css:{width:'100%',height:'78px',objectFit:'cover',border:'1px solid #dcdcde',borderRadius:'6px'}}));});}$('#luxstage-gallery-open').on('click',function(e){e.preventDefault();var ids=(input.val()||'').split(',').map(function(v){return parseInt(v,10)}).filter(Boolean);if(!frame){frame=wp.media({title:'Select Gallery Images',button:{text:'Use selected images'},library:{type:'image'},multiple:true});frame.on('open',function(){var selection=frame.state().get('selection');selection.reset();ids.forEach(function(id){var attachment=wp.media.attachment(id);attachment.fetch();selection.add(attachment);});});frame.on('select',function(){var selection=frame.state().get('selection').toArray();var selectedIds=selection.map(function(item){return item.get('id');});input.val(selectedIds.join(','));render(selectedIds);});}frame.open();});$('#luxstage-gallery-clear').on('click',function(e){e.preventDefault();input.val('');render([]);});});})(jQuery);");
+    $gallery_script = <<<'JS'
+(function($){
+  $(function(){
+    var box = $('#luxstage-gallery-metabox');
+    if (!box.length) {
+      return;
+    }
+
+    var input = $('#' + box.data('target-input-id'));
+    var preview = $('#luxstage-gallery-preview');
+    var frame;
+
+    function render(ids){
+      preview.empty();
+      ids.forEach(function(id){
+        var a = wp.media.attachment(id);
+        a.fetch();
+        var thumb = (a.get('sizes') && a.get('sizes').thumbnail) ? a.get('sizes').thumbnail.url : a.get('url');
+        if (!thumb) {
+          return;
+        }
+        preview.append($('<img>', {
+          src: thumb,
+          alt: '',
+          css: {
+            width: '100%',
+            height: '78px',
+            objectFit: 'cover',
+            border: '1px solid #dcdcde',
+            borderRadius: '6px'
+          }
+        }));
+      });
+    }
+
+    $('#luxstage-gallery-open').on('click', function(e){
+      e.preventDefault();
+      var ids = (input.val() || '').split(',').map(function(v){ return parseInt(v, 10); }).filter(Boolean);
+
+      if (!frame) {
+        frame = wp.media({
+          title: 'Select Gallery Images',
+          button: { text: 'Use selected images' },
+          library: { type: 'image' },
+          multiple: true
+        });
+
+        frame.on('open', function(){
+          var selection = frame.state().get('selection');
+          selection.reset();
+          ids.forEach(function(id){
+            var attachment = wp.media.attachment(id);
+            attachment.fetch();
+            selection.add(attachment);
+          });
+        });
+
+        frame.on('select', function(){
+          var selection = frame.state().get('selection').toArray();
+          var selectedIds = selection.map(function(item){ return item.get('id'); });
+          input.val(selectedIds.join(','));
+          render(selectedIds);
+        });
+      }
+
+      frame.open();
+    });
+
+    $('#luxstage-gallery-clear').on('click', function(e){
+      e.preventDefault();
+      input.val('');
+      render([]);
+    });
+  });
+})(jQuery);
+JS;
+    wp_add_inline_script('jquery-core', $gallery_script);
 });
 
 add_action('save_post_stage_lighting', static function (int $post_id): void {
