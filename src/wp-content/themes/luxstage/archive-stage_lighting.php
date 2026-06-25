@@ -6,11 +6,6 @@
 get_header();
 ?>
 <main class="fw-b2b-container">
-  <header>
-    <h1><?php post_type_archive_title(); ?></h1>
-    <p><?php esc_html_e('Browse all stage lighting products.', 'luxstage'); ?></p>
-  </header>
-
   <?php
   $product_categories = get_terms([
       'taxonomy' => 'product_category',
@@ -32,6 +27,26 @@ get_header();
   $current_certification = sanitize_title((string) ($_GET['certification'] ?? ''));
   $current_keyword = sanitize_text_field((string) ($_GET['keyword'] ?? ''));
   $current_sort = sanitize_key((string) ($_GET['sort'] ?? 'date_desc'));
+
+  $archive_title = post_type_archive_title('', false);
+  if ($current_category !== '') {
+      $term = get_term_by('slug', $current_category, 'product_category');
+      if ($term instanceof WP_Term) {
+          $archive_title = $term->name;
+      }
+  } elseif ($current_light_source !== '') {
+      $term = get_term_by('slug', $current_light_source, 'light_source');
+      if ($term instanceof WP_Term) {
+          $archive_title = $term->name;
+      }
+  } elseif ($current_certification !== '') {
+      $term = get_term_by('slug', $current_certification, 'certification');
+      if ($term instanceof WP_Term) {
+          $archive_title = $term->name;
+      }
+  } elseif ($current_keyword !== '') {
+      $archive_title = sprintf(__('Search: %s', 'luxstage'), $current_keyword);
+  }
 
   $tax_query = [];
   if ($current_category !== '') {
@@ -95,6 +110,10 @@ get_header();
 
   $products_query = new WP_Query($query_args);
   ?>
+  <header>
+    <h1><?php echo esc_html($archive_title); ?></h1>
+  </header>
+
   <section class="lux-filter-panel">
     <form method="get" action="<?php echo esc_url(get_post_type_archive_link('stage_lighting')); ?>">
       <label for="filter-product-category"><?php esc_html_e('Product Category', 'luxstage'); ?></label>
