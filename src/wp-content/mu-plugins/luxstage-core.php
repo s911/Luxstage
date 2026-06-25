@@ -60,10 +60,12 @@ add_action('init', 'luxstage_ensure_image_memory_limit', 1);
 add_action('admin_init', 'luxstage_ensure_image_memory_limit', 1);
 
 add_filter('wp_image_editors', static function (array $editors): array {
-    // Prefer GD first for containerized environments where Imagick may be unstable.
-    $preferred = ['WP_Image_Editor_GD', 'WP_Image_Editor_Imagick'];
-    $merged = array_values(array_unique(array_merge($preferred, $editors)));
-    return $merged;
+    // Force GD only. In some containerized environments Imagick fails on PNG processing
+    // and causes "The server cannot process the image" during media upload.
+    if (class_exists('WP_Image_Editor_GD')) {
+        return ['WP_Image_Editor_GD'];
+    }
+    return $editors;
 }, 20);
 
 // Temporary hardening for environments where image editors fail during upload.
@@ -157,7 +159,7 @@ add_filter('upload_mimes', static function (array $mimes): array {
     return $mimes;
 });
 
-add_filter('wp_check_filetype_and_ext', static function (array $file_data, string $file, string $filename, array $mimes): array {
+add_filter('wp_check_filetype_and_ext', static function (array $file_data, string $file, string $filename, ?array $mimes = null): array {
     $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
     if ($extension === 'webp') {
