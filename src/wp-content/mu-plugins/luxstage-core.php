@@ -718,7 +718,10 @@ add_action('add_meta_boxes', static function (): void {
     add_meta_box(
         'luxstage_product_gallery_images',
         __('Product Gallery Images', 'luxstage'),
-        static function (WP_Post $post): void {
+        static function ($post): void {
+            if (!($post instanceof WP_Post)) {
+                return;
+            }
             wp_nonce_field('luxstage_product_gallery_images', 'luxstage_product_gallery_images_nonce');
             $raw_ids = (string) get_post_meta($post->ID, 'luxstage_gallery_image_ids', true);
             $ids = array_filter(array_map('intval', explode(',', $raw_ids)));
@@ -750,8 +753,11 @@ add_action('add_meta_boxes', static function (): void {
     );
 });
 
-add_action('admin_enqueue_scripts', static function (string $hook): void {
+add_action('admin_enqueue_scripts', static function ($hook): void {
     if (!in_array($hook, ['post.php', 'post-new.php'], true)) {
+        return;
+    }
+    if (!function_exists('get_current_screen')) {
         return;
     }
     $screen = get_current_screen();
@@ -760,7 +766,7 @@ add_action('admin_enqueue_scripts', static function (string $hook): void {
     }
 
     wp_enqueue_media();
-    wp_add_inline_script('media-editor', "(function($){$(function(){var box=$('#luxstage-gallery-metabox');if(!box.length){return;}var input=$('#'+box.data('target-input-id'));var preview=$('#luxstage-gallery-preview');var frame;function render(ids){preview.empty();ids.forEach(function(id){var a=wp.media.attachment(id);a.fetch();var thumb=(a.get('sizes')&&a.get('sizes').thumbnail)?a.get('sizes').thumbnail.url:a.get('url');if(!thumb){return;}preview.append($('<img>',{src:thumb,alt:'',css:{width:'100%',height:'78px',objectFit:'cover',border:'1px solid #dcdcde',borderRadius:'6px'}}));});}$('#luxstage-gallery-open').on('click',function(e){e.preventDefault();var ids=(input.val()||'').split(',').map(function(v){return parseInt(v,10)}).filter(Boolean);if(!frame){frame=wp.media({title:'Select Gallery Images',button:{text:'Use selected images'},library:{type:'image'},multiple:true});frame.on('open',function(){var selection=frame.state().get('selection');selection.reset();ids.forEach(function(id){var attachment=wp.media.attachment(id);attachment.fetch();selection.add(attachment);});});frame.on('select',function(){var selection=frame.state().get('selection').toArray();var selectedIds=selection.map(function(item){return item.get('id');});input.val(selectedIds.join(','));render(selectedIds);});}frame.open();});$('#luxstage-gallery-clear').on('click',function(e){e.preventDefault();input.val('');render([]);});});})(jQuery);");
+    wp_add_inline_script('jquery-core', "(function($){$(function(){var box=$('#luxstage-gallery-metabox');if(!box.length){return;}var input=$('#'+box.data('target-input-id'));var preview=$('#luxstage-gallery-preview');var frame;function render(ids){preview.empty();ids.forEach(function(id){var a=wp.media.attachment(id);a.fetch();var thumb=(a.get('sizes')&&a.get('sizes').thumbnail)?a.get('sizes').thumbnail.url:a.get('url');if(!thumb){return;}preview.append($('<img>',{src:thumb,alt:'',css:{width:'100%',height:'78px',objectFit:'cover',border:'1px solid #dcdcde',borderRadius:'6px'}}));});}$('#luxstage-gallery-open').on('click',function(e){e.preventDefault();var ids=(input.val()||'').split(',').map(function(v){return parseInt(v,10)}).filter(Boolean);if(!frame){frame=wp.media({title:'Select Gallery Images',button:{text:'Use selected images'},library:{type:'image'},multiple:true});frame.on('open',function(){var selection=frame.state().get('selection');selection.reset();ids.forEach(function(id){var attachment=wp.media.attachment(id);attachment.fetch();selection.add(attachment);});});frame.on('select',function(){var selection=frame.state().get('selection').toArray();var selectedIds=selection.map(function(item){return item.get('id');});input.val(selectedIds.join(','));render(selectedIds);});}frame.open();});$('#luxstage-gallery-clear').on('click',function(e){e.preventDefault();input.val('');render([]);});});})(jQuery);");
 });
 
 add_action('save_post_stage_lighting', static function (int $post_id): void {
