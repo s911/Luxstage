@@ -12,35 +12,13 @@ get_header();
       'hide_empty' => false,
   ]);
 
-  $light_sources = get_terms([
-      'taxonomy' => 'light_source',
-      'hide_empty' => false,
-  ]);
-
-  $certifications = get_terms([
-      'taxonomy' => 'certification',
-      'hide_empty' => false,
-  ]);
-
   $current_category = sanitize_title((string) ($_GET['product_category'] ?? ''));
-  $current_light_source = sanitize_title((string) ($_GET['light_source'] ?? ''));
-  $current_certification = sanitize_title((string) ($_GET['certification'] ?? ''));
   $current_keyword = sanitize_text_field((string) ($_GET['keyword'] ?? ''));
   $current_sort = sanitize_key((string) ($_GET['sort'] ?? 'date_desc'));
 
   $archive_title = post_type_archive_title('', false);
   if ($current_category !== '') {
       $term = get_term_by('slug', $current_category, 'product_category');
-      if ($term instanceof WP_Term) {
-          $archive_title = $term->name;
-      }
-  } elseif ($current_light_source !== '') {
-      $term = get_term_by('slug', $current_light_source, 'light_source');
-      if ($term instanceof WP_Term) {
-          $archive_title = $term->name;
-      }
-  } elseif ($current_certification !== '') {
-      $term = get_term_by('slug', $current_certification, 'certification');
       if ($term instanceof WP_Term) {
           $archive_title = $term->name;
       }
@@ -55,24 +33,6 @@ get_header();
           'field' => 'slug',
           'terms' => [$current_category],
       ];
-  }
-  if ($current_light_source !== '') {
-      $tax_query[] = [
-          'taxonomy' => 'light_source',
-          'field' => 'slug',
-          'terms' => [$current_light_source],
-      ];
-  }
-  if ($current_certification !== '') {
-      $tax_query[] = [
-          'taxonomy' => 'certification',
-          'field' => 'slug',
-          'terms' => [$current_certification],
-      ];
-  }
-
-  if (count($tax_query) > 1) {
-      $tax_query['relation'] = 'AND';
   }
 
   $query_args = [
@@ -123,30 +83,6 @@ get_header();
           <?php foreach ($product_categories as $category) : ?>
             <option value="<?php echo esc_attr($category->slug); ?>" <?php selected($current_category, $category->slug); ?>>
               <?php echo esc_html($category->name); ?>
-            </option>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </select>
-
-      <label for="filter-light-source"><?php esc_html_e('Light Source', 'luxstage'); ?></label>
-      <select id="filter-light-source" name="light_source">
-        <option value=""><?php esc_html_e('All Types', 'luxstage'); ?></option>
-        <?php if (!is_wp_error($light_sources) && $light_sources) : ?>
-          <?php foreach ($light_sources as $light_source) : ?>
-            <option value="<?php echo esc_attr($light_source->slug); ?>" <?php selected($current_light_source, $light_source->slug); ?>>
-              <?php echo esc_html($light_source->name); ?>
-            </option>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </select>
-
-      <label for="filter-certification"><?php esc_html_e('Certification', 'luxstage'); ?></label>
-      <select id="filter-certification" name="certification">
-        <option value=""><?php esc_html_e('All Certifications', 'luxstage'); ?></option>
-        <?php if (!is_wp_error($certifications) && $certifications) : ?>
-          <?php foreach ($certifications as $certification) : ?>
-            <option value="<?php echo esc_attr($certification->slug); ?>" <?php selected($current_certification, $certification->slug); ?>>
-              <?php echo esc_html($certification->name); ?>
             </option>
           <?php endforeach; ?>
         <?php endif; ?>
