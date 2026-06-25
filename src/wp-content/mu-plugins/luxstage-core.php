@@ -839,14 +839,40 @@ add_action('admin_enqueue_scripts', static function ($hook): void {
         .split(',')
         .map(function(v){ return parseInt(v, 10); })
         .filter(Boolean);
-      var shortcode = ids.length ? '[gallery ids="' + ids.join(',') + '"]' : '[gallery]';
-      var frame = wp.media.gallery.edit(shortcode);
+
+      var frame = wp.media({
+        frame: 'post',
+        state: 'gallery-edit',
+        editing: true,
+        title: 'Edit product gallery',
+        library: { type: 'image' },
+        multiple: true
+      });
+
+      frame.on('open', function(){
+        var state = frame.state('gallery-edit');
+        if (!state || !state.get) {
+          return;
+        }
+        var selection = state.get('library');
+        if (!selection || !selection.reset) {
+          return;
+        }
+        selection.reset();
+        ids.forEach(function(id){
+          var attachment = wp.media.attachment(id);
+          attachment.fetch();
+          selection.add(attachment);
+        });
+      });
 
       frame.on('update', function(selection){
         var selectedIds = selection.pluck('id').map(function(id){ return parseInt(id, 10); }).filter(Boolean);
         input.val(selectedIds.join(','));
         render(selectedIds);
       });
+
+      frame.open();
     });
 
     $('#luxstage-gallery-clear').on('click', function(e){
@@ -872,7 +898,7 @@ add_action('admin_enqueue_scripts', static function ($hook): void {
   });
 })(jQuery);
 JS;
-    wp_add_inline_script('jquery-core', $gallery_script);
+    wp_add_inline_script('media-editor', $gallery_script);
 });
 
 add_action('save_post_stage_lighting', static function (int $post_id): void {
