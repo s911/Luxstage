@@ -833,6 +833,8 @@ add_action('admin_enqueue_scripts', static function ($hook): void {
       });
     }
 
+    var frame;
+
     $('#luxstage-gallery-open').on('click', function(e){
       e.preventDefault();
       var ids = (input.val() || '')
@@ -840,21 +842,27 @@ add_action('admin_enqueue_scripts', static function ($hook): void {
         .map(function(v){ return parseInt(v, 10); })
         .filter(Boolean);
 
-      var frame = wp.media({
-        frame: 'post',
-        state: 'gallery-edit',
-        editing: true,
-        title: 'Edit product gallery',
-        library: { type: 'image' },
-        multiple: true
-      });
+      if (!frame) {
+        frame = wp.media({
+          frame: 'select',
+          state: 'library',
+          title: 'Select product gallery images',
+          button: { text: 'Use selected images' },
+          library: { type: 'image' },
+          multiple: 'add'
+        });
 
+        frame.on('select', function(){
+          var selection = frame.state().get('selection');
+          var selectedIds = selection.pluck('id').map(function(id){ return parseInt(id, 10); }).filter(Boolean);
+          input.val(selectedIds.join(','));
+          render(selectedIds);
+        });
+      }
+
+      frame.off('open');
       frame.on('open', function(){
-        var state = frame.state('gallery-edit');
-        if (!state || !state.get) {
-          return;
-        }
-        var selection = state.get('library');
+        var selection = frame.state().get('selection');
         if (!selection || !selection.reset) {
           return;
         }
@@ -864,12 +872,6 @@ add_action('admin_enqueue_scripts', static function ($hook): void {
           attachment.fetch();
           selection.add(attachment);
         });
-      });
-
-      frame.on('update', function(selection){
-        var selectedIds = selection.pluck('id').map(function(id){ return parseInt(id, 10); }).filter(Boolean);
-        input.val(selectedIds.join(','));
-        render(selectedIds);
       });
 
       frame.open();
