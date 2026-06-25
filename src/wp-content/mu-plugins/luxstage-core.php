@@ -66,6 +66,13 @@ add_filter('wp_image_editors', static function (array $editors): array {
     return $merged;
 }, 20);
 
+// Temporary hardening for environments where image editors fail during upload.
+// This allows media files to be uploaded without generating intermediate sizes.
+add_filter('big_image_size_threshold', '__return_false');
+add_filter('intermediate_image_sizes_advanced', static function (array $sizes): array {
+    return [];
+}, 10, 1);
+
 if (!function_exists('luxstage_normalize_phone_number')) {
     function luxstage_normalize_phone_number(string $raw): string
     {
