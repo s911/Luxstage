@@ -623,6 +623,21 @@ add_action('acf/init', static function (): void {
                 'choices' => ['CE' => 'CE', 'RoHS' => 'RoHS', 'UL' => 'UL', 'ETL' => 'ETL', 'FCC' => 'FCC'],
                 'layout' => 'horizontal',
             ],
+            ['key' => 'field_luxstage_catalog_pdf', 'label' => 'Catalog PDF', 'name' => 'catalog_pdf', 'type' => 'file', 'return_format' => 'array', 'mime_types' => 'pdf'],
+        ],
+        'location' => [[[ 'param' => 'post_type', 'operator' => '==', 'value' => 'stage_lighting' ]]],
+        'position' => 'normal',
+        'style' => 'default',
+        'label_placement' => 'top',
+        'instruction_placement' => 'label',
+        'active' => true,
+        'show_in_rest' => 1,
+    ]);
+
+    acf_add_local_field_group([
+        'key' => 'group_luxstage_stage_lighting_media',
+        'title' => 'Product Media',
+        'fields' => [
             [
                 'key' => 'field_luxstage_video_url',
                 'label' => 'Video URL',
@@ -640,10 +655,9 @@ add_action('acf/init', static function (): void {
                 'insert' => 'append',
                 'library' => 'all',
             ],
-            ['key' => 'field_luxstage_catalog_pdf', 'label' => 'Catalog PDF', 'name' => 'catalog_pdf', 'type' => 'file', 'return_format' => 'array', 'mime_types' => 'pdf'],
         ],
         'location' => [[[ 'param' => 'post_type', 'operator' => '==', 'value' => 'stage_lighting' ]]],
-        'position' => 'normal',
+        'position' => 'side',
         'style' => 'default',
         'label_placement' => 'top',
         'instruction_placement' => 'label',
