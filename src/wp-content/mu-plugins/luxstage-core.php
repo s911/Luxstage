@@ -20,6 +20,52 @@ if (!function_exists('luxstage_field')) {
     }
 }
 
+if (!function_exists('luxstage_gallery_images')) {
+    function luxstage_gallery_images(int $post_id = 0): array
+    {
+        $post_id = $post_id > 0 ? $post_id : (int) get_the_ID();
+        if ($post_id <= 0) {
+            return [];
+        }
+
+        $acf_gallery = luxstage_field('gallery_images', $post_id);
+        if (is_array($acf_gallery) && !empty($acf_gallery)) {
+            return $acf_gallery;
+        }
+
+        $raw_ids = (string) get_post_meta($post_id, 'luxstage_gallery_image_ids', true);
+        if ($raw_ids === '') {
+            return [];
+        }
+
+        $ids = array_filter(array_map('intval', explode(',', $raw_ids)));
+        $images = [];
+        foreach ($ids as $id) {
+            $full = (string) wp_get_attachment_image_url($id, 'large');
+            if ($full === '') {
+                continue;
+            }
+            $thumb = (string) wp_get_attachment_image_url($id, 'thumbnail');
+            $alt = (string) get_post_meta($id, '_wp_attachment_image_alt', true);
+            if ($alt === '') {
+                $alt = (string) get_the_title($id);
+            }
+
+            $images[] = [
+                'ID' => $id,
+                'url' => $full,
+                'sizes' => [
+                    'large' => $full,
+                    'thumbnail' => $thumb !== '' ? $thumb : $full,
+                ],
+                'alt' => $alt,
+            ];
+        }
+
+        return $images;
+    }
+}
+
 if (!function_exists('luxstage_ini_bytes')) {
     function luxstage_ini_bytes(string $value): int
     {
@@ -656,30 +702,6 @@ add_action('acf/init', static function (): void {
     ]);
 
     acf_add_local_field_group([
-        'key' => 'group_luxstage_stage_lighting_gallery',
-        'title' => 'Product Gallery',
-        'fields' => [
-            [
-                'key' => 'field_luxstage_gallery_images',
-                'label' => 'Gallery Images',
-                'name' => 'gallery_images',
-                'type' => 'gallery',
-                'return_format' => 'array',
-                'preview_size' => 'medium',
-                'insert' => 'append',
-                'library' => 'all',
-            ],
-        ],
-        'location' => [[[ 'param' => 'post_type', 'operator' => '==', 'value' => 'stage_lighting' ]]],
-        'position' => 'normal',
-        'style' => 'default',
-        'label_placement' => 'top',
-        'instruction_placement' => 'label',
-        'active' => true,
-        'show_in_rest' => 1,
-    ]);
-
-    acf_add_local_field_group([
         'key' => 'group_luxstage_catalog_file',
         'title' => 'Catalog Download',
         'fields' => [
@@ -690,6 +712,71 @@ add_action('acf/init', static function (): void {
         'active' => true,
         'show_in_rest' => 1,
     ]);
+});
+
+add_action('add_meta_boxes', static function (): void {
+    add_meta_box(
+        'luxstage_product_gallery_images',
+        __('Product Gallery Images', 'luxstage'),
+        static function (WP_Post $post): void {
+            wp_nonce_field('luxstage_product_gallery_images', 'luxstage_product_gallery_images_nonce');
+            $raw_ids = (string) get_post_meta($post->ID, 'luxstage_gallery_image_ids', true);
+            $ids = array_filter(array_map('intval', explode(',', $raw_ids)));
+            ?>
+            <div id="luxstage-gallery-metabox" data-target-input-id="luxstage-gallery-image-ids">
+                <input type="hidden" id="luxstage-gallery-image-ids" name="luxstage_gallery_image_ids" value="<?php echo esc_attr(implode(',', $ids)); ?>">
+                <p>
+                    <button type="button" class="button button-primary" id="luxstage-gallery-open">
+                        <?php esc_html_e('Select / Edit Gallery Images', 'luxstage'); ?>
+                    </button>
+                    <button type="button" class="button" id="luxstage-gallery-clear">
+                        <?php esc_html_e('Clear', 'luxstage'); ?>
+                    </button>
+                </p>
+                <div id="luxstage-gallery-preview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;max-width:680px;">
+                    <?php foreach ($ids as $id) : ?>
+                        <?php $thumb = (string) wp_get_attachment_image_url($id, 'thumbnail'); ?>
+                        <?php if ($thumb === '') { continue; } ?>
+                        <img src="<?php echo esc_url($thumb); ?>" alt="" style="width:100%;height:78px;object-fit:cover;border:1px solid #dcdcde;border-radius:6px;">
+                    <?php endforeach; ?>
+                </div>
+                <p class="description"><?php esc_html_e('Choose multiple images for product detail gallery thumbnails.', 'luxstage'); ?></p>
+            </div>
+            <?php
+        },
+        'stage_lighting',
+        'normal',
+        'high'
+    );
+});
+
+add_action('admin_enqueue_scripts', static function (string $hook): void {
+    if (!in_array($hook, ['post.php', 'post-new.php'], true)) {
+        return;
+    }
+    $screen = get_current_screen();
+    if (!$screen || $screen->post_type !== 'stage_lighting') {
+        return;
+    }
+
+    wp_enqueue_media();
+    wp_add_inline_script('media-editor', "(function($){$(function(){var box=$('#luxstage-gallery-metabox');if(!box.length){return;}var input=$('#'+box.data('target-input-id'));var preview=$('#luxstage-gallery-preview');var frame;function render(ids){preview.empty();ids.forEach(function(id){var a=wp.media.attachment(id);a.fetch();var thumb=(a.get('sizes')&&a.get('sizes').thumbnail)?a.get('sizes').thumbnail.url:a.get('url');if(!thumb){return;}preview.append($('<img>',{src:thumb,alt:'',css:{width:'100%',height:'78px',objectFit:'cover',border:'1px solid #dcdcde',borderRadius:'6px'}}));});}$('#luxstage-gallery-open').on('click',function(e){e.preventDefault();var ids=(input.val()||'').split(',').map(function(v){return parseInt(v,10)}).filter(Boolean);if(!frame){frame=wp.media({title:'Select Gallery Images',button:{text:'Use selected images'},library:{type:'image'},multiple:true});frame.on('open',function(){var selection=frame.state().get('selection');selection.reset();ids.forEach(function(id){var attachment=wp.media.attachment(id);attachment.fetch();selection.add(attachment);});});frame.on('select',function(){var selection=frame.state().get('selection').toArray();var selectedIds=selection.map(function(item){return item.get('id');});input.val(selectedIds.join(','));render(selectedIds);});}frame.open();});$('#luxstage-gallery-clear').on('click',function(e){e.preventDefault();input.val('');render([]);});});})(jQuery);");
+});
+
+add_action('save_post_stage_lighting', static function (int $post_id): void {
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    if (!isset($_POST['luxstage_product_gallery_images_nonce']) || !wp_verify_nonce((string) $_POST['luxstage_product_gallery_images_nonce'], 'luxstage_product_gallery_images')) {
+        return;
+    }
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+
+    $raw = (string) ($_POST['luxstage_gallery_image_ids'] ?? '');
+    $ids = array_filter(array_map('intval', explode(',', $raw)));
+    update_post_meta($post_id, 'luxstage_gallery_image_ids', implode(',', $ids));
 });
 
 if (!function_exists('luxstage_get_catalog_pdf_url')) {

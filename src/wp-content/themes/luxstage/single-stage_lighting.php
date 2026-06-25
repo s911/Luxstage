@@ -16,7 +16,9 @@ get_header();
     $ip_rating = (string) luxstage_field('ip_rating');
     $channels = (string) luxstage_field('channels');
     $video_url = (string) luxstage_field('video_url');
-    $gallery_images = luxstage_field('gallery_images');
+    $gallery_images = function_exists('luxstage_gallery_images')
+        ? luxstage_gallery_images($post_id)
+        : luxstage_field('gallery_images');
 
     $media_items = [];
     if (has_post_thumbnail()) {
