@@ -645,6 +645,20 @@ add_action('acf/init', static function (): void {
                 'type' => 'url',
                 'placeholder' => 'https://',
             ],
+        ],
+        'location' => [[[ 'param' => 'post_type', 'operator' => '==', 'value' => 'stage_lighting' ]]],
+        'position' => 'side',
+        'style' => 'default',
+        'label_placement' => 'top',
+        'instruction_placement' => 'label',
+        'active' => true,
+        'show_in_rest' => 1,
+    ]);
+
+    acf_add_local_field_group([
+        'key' => 'group_luxstage_stage_lighting_gallery',
+        'title' => 'Product Gallery',
+        'fields' => [
             [
                 'key' => 'field_luxstage_gallery_images',
                 'label' => 'Gallery Images',
@@ -657,7 +671,7 @@ add_action('acf/init', static function (): void {
             ],
         ],
         'location' => [[[ 'param' => 'post_type', 'operator' => '==', 'value' => 'stage_lighting' ]]],
-        'position' => 'side',
+        'position' => 'normal',
         'style' => 'default',
         'label_placement' => 'top',
         'instruction_placement' => 'label',
