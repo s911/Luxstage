@@ -473,14 +473,14 @@ img {
 }
 
 .lux-filter-panel {
-  margin: 20px 0 34px;
+  margin: 40px 0 68px;
 }
 
 .lux-filter-panel form {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 14px 20px;
+  gap: 28px 40px;
 }
 
 .lux-filter-panel label {
@@ -491,18 +491,18 @@ img {
 
 .lux-filter-panel input[type="text"],
 .lux-filter-panel select {
-  min-height: 40px;
+  min-height: 48px;
   border: 1px solid var(--fw-color-line);
   border-radius: 10px;
-  padding: 0 12px;
+  padding: 0 16px;
   background: #fff;
 }
 
 .lux-filter-panel button[type="submit"] {
-  min-height: 40px;
+  min-height: 48px;
   border: 1px solid var(--fw-color-line);
   border-radius: 10px;
-  padding: 0 14px;
+  padding: 0 20px;
   background: var(--fw-color-soft);
   color: var(--fw-color-primary);
   font-weight: 700;
@@ -510,7 +510,7 @@ img {
 }
 
 .lux-filter-panel a {
-  margin-left: 6px;
+  margin-left: 12px;
   font-weight: 600;
 }
 
