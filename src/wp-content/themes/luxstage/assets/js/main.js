@@ -6,7 +6,20 @@
   function createLightbox() {
     var existing = document.querySelector("[data-lux-lightbox]");
     if (existing) {
-      return existing;
+      var existingImage = existing.querySelector(".lux-lightbox__image");
+      return {
+        root: existing,
+        image: existingImage,
+        open: function (src, alt) {
+          if (!src || !existingImage) {
+            return;
+          }
+          existingImage.setAttribute("src", src);
+          existingImage.setAttribute("alt", alt || "");
+          existing.classList.add("is-open");
+          existing.setAttribute("aria-hidden", "false");
+        },
+      };
     }
 
     var lightbox = document.createElement("div");
@@ -46,17 +59,19 @@
       }
     });
 
-    lightbox.open = function (src, alt) {
-      if (!src) {
-        return;
-      }
-      image.setAttribute("src", src);
-      image.setAttribute("alt", alt || "");
-      lightbox.classList.add("is-open");
-      lightbox.setAttribute("aria-hidden", "false");
+    return {
+      root: lightbox,
+      image: image,
+      open: function (src, alt) {
+        if (!src) {
+          return;
+        }
+        image.setAttribute("src", src);
+        image.setAttribute("alt", alt || "");
+        lightbox.classList.add("is-open");
+        lightbox.setAttribute("aria-hidden", "false");
+      },
     };
-
-    return lightbox;
   }
 
   function initProductGalleries() {
@@ -72,7 +87,9 @@
       }
 
       mainImage.addEventListener("click", function () {
-        lightbox.open(mainImage.getAttribute("src"), mainImage.getAttribute("alt"));
+        if (typeof lightbox.open === "function") {
+          lightbox.open(mainImage.getAttribute("src"), mainImage.getAttribute("alt"));
+        }
       });
 
       thumbs.forEach(function (thumb) {
