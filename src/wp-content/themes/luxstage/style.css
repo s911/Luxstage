@@ -473,36 +473,36 @@ img {
 }
 
 .lux-filter-panel {
-  margin: 14px 0 26px;
+  margin: 20px 0 34px;
 }
 
 .lux-filter-panel form {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 14px;
+  gap: 14px 20px;
 }
 
 .lux-filter-panel label {
   color: var(--fw-color-primary);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
 }
 
 .lux-filter-panel input[type="text"],
 .lux-filter-panel select {
-  min-height: 36px;
+  min-height: 40px;
   border: 1px solid var(--fw-color-line);
-  border-radius: 8px;
-  padding: 0 10px;
+  border-radius: 10px;
+  padding: 0 12px;
   background: #fff;
 }
 
 .lux-filter-panel button[type="submit"] {
-  min-height: 36px;
+  min-height: 40px;
   border: 1px solid var(--fw-color-line);
-  border-radius: 8px;
-  padding: 0 12px;
+  border-radius: 10px;
+  padding: 0 14px;
   background: var(--fw-color-soft);
   color: var(--fw-color-primary);
   font-weight: 700;
@@ -510,7 +510,7 @@ img {
 }
 
 .lux-filter-panel a {
-  margin-left: 2px;
+  margin-left: 6px;
   font-weight: 600;
 }
 
