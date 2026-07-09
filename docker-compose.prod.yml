@@ -1,0 +1,54 @@
+services:
+  web:
+    image: wordpress:6.6.2-php8.3-apache
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${WEB_PORT:-8080}:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_HOME', '${WP_URL}');
+        define('WP_SITEURL', '${WP_URL}');
+        define('DISALLOW_FILE_EDIT', true);
+      LUXSTAGE_MAIL_MODE: ${LUXSTAGE_MAIL_MODE:-smtp}
+      LUXSTAGE_SMTP_HOST: ${LUXSTAGE_SMTP_HOST:-}
+      LUXSTAGE_SMTP_PORT: ${LUXSTAGE_SMTP_PORT:-587}
+      LUXSTAGE_SMTP_SECURE: ${LUXSTAGE_SMTP_SECURE:-tls}
+      LUXSTAGE_SMTP_USER: ${LUXSTAGE_SMTP_USER:-}
+      LUXSTAGE_SMTP_PASSWORD: ${LUXSTAGE_SMTP_PASSWORD:-}
+      LUXSTAGE_MAIL_FROM: ${LUXSTAGE_MAIL_FROM:-no-reply@luxstage.com}
+      LUXSTAGE_MAIL_FROM_NAME: ${LUXSTAGE_MAIL_FROM_NAME:-Luxstage}
+      LUXSTAGE_WHATSAPP_NUMBER: ${LUXSTAGE_WHATSAPP_NUMBER:-}
+    volumes:
+      - ./src:/var/www/html
+      - ./deploy/php/custom.ini:/usr/local/etc/php/conf.d/zz-luxstage-custom.ini:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+volumes:
+  db_data:

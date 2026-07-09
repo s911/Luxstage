@@ -1,0 +1,12 @@
+.env
+deploy-credentials.txt
+*.sql
+*.tar.gz
+src/wp-config.php
+src/wp-content/uploads/
+src/wp-content/cache/
+src/wp-content/upgrade/
+src/wp-content/debug.log
+node_modules/
+.DS_Store
+Thumbs.db

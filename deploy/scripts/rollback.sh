@@ -3,6 +3,7 @@ set -euo pipefail
 
 PROJECT_ROOT="${PROJECT_ROOT:-/opt/luxstage}"
 BACKUP_DIR="${BACKUP_DIR:-/opt/luxstage-backups}"
+COMPOSE_FILE="${COMPOSE_FILE:-${PROJECT_ROOT}/docker-compose.prod.yml}"
 TARGET_STAMP="${1:-}"
 
 if [[ -z "${TARGET_STAMP}" ]]; then
@@ -23,7 +24,7 @@ if [[ ! -f "${CODE_TAR}" || ! -f "${DB_SQL}" ]]; then
 fi
 
 echo "Stopping stack..."
-docker compose -f "${PROJECT_ROOT}/docker-compose.yml" down
+docker compose --env-file "${PROJECT_ROOT}/.env" -f "${COMPOSE_FILE}" down
 
 echo "Restoring code..."
 find "${PROJECT_ROOT}" -mindepth 1 -maxdepth 1 \
@@ -33,7 +34,7 @@ find "${PROJECT_ROOT}" -mindepth 1 -maxdepth 1 \
 tar -xzf "${CODE_TAR}" -C "${PROJECT_ROOT}"
 
 echo "Starting DB for restore..."
-docker compose -f "${PROJECT_ROOT}/docker-compose.yml" up -d db
+docker compose --env-file "${PROJECT_ROOT}/.env" -f "${COMPOSE_FILE}" up -d db
 sleep 12
 
 DB_NAME="$(grep -E '^DB_NAME=' "${PROJECT_ROOT}/.env" | cut -d'=' -f2-)"
@@ -41,10 +42,10 @@ DB_USER="$(grep -E '^DB_USER=' "${PROJECT_ROOT}/.env" | cut -d'=' -f2-)"
 DB_PASSWORD="$(grep -E '^DB_PASSWORD=' "${PROJECT_ROOT}/.env" | cut -d'=' -f2-)"
 
 echo "Restoring database..."
-docker compose -f "${PROJECT_ROOT}/docker-compose.yml" exec -T db \
+docker compose --env-file "${PROJECT_ROOT}/.env" -f "${COMPOSE_FILE}" exec -T db \
   mysql -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_NAME}" < "${DB_SQL}"
 
 echo "Starting full stack..."
-docker compose -f "${PROJECT_ROOT}/docker-compose.yml" up -d
+docker compose --env-file "${PROJECT_ROOT}/.env" -f "${COMPOSE_FILE}" up -d
 
 echo "Rollback complete: ${TARGET_STAMP}"
