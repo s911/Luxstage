@@ -1,68 +1,115 @@
 case_id,name,status,detail
 SETUP-01,Seed demo data,PASS,10 product records prepared
-H-01,Home page loads,FAIL,HTTP 504 for /
-H-01-TIME,Home load under 3s,PASS,0.06s
-H-02,Responsive markup baseline,FAIL,viewport meta
-H-03,Hero Banner and CTA,FAIL,Hero CTA
-H-04,Featured products show 4-6 items,FAIL,0 cards
-H-05,Certificates & Trust,FAIL,certificate badges
-H-06,Main navigation,FAIL,nav links
-H-07,Footer information,FAIL,footer contact/social
-P-01,Product category navigation,PASS,"Beam Light, Effect Light, Follow Spot, Laser Light, LED Par, Moving Head, Strobe"
-P-02,Product list display,FAIL,HTTP 504 for /products/
-P-03,Multi-dimensional filters,SKIP,Ajax filter UI is not implemented in current theme baseline
-P-04,Product sorting,SKIP,Sorting UI is not implemented in current theme baseline
-P-05,Product detail URL,FAIL,HTTP 504 for http://localhost:8080/products/beam-light/lx-ip67-beam-wash-outdoor/
-P-06,Product gallery/video baseline,SKIP,Media gallery requires uploaded product images/videos
-P-07,Technical parameters,FAIL,PRD parameter groups
-P-08,Related products,FAIL,related section
-P-09,Inquiry button with SKU,FAIL,RFQ link
-P-10,Catalog download button,FAIL,download CTA
-P-11,Batch inquiry,SKIP,Batch inquiry cart is P2 and not implemented in current baseline
-F-01,General contact form,SKIP,Form plugin not installed/activated
-F-02,Form validation,SKIP,Form plugin not installed/activated
-F-03,Product RFQ form,SKIP,Form plugin not installed/activated
-F-04,Attachment upload,SKIP,Form plugin not installed/activated
-F-05,Catalog lead form,SKIP,Form plugin not installed/activated
-F-06,Returning catalog downloader,SKIP,Form plugin not installed/activated
-F-07,Spam protection,SKIP,Form plugin not installed/activated
-F-08,Batch inquiry form,SKIP,Form plugin not installed/activated
-C-01,Catalog archive exists,FAIL,HTTP 504 for /downloads/catalogs/
-C-02,Category-specific catalogs,SKIP,Requires uploaded PDF catalog files
-C-03,Admin upload catalog,FAIL,catalog CPT archive
-C-04,Multilingual catalogs,SKIP,Requires WPML/Polylang content
-C-05,Download link expiry,SKIP,Lead magnet expiry logic is not implemented in baseline
-A-01,Brand story,SKIP,About page content should be built in Elementor/content editor
-A-02,Factory capability,SKIP,About page content should be built in Elementor/content editor
-A-03,Certificates,SKIP,About page content should be built in Elementor/content editor
-A-04,Video embed,SKIP,About page content should be built in Elementor/content editor
-T-01,Contact form page,FAIL,HTTP 504
-T-02,Google Maps,SKIP,map embed
-T-03,Contact methods,FAIL,email/phone
-T-04,Social links,FAIL,social links
-S-01,Meta tags,FAIL,HTTP 504 for /
-S-02,XML sitemap,SKIP,Requires Rank Math or WP sitemap routing
-S-03,Structured data,FAIL,Product schema
-S-04,Breadcrumbs,FAIL,breadcrumb nav
-S-05,Image alt tags,PASS,image alt
-S-06,URL structure,PASS,http://localhost:8080/products/beam-light/lx-ip67-beam-wash-outdoor/
-S-07,robots.txt,FAIL,robots rules
-L-01,Language switcher,SKIP,Requires WPML/Polylang
-L-02,Static content translation,SKIP,Requires WPML/Polylang
-L-03,Product translation,SKIP,Requires WPML/Polylang
-L-04,Language URL prefix,SKIP,Requires WPML/Polylang
-L-05,Language cookie preference,SKIP,Requires WPML/Polylang
-B-01,Product create/read,PASS,11 products
-B-02,Product edit propagation,PASS,Seed script updates products idempotently by SKU
-B-03,Product delete behavior,SKIP,Destructive delete test intentionally not run
-B-04,Category admin,PASS,product categories
-B-05,Inquiry records,SKIP,Requires form plugin submissions
-B-06,Catalog PDF upload,SKIP,Requires uploaded PDF fixture
-B-07,User roles,PASS,"editor_manage_options=False, admin_manage_options=True"
-X-01,Home performance smoke,FAIL,"status=504, 0.06s"
-X-02,HTTPS/SSL,SKIP,Local Docker runs over HTTP
-X-03,Login protection,FAIL,Install Wordfence or equivalent protection plugin
-X-04,XSS baseline escaping,PASS,Theme output uses escaping functions
-X-05,SQL injection smoke,FAIL,HTTP 598
-X-06,Image lazy loading,PASS,Depends on product images
-X-07,Static cache headers,PASS,Depends on web server/CDN cache
+SETUP-02,Activate Luxstage theme,PASS,luxstage active
+SETUP-03,Ensure page Contact,PASS,contact
+SETUP-03,Ensure page About Us,PASS,about-us
+SETUP-05,Ensure Contact Form 7,PASS,contact-form-7 active
+SETUP-12,Ensure admin email,PASS,admin@luxstage.local
+SETUP-06,Ensure CF7 forms,PASS,luxstage_contact:32\nluxstage_rfq:33\nluxstage_catalog:34\nluxstage_batch:35\n
+SETUP-07,Ensure form pages,PASS,contact:28\nrfq:37\ncatalog-request:38\nbatch-inquiry:39\n
+SETUP-08,Ensure catalog fixtures,PASS,luxstage-catalog-01:10\nluxstage-catalog-02:11\nluxstage-catalog-03:12\n
+SETUP-09,Ensure application fixtures,PASS,luxstage-application-01:13\nluxstage-application-02:14\nluxstage-application-03:15\n
+SETUP-10,Ensure inquiry fixtures,PASS,existing:16\nexisting:17\nexisting:18\n
+SETUP-15,Ensure product category coverage,PASS,created=4
+SETUP-13,Ensure Polylang,SKIP,plugin unavailable; multilingual tests may skip
+SETUP-04,Web readiness check,PASS,HTTP 200
+SETUP-11,Mailpit readiness,PASS,"HTTP 200, keys=Database,DatabaseSize,LatestVersion,Messages,RuntimeStats"
+H-01::HOME-DATA-01,Home load (桌面端冒烟),PASS,"HTTP 200, 0.63s, viewport=1920x1080"
+H-03::HOME-DATA-01,Hero CTA (桌面端冒烟),PASS,missing=none
+H-04::HOME-DATA-01,Featured products (桌面端冒烟),PASS,cards=12
+H-05::HOME-DATA-01,Certificates (桌面端冒烟),PASS,missing=none
+H-06::HOME-DATA-01,Navigation (桌面端冒烟),PASS,missing=none
+H-07::HOME-DATA-01,Footer (桌面端冒烟),PASS,missing=none
+H-01::HOME-DATA-02,Home load (平板端布局),PASS,"HTTP 200, 0.13s, viewport=1024x768"
+H-03::HOME-DATA-02,Hero CTA (平板端布局),PASS,missing=none
+H-04::HOME-DATA-02,Featured products (平板端布局),PASS,cards=12
+H-05::HOME-DATA-02,Certificates (平板端布局),PASS,missing=none
+H-06::HOME-DATA-02,Navigation (平板端布局),PASS,missing=none
+H-07::HOME-DATA-02,Footer (平板端布局),PASS,missing=none
+H-01::HOME-DATA-03,Home load (手机端布局),PASS,"HTTP 200, 0.50s, viewport=390x844"
+H-03::HOME-DATA-03,Hero CTA (手机端布局),PASS,missing=none
+H-04::HOME-DATA-03,Featured products (手机端布局),PASS,cards=12
+H-05::HOME-DATA-03,Certificates (手机端布局),PASS,missing=none
+H-06::HOME-DATA-03,Navigation (手机端布局),PASS,missing=none
+H-07::HOME-DATA-03,Footer (手机端布局),PASS,missing=none
+P-02::PROD-DATA-01,Product list (摇头灯产品线),FAIL,"path=/products/, HTTP 404"
+P-03::PROD-DATA-01,Product filter (摇头灯产品线),FAIL,"cards=0, HTTP 404"
+P-04::PROD-DATA-01,Product sort (摇头灯产品线),FAIL,"titles=0, HTTP 404"
+P-05::PROD-DATA-01,Product detail (摇头灯产品线),FAIL,http://localhost:8080/products/beam-light/lx-auto-beam-light/
+P-07::PROD-DATA-01,Technical specs (摇头灯产品线),FAIL,"missing=['Wattage', 'DMX Channels', 'IP Rating', 'Voltage']"
+P-09::PROD-DATA-01,RFQ button (摇头灯产品线),FAIL,LX-MH350-PRO
+P-02::PROD-DATA-02,Product list (LED Par户外线),FAIL,"path=/products/category/led-par/, HTTP 404"
+P-03::PROD-DATA-02,Product filter (LED Par户外线),FAIL,"cards=0, HTTP 404"
+P-04::PROD-DATA-02,Product sort (LED Par户外线),FAIL,"titles=0, HTTP 404"
+P-05::PROD-DATA-02,Product detail (LED Par户外线),FAIL,http://localhost:8080/products/beam-light/lx-auto-beam-light/
+P-07::PROD-DATA-02,Technical specs (LED Par户外线),FAIL,"missing=['Control Protocols', 'Certification Standards']"
+P-09::PROD-DATA-02,RFQ button (LED Par户外线),FAIL,LX-PAR1815-IP65
+P-02::PROD-DATA-03,Product list (激光灯产品线),FAIL,"path=/products/category/laser-light/, HTTP 404"
+P-03::PROD-DATA-03,Product filter (激光灯产品线),FAIL,"cards=0, HTTP 404"
+P-04::PROD-DATA-03,Product sort (激光灯产品线),FAIL,"titles=0, HTTP 404"
+P-05::PROD-DATA-03,Product detail (激光灯产品线),FAIL,http://localhost:8080/products/beam-light/lx-auto-beam-light/
+P-07::PROD-DATA-03,Technical specs (激光灯产品线),FAIL,"missing=['Light Source Type', 'Channels', 'Weight']"
+P-09::PROD-DATA-03,RFQ button (激光灯产品线),FAIL,LX-LASER30-RGB
+F-01::FORM-CONTACT-01,Contact form submit,FAIL,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-01::FORM-CONTACT-02,Contact form submit,FAIL,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-01::FORM-CONTACT-03,Contact form submit,FAIL,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-02::FORM-NEG-01,Validation negative,PASS,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-02::FORM-NEG-02,Validation negative,PASS,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-02::FORM-NEG-03,Validation negative,PASS,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-03::FORM-RFQ-01,RFQ submit,FAIL,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-04::FORM-RFQ-01,RFQ attachment,FAIL,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-03::FORM-RFQ-02,RFQ submit,FAIL,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-04::FORM-RFQ-02,RFQ attachment,FAIL,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-03::FORM-RFQ-03,RFQ submit,FAIL,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-04::FORM-RFQ-03,RFQ attachment,FAIL,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-05::FORM-CATALOG-01,Catalog lead submit,FAIL,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-05::FORM-CATALOG-02,Catalog lead submit,FAIL,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-05::FORM-CATALOG-03,Catalog lead submit,FAIL,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-06::FORM-CATALOG-RETURN-01,Returning catalog downloader,FAIL,"missing=['Returning visitor', 'Go to catalog downloads']"
+F-06::FORM-CATALOG-RETURN-02,Returning catalog downloader,FAIL,missing=['Returning visitor']
+F-06::FORM-CATALOG-RETURN-03,Returning catalog downloader,FAIL,missing=['Go to catalog downloads']
+F-08::FORM-BATCH-01,Batch inquiry submit,FAIL,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-08::FORM-BATCH-02,Batch inquiry submit,FAIL,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+F-08::FORM-BATCH-03,Batch inquiry submit,FAIL,"http_404:<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd""> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+C-01::CAT-DATA-01,Catalog archive (luxstage-catalog-01),FAIL,HTTP 404
+C-02::CAT-DATA-01,Catalog certification filter (ce),FAIL,cards=0
+C-05::CAT-DATA-01,Catalog link expiry (luxstage-catalog-01),FAIL,download link not found
+C-01::CAT-DATA-02,Catalog archive (luxstage-catalog-02),FAIL,HTTP 404
+C-02::CAT-DATA-02,Catalog certification filter (rohs),FAIL,cards=0
+C-05::CAT-DATA-02,Catalog link expiry (luxstage-catalog-02),FAIL,download link not found
+C-01::CAT-DATA-03,Catalog archive (luxstage-catalog-03),FAIL,HTTP 404
+C-02::CAT-DATA-03,Catalog certification filter (ul),FAIL,cards=0
+C-05::CAT-DATA-03,Catalog link expiry (luxstage-catalog-03),FAIL,download link not found
+A-01::ABOUT-DATA-01,About content (ABOUT-DATA-01),FAIL,missing=['Brand Story']
+A-04::ABOUT-DATA-01,About video (ABOUT-DATA-01),FAIL,"missing=['iframe', 'youtube']"
+A-01::ABOUT-DATA-02,About content (ABOUT-DATA-02),FAIL,missing=['Factory Capability']
+A-04::ABOUT-DATA-02,About video (ABOUT-DATA-02),FAIL,missing=['iframe']
+A-01::ABOUT-DATA-03,About content (ABOUT-DATA-03),FAIL,missing=['Certificates']
+A-04::ABOUT-DATA-03,About video (ABOUT-DATA-03),FAIL,missing=['youtube']
+T-02::CONTACT-DATA-01,Contact map (CONTACT-DATA-01),FAIL,"missing=['maps.google', 'google.com/maps']"
+T-03::CONTACT-DATA-01,Contact info (CONTACT-DATA-01),FAIL,"missing=['sales@luxstage.com', '+86']"
+T-02::CONTACT-DATA-02,Contact map (CONTACT-DATA-02),FAIL,missing=['iframe']
+T-03::CONTACT-DATA-02,Contact info (CONTACT-DATA-02),FAIL,missing=['sales@luxstage.com']
+T-02::CONTACT-DATA-03,Contact map (CONTACT-DATA-03),FAIL,missing=['maps.google']
+T-03::CONTACT-DATA-03,Contact info (CONTACT-DATA-03),FAIL,"missing=['Guangzhou', 'sales@luxstage.com']"
+S-01::SEO-DATA-01,Meta tags (/),PASS,HTTP 200
+S-02::SEO-DATA-01,Sitemap (/sitemap_index.xml),FAIL,HTTP 404
+S-07::SEO-DATA-01,robots.txt (SEO-DATA-01),FAIL,missing=['Disallow: /wp-admin/']
+S-01::SEO-DATA-02,Meta tags (/products/),FAIL,HTTP 404
+S-02::SEO-DATA-02,Sitemap (/wp-sitemap.xml),FAIL,HTTP 404
+S-07::SEO-DATA-02,robots.txt (SEO-DATA-02),FAIL,missing=['User-agent']
+S-01::SEO-DATA-03,Meta tags (/products/lx-mh350-pro/),FAIL,HTTP 404
+S-02::SEO-DATA-03,Sitemap (/sitemap_index.xml),FAIL,HTTP 404
+S-07::SEO-DATA-03,robots.txt (SEO-DATA-03),FAIL,missing=['Sitemap']
+X-05::SEC-SQLI-01,SQLi smoke (/?s=%27%20OR%201%3D1),PASS,HTTP 200
+X-05::SEC-SQLI-02,SQLi smoke (/products/?product_category=%27%20OR%201%3D1%20--),PASS,HTTP 404
+X-05::SEC-SQLI-03,SQLi smoke (/wp-json/wp/v2/posts?search=%27%20OR%201%3D1%20--),PASS,HTTP 404
+X-01::PERF-DATA-01,Performance smoke (/),PASS,"HTTP 200, 0.36s"
+X-07::PERF-DATA-01,Cache headers (/),PASS,cache
+X-06::PERF-DATA-01,Lazy loading (/),PASS,"loading=""lazy"""
+X-01::PERF-DATA-02,Performance smoke (/products/),FAIL,"HTTP 404, 0.00s"
+X-07::PERF-DATA-02,Cache headers (/products/),SKIP,cache
+X-06::PERF-DATA-02,Lazy loading (/products/),PASS,"loading=""lazy"""
+X-01::PERF-DATA-03,Performance smoke (/downloads/catalogs/),FAIL,"HTTP 404, 0.00s"
+X-07::PERF-DATA-03,Cache headers (/downloads/catalogs/),SKIP,etag
+X-06::PERF-DATA-03,Lazy loading (/downloads/catalogs/),PASS,"loading=""lazy"""

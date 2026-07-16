@@ -6,6 +6,8 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-luxstage}"
 
+bash "${PROJECT_ROOT}/deploy/scripts/ensure-htaccess.sh"
+
 docker run --rm \
   --user 0:0 \
   --network "${COMPOSE_PROJECT_NAME}_default" \

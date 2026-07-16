@@ -6,399 +6,681 @@
     "detail": "10 product records prepared"
   },
   {
-    "case_id": "H-01",
-    "name": "Home page loads",
-    "status": "FAIL",
-    "detail": "HTTP 504 for /"
-  },
-  {
-    "case_id": "H-01-TIME",
-    "name": "Home load under 3s",
+    "case_id": "SETUP-02",
+    "name": "Activate Luxstage theme",
     "status": "PASS",
-    "detail": "0.06s"
+    "detail": "luxstage active"
   },
   {
-    "case_id": "H-02",
-    "name": "Responsive markup baseline",
-    "status": "FAIL",
-    "detail": "viewport meta"
-  },
-  {
-    "case_id": "H-03",
-    "name": "Hero Banner and CTA",
-    "status": "FAIL",
-    "detail": "Hero CTA"
-  },
-  {
-    "case_id": "H-04",
-    "name": "Featured products show 4-6 items",
-    "status": "FAIL",
-    "detail": "0 cards"
-  },
-  {
-    "case_id": "H-05",
-    "name": "Certificates & Trust",
-    "status": "FAIL",
-    "detail": "certificate badges"
-  },
-  {
-    "case_id": "H-06",
-    "name": "Main navigation",
-    "status": "FAIL",
-    "detail": "nav links"
-  },
-  {
-    "case_id": "H-07",
-    "name": "Footer information",
-    "status": "FAIL",
-    "detail": "footer contact/social"
-  },
-  {
-    "case_id": "P-01",
-    "name": "Product category navigation",
+    "case_id": "SETUP-03",
+    "name": "Ensure page Contact",
     "status": "PASS",
-    "detail": "Beam Light, Effect Light, Follow Spot, Laser Light, LED Par, Moving Head, Strobe"
+    "detail": "contact"
   },
   {
-    "case_id": "P-02",
-    "name": "Product list display",
+    "case_id": "SETUP-03",
+    "name": "Ensure page About Us",
+    "status": "PASS",
+    "detail": "about-us"
+  },
+  {
+    "case_id": "SETUP-05",
+    "name": "Ensure Contact Form 7",
+    "status": "PASS",
+    "detail": "contact-form-7 active"
+  },
+  {
+    "case_id": "SETUP-12",
+    "name": "Ensure admin email",
+    "status": "PASS",
+    "detail": "admin@luxstage.local"
+  },
+  {
+    "case_id": "SETUP-06",
+    "name": "Ensure CF7 forms",
+    "status": "PASS",
+    "detail": "luxstage_contact:32\\nluxstage_rfq:33\\nluxstage_catalog:34\\nluxstage_batch:35\\n"
+  },
+  {
+    "case_id": "SETUP-07",
+    "name": "Ensure form pages",
+    "status": "PASS",
+    "detail": "contact:28\\nrfq:37\\ncatalog-request:38\\nbatch-inquiry:39\\n"
+  },
+  {
+    "case_id": "SETUP-08",
+    "name": "Ensure catalog fixtures",
+    "status": "PASS",
+    "detail": "luxstage-catalog-01:10\\nluxstage-catalog-02:11\\nluxstage-catalog-03:12\\n"
+  },
+  {
+    "case_id": "SETUP-09",
+    "name": "Ensure application fixtures",
+    "status": "PASS",
+    "detail": "luxstage-application-01:13\\nluxstage-application-02:14\\nluxstage-application-03:15\\n"
+  },
+  {
+    "case_id": "SETUP-10",
+    "name": "Ensure inquiry fixtures",
+    "status": "PASS",
+    "detail": "existing:16\\nexisting:17\\nexisting:18\\n"
+  },
+  {
+    "case_id": "SETUP-15",
+    "name": "Ensure product category coverage",
+    "status": "PASS",
+    "detail": "created=4"
+  },
+  {
+    "case_id": "SETUP-13",
+    "name": "Ensure Polylang",
+    "status": "SKIP",
+    "detail": "plugin unavailable; multilingual tests may skip"
+  },
+  {
+    "case_id": "SETUP-04",
+    "name": "Web readiness check",
+    "status": "PASS",
+    "detail": "HTTP 200"
+  },
+  {
+    "case_id": "SETUP-11",
+    "name": "Mailpit readiness",
+    "status": "PASS",
+    "detail": "HTTP 200, keys=Database,DatabaseSize,LatestVersion,Messages,RuntimeStats"
+  },
+  {
+    "case_id": "H-01::HOME-DATA-01",
+    "name": "Home load (桌面端冒烟)",
+    "status": "PASS",
+    "detail": "HTTP 200, 0.63s, viewport=1920x1080"
+  },
+  {
+    "case_id": "H-03::HOME-DATA-01",
+    "name": "Hero CTA (桌面端冒烟)",
+    "status": "PASS",
+    "detail": "missing=none"
+  },
+  {
+    "case_id": "H-04::HOME-DATA-01",
+    "name": "Featured products (桌面端冒烟)",
+    "status": "PASS",
+    "detail": "cards=12"
+  },
+  {
+    "case_id": "H-05::HOME-DATA-01",
+    "name": "Certificates (桌面端冒烟)",
+    "status": "PASS",
+    "detail": "missing=none"
+  },
+  {
+    "case_id": "H-06::HOME-DATA-01",
+    "name": "Navigation (桌面端冒烟)",
+    "status": "PASS",
+    "detail": "missing=none"
+  },
+  {
+    "case_id": "H-07::HOME-DATA-01",
+    "name": "Footer (桌面端冒烟)",
+    "status": "PASS",
+    "detail": "missing=none"
+  },
+  {
+    "case_id": "H-01::HOME-DATA-02",
+    "name": "Home load (平板端布局)",
+    "status": "PASS",
+    "detail": "HTTP 200, 0.13s, viewport=1024x768"
+  },
+  {
+    "case_id": "H-03::HOME-DATA-02",
+    "name": "Hero CTA (平板端布局)",
+    "status": "PASS",
+    "detail": "missing=none"
+  },
+  {
+    "case_id": "H-04::HOME-DATA-02",
+    "name": "Featured products (平板端布局)",
+    "status": "PASS",
+    "detail": "cards=12"
+  },
+  {
+    "case_id": "H-05::HOME-DATA-02",
+    "name": "Certificates (平板端布局)",
+    "status": "PASS",
+    "detail": "missing=none"
+  },
+  {
+    "case_id": "H-06::HOME-DATA-02",
+    "name": "Navigation (平板端布局)",
+    "status": "PASS",
+    "detail": "missing=none"
+  },
+  {
+    "case_id": "H-07::HOME-DATA-02",
+    "name": "Footer (平板端布局)",
+    "status": "PASS",
+    "detail": "missing=none"
+  },
+  {
+    "case_id": "H-01::HOME-DATA-03",
+    "name": "Home load (手机端布局)",
+    "status": "PASS",
+    "detail": "HTTP 200, 0.50s, viewport=390x844"
+  },
+  {
+    "case_id": "H-03::HOME-DATA-03",
+    "name": "Hero CTA (手机端布局)",
+    "status": "PASS",
+    "detail": "missing=none"
+  },
+  {
+    "case_id": "H-04::HOME-DATA-03",
+    "name": "Featured products (手机端布局)",
+    "status": "PASS",
+    "detail": "cards=12"
+  },
+  {
+    "case_id": "H-05::HOME-DATA-03",
+    "name": "Certificates (手机端布局)",
+    "status": "PASS",
+    "detail": "missing=none"
+  },
+  {
+    "case_id": "H-06::HOME-DATA-03",
+    "name": "Navigation (手机端布局)",
+    "status": "PASS",
+    "detail": "missing=none"
+  },
+  {
+    "case_id": "H-07::HOME-DATA-03",
+    "name": "Footer (手机端布局)",
+    "status": "PASS",
+    "detail": "missing=none"
+  },
+  {
+    "case_id": "P-02::PROD-DATA-01",
+    "name": "Product list (摇头灯产品线)",
     "status": "FAIL",
-    "detail": "HTTP 504 for /products/"
+    "detail": "path=/products/, HTTP 404"
   },
   {
-    "case_id": "P-03",
-    "name": "Multi-dimensional filters",
-    "status": "SKIP",
-    "detail": "Ajax filter UI is not implemented in current theme baseline"
-  },
-  {
-    "case_id": "P-04",
-    "name": "Product sorting",
-    "status": "SKIP",
-    "detail": "Sorting UI is not implemented in current theme baseline"
-  },
-  {
-    "case_id": "P-05",
-    "name": "Product detail URL",
+    "case_id": "P-03::PROD-DATA-01",
+    "name": "Product filter (摇头灯产品线)",
     "status": "FAIL",
-    "detail": "HTTP 504 for http://localhost:8080/products/beam-light/lx-ip67-beam-wash-outdoor/"
+    "detail": "cards=0, HTTP 404"
   },
   {
-    "case_id": "P-06",
-    "name": "Product gallery/video baseline",
-    "status": "SKIP",
-    "detail": "Media gallery requires uploaded product images/videos"
-  },
-  {
-    "case_id": "P-07",
-    "name": "Technical parameters",
+    "case_id": "P-04::PROD-DATA-01",
+    "name": "Product sort (摇头灯产品线)",
     "status": "FAIL",
-    "detail": "PRD parameter groups"
+    "detail": "titles=0, HTTP 404"
   },
   {
-    "case_id": "P-08",
-    "name": "Related products",
+    "case_id": "P-05::PROD-DATA-01",
+    "name": "Product detail (摇头灯产品线)",
     "status": "FAIL",
-    "detail": "related section"
+    "detail": "http://localhost:8080/products/beam-light/lx-auto-beam-light/"
   },
   {
-    "case_id": "P-09",
-    "name": "Inquiry button with SKU",
+    "case_id": "P-07::PROD-DATA-01",
+    "name": "Technical specs (摇头灯产品线)",
     "status": "FAIL",
-    "detail": "RFQ link"
+    "detail": "missing=['Wattage', 'DMX Channels', 'IP Rating', 'Voltage']"
   },
   {
-    "case_id": "P-10",
-    "name": "Catalog download button",
+    "case_id": "P-09::PROD-DATA-01",
+    "name": "RFQ button (摇头灯产品线)",
     "status": "FAIL",
-    "detail": "download CTA"
+    "detail": "LX-MH350-PRO"
   },
   {
-    "case_id": "P-11",
-    "name": "Batch inquiry",
-    "status": "SKIP",
-    "detail": "Batch inquiry cart is P2 and not implemented in current baseline"
+    "case_id": "P-02::PROD-DATA-02",
+    "name": "Product list (LED Par户外线)",
+    "status": "FAIL",
+    "detail": "path=/products/category/led-par/, HTTP 404"
   },
   {
-    "case_id": "F-01",
-    "name": "General contact form",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
+    "case_id": "P-03::PROD-DATA-02",
+    "name": "Product filter (LED Par户外线)",
+    "status": "FAIL",
+    "detail": "cards=0, HTTP 404"
   },
   {
-    "case_id": "F-02",
-    "name": "Form validation",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
+    "case_id": "P-04::PROD-DATA-02",
+    "name": "Product sort (LED Par户外线)",
+    "status": "FAIL",
+    "detail": "titles=0, HTTP 404"
   },
   {
-    "case_id": "F-03",
-    "name": "Product RFQ form",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
+    "case_id": "P-05::PROD-DATA-02",
+    "name": "Product detail (LED Par户外线)",
+    "status": "FAIL",
+    "detail": "http://localhost:8080/products/beam-light/lx-auto-beam-light/"
   },
   {
-    "case_id": "F-04",
-    "name": "Attachment upload",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
+    "case_id": "P-07::PROD-DATA-02",
+    "name": "Technical specs (LED Par户外线)",
+    "status": "FAIL",
+    "detail": "missing=['Control Protocols', 'Certification Standards']"
   },
   {
-    "case_id": "F-05",
-    "name": "Catalog lead form",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
+    "case_id": "P-09::PROD-DATA-02",
+    "name": "RFQ button (LED Par户外线)",
+    "status": "FAIL",
+    "detail": "LX-PAR1815-IP65"
   },
   {
-    "case_id": "F-06",
+    "case_id": "P-02::PROD-DATA-03",
+    "name": "Product list (激光灯产品线)",
+    "status": "FAIL",
+    "detail": "path=/products/category/laser-light/, HTTP 404"
+  },
+  {
+    "case_id": "P-03::PROD-DATA-03",
+    "name": "Product filter (激光灯产品线)",
+    "status": "FAIL",
+    "detail": "cards=0, HTTP 404"
+  },
+  {
+    "case_id": "P-04::PROD-DATA-03",
+    "name": "Product sort (激光灯产品线)",
+    "status": "FAIL",
+    "detail": "titles=0, HTTP 404"
+  },
+  {
+    "case_id": "P-05::PROD-DATA-03",
+    "name": "Product detail (激光灯产品线)",
+    "status": "FAIL",
+    "detail": "http://localhost:8080/products/beam-light/lx-auto-beam-light/"
+  },
+  {
+    "case_id": "P-07::PROD-DATA-03",
+    "name": "Technical specs (激光灯产品线)",
+    "status": "FAIL",
+    "detail": "missing=['Light Source Type', 'Channels', 'Weight']"
+  },
+  {
+    "case_id": "P-09::PROD-DATA-03",
+    "name": "RFQ button (激光灯产品线)",
+    "status": "FAIL",
+    "detail": "LX-LASER30-RGB"
+  },
+  {
+    "case_id": "F-01::FORM-CONTACT-01",
+    "name": "Contact form submit",
+    "status": "FAIL",
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+  },
+  {
+    "case_id": "F-01::FORM-CONTACT-02",
+    "name": "Contact form submit",
+    "status": "FAIL",
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+  },
+  {
+    "case_id": "F-01::FORM-CONTACT-03",
+    "name": "Contact form submit",
+    "status": "FAIL",
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+  },
+  {
+    "case_id": "F-02::FORM-NEG-01",
+    "name": "Validation negative",
+    "status": "PASS",
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+  },
+  {
+    "case_id": "F-02::FORM-NEG-02",
+    "name": "Validation negative",
+    "status": "PASS",
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+  },
+  {
+    "case_id": "F-02::FORM-NEG-03",
+    "name": "Validation negative",
+    "status": "PASS",
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+  },
+  {
+    "case_id": "F-03::FORM-RFQ-01",
+    "name": "RFQ submit",
+    "status": "FAIL",
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+  },
+  {
+    "case_id": "F-04::FORM-RFQ-01",
+    "name": "RFQ attachment",
+    "status": "FAIL",
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+  },
+  {
+    "case_id": "F-03::FORM-RFQ-02",
+    "name": "RFQ submit",
+    "status": "FAIL",
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+  },
+  {
+    "case_id": "F-04::FORM-RFQ-02",
+    "name": "RFQ attachment",
+    "status": "FAIL",
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+  },
+  {
+    "case_id": "F-03::FORM-RFQ-03",
+    "name": "RFQ submit",
+    "status": "FAIL",
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+  },
+  {
+    "case_id": "F-04::FORM-RFQ-03",
+    "name": "RFQ attachment",
+    "status": "FAIL",
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+  },
+  {
+    "case_id": "F-05::FORM-CATALOG-01",
+    "name": "Catalog lead submit",
+    "status": "FAIL",
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+  },
+  {
+    "case_id": "F-05::FORM-CATALOG-02",
+    "name": "Catalog lead submit",
+    "status": "FAIL",
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+  },
+  {
+    "case_id": "F-05::FORM-CATALOG-03",
+    "name": "Catalog lead submit",
+    "status": "FAIL",
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
+  },
+  {
+    "case_id": "F-06::FORM-CATALOG-RETURN-01",
     "name": "Returning catalog downloader",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
-  },
-  {
-    "case_id": "F-07",
-    "name": "Spam protection",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
-  },
-  {
-    "case_id": "F-08",
-    "name": "Batch inquiry form",
-    "status": "SKIP",
-    "detail": "Form plugin not installed/activated"
-  },
-  {
-    "case_id": "C-01",
-    "name": "Catalog archive exists",
     "status": "FAIL",
-    "detail": "HTTP 504 for /downloads/catalogs/"
+    "detail": "missing=['Returning visitor', 'Go to catalog downloads']"
   },
   {
-    "case_id": "C-02",
-    "name": "Category-specific catalogs",
-    "status": "SKIP",
-    "detail": "Requires uploaded PDF catalog files"
-  },
-  {
-    "case_id": "C-03",
-    "name": "Admin upload catalog",
+    "case_id": "F-06::FORM-CATALOG-RETURN-02",
+    "name": "Returning catalog downloader",
     "status": "FAIL",
-    "detail": "catalog CPT archive"
+    "detail": "missing=['Returning visitor']"
   },
   {
-    "case_id": "C-04",
-    "name": "Multilingual catalogs",
-    "status": "SKIP",
-    "detail": "Requires WPML/Polylang content"
-  },
-  {
-    "case_id": "C-05",
-    "name": "Download link expiry",
-    "status": "SKIP",
-    "detail": "Lead magnet expiry logic is not implemented in baseline"
-  },
-  {
-    "case_id": "A-01",
-    "name": "Brand story",
-    "status": "SKIP",
-    "detail": "About page content should be built in Elementor/content editor"
-  },
-  {
-    "case_id": "A-02",
-    "name": "Factory capability",
-    "status": "SKIP",
-    "detail": "About page content should be built in Elementor/content editor"
-  },
-  {
-    "case_id": "A-03",
-    "name": "Certificates",
-    "status": "SKIP",
-    "detail": "About page content should be built in Elementor/content editor"
-  },
-  {
-    "case_id": "A-04",
-    "name": "Video embed",
-    "status": "SKIP",
-    "detail": "About page content should be built in Elementor/content editor"
-  },
-  {
-    "case_id": "T-01",
-    "name": "Contact form page",
+    "case_id": "F-06::FORM-CATALOG-RETURN-03",
+    "name": "Returning catalog downloader",
     "status": "FAIL",
-    "detail": "HTTP 504"
+    "detail": "missing=['Go to catalog downloads']"
   },
   {
-    "case_id": "T-02",
-    "name": "Google Maps",
-    "status": "SKIP",
-    "detail": "map embed"
-  },
-  {
-    "case_id": "T-03",
-    "name": "Contact methods",
+    "case_id": "F-08::FORM-BATCH-01",
+    "name": "Batch inquiry submit",
     "status": "FAIL",
-    "detail": "email/phone"
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
   },
   {
-    "case_id": "T-04",
-    "name": "Social links",
+    "case_id": "F-08::FORM-BATCH-02",
+    "name": "Batch inquiry submit",
     "status": "FAIL",
-    "detail": "social links"
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
   },
   {
-    "case_id": "S-01",
-    "name": "Meta tags",
+    "case_id": "F-08::FORM-BATCH-03",
+    "name": "Batch inquiry submit",
     "status": "FAIL",
-    "detail": "HTTP 504 for /"
+    "detail": "http_404:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> <html><head> <title>404 Not Found</title> </head><body> <h1>Not Found</h1> <p>The request"
   },
   {
-    "case_id": "S-02",
-    "name": "XML sitemap",
-    "status": "SKIP",
-    "detail": "Requires Rank Math or WP sitemap routing"
-  },
-  {
-    "case_id": "S-03",
-    "name": "Structured data",
+    "case_id": "C-01::CAT-DATA-01",
+    "name": "Catalog archive (luxstage-catalog-01)",
     "status": "FAIL",
-    "detail": "Product schema"
+    "detail": "HTTP 404"
   },
   {
-    "case_id": "S-04",
-    "name": "Breadcrumbs",
+    "case_id": "C-02::CAT-DATA-01",
+    "name": "Catalog certification filter (ce)",
     "status": "FAIL",
-    "detail": "breadcrumb nav"
+    "detail": "cards=0"
   },
   {
-    "case_id": "S-05",
-    "name": "Image alt tags",
+    "case_id": "C-05::CAT-DATA-01",
+    "name": "Catalog link expiry (luxstage-catalog-01)",
+    "status": "FAIL",
+    "detail": "download link not found"
+  },
+  {
+    "case_id": "C-01::CAT-DATA-02",
+    "name": "Catalog archive (luxstage-catalog-02)",
+    "status": "FAIL",
+    "detail": "HTTP 404"
+  },
+  {
+    "case_id": "C-02::CAT-DATA-02",
+    "name": "Catalog certification filter (rohs)",
+    "status": "FAIL",
+    "detail": "cards=0"
+  },
+  {
+    "case_id": "C-05::CAT-DATA-02",
+    "name": "Catalog link expiry (luxstage-catalog-02)",
+    "status": "FAIL",
+    "detail": "download link not found"
+  },
+  {
+    "case_id": "C-01::CAT-DATA-03",
+    "name": "Catalog archive (luxstage-catalog-03)",
+    "status": "FAIL",
+    "detail": "HTTP 404"
+  },
+  {
+    "case_id": "C-02::CAT-DATA-03",
+    "name": "Catalog certification filter (ul)",
+    "status": "FAIL",
+    "detail": "cards=0"
+  },
+  {
+    "case_id": "C-05::CAT-DATA-03",
+    "name": "Catalog link expiry (luxstage-catalog-03)",
+    "status": "FAIL",
+    "detail": "download link not found"
+  },
+  {
+    "case_id": "A-01::ABOUT-DATA-01",
+    "name": "About content (ABOUT-DATA-01)",
+    "status": "FAIL",
+    "detail": "missing=['Brand Story']"
+  },
+  {
+    "case_id": "A-04::ABOUT-DATA-01",
+    "name": "About video (ABOUT-DATA-01)",
+    "status": "FAIL",
+    "detail": "missing=['iframe', 'youtube']"
+  },
+  {
+    "case_id": "A-01::ABOUT-DATA-02",
+    "name": "About content (ABOUT-DATA-02)",
+    "status": "FAIL",
+    "detail": "missing=['Factory Capability']"
+  },
+  {
+    "case_id": "A-04::ABOUT-DATA-02",
+    "name": "About video (ABOUT-DATA-02)",
+    "status": "FAIL",
+    "detail": "missing=['iframe']"
+  },
+  {
+    "case_id": "A-01::ABOUT-DATA-03",
+    "name": "About content (ABOUT-DATA-03)",
+    "status": "FAIL",
+    "detail": "missing=['Certificates']"
+  },
+  {
+    "case_id": "A-04::ABOUT-DATA-03",
+    "name": "About video (ABOUT-DATA-03)",
+    "status": "FAIL",
+    "detail": "missing=['youtube']"
+  },
+  {
+    "case_id": "T-02::CONTACT-DATA-01",
+    "name": "Contact map (CONTACT-DATA-01)",
+    "status": "FAIL",
+    "detail": "missing=['maps.google', 'google.com/maps']"
+  },
+  {
+    "case_id": "T-03::CONTACT-DATA-01",
+    "name": "Contact info (CONTACT-DATA-01)",
+    "status": "FAIL",
+    "detail": "missing=['sales@luxstage.com', '+86']"
+  },
+  {
+    "case_id": "T-02::CONTACT-DATA-02",
+    "name": "Contact map (CONTACT-DATA-02)",
+    "status": "FAIL",
+    "detail": "missing=['iframe']"
+  },
+  {
+    "case_id": "T-03::CONTACT-DATA-02",
+    "name": "Contact info (CONTACT-DATA-02)",
+    "status": "FAIL",
+    "detail": "missing=['sales@luxstage.com']"
+  },
+  {
+    "case_id": "T-02::CONTACT-DATA-03",
+    "name": "Contact map (CONTACT-DATA-03)",
+    "status": "FAIL",
+    "detail": "missing=['maps.google']"
+  },
+  {
+    "case_id": "T-03::CONTACT-DATA-03",
+    "name": "Contact info (CONTACT-DATA-03)",
+    "status": "FAIL",
+    "detail": "missing=['Guangzhou', 'sales@luxstage.com']"
+  },
+  {
+    "case_id": "S-01::SEO-DATA-01",
+    "name": "Meta tags (/)",
     "status": "PASS",
-    "detail": "image alt"
+    "detail": "HTTP 200"
   },
   {
-    "case_id": "S-06",
-    "name": "URL structure",
-    "status": "PASS",
-    "detail": "http://localhost:8080/products/beam-light/lx-ip67-beam-wash-outdoor/"
-  },
-  {
-    "case_id": "S-07",
-    "name": "robots.txt",
+    "case_id": "S-02::SEO-DATA-01",
+    "name": "Sitemap (/sitemap_index.xml)",
     "status": "FAIL",
-    "detail": "robots rules"
+    "detail": "HTTP 404"
   },
   {
-    "case_id": "L-01",
-    "name": "Language switcher",
-    "status": "SKIP",
-    "detail": "Requires WPML/Polylang"
-  },
-  {
-    "case_id": "L-02",
-    "name": "Static content translation",
-    "status": "SKIP",
-    "detail": "Requires WPML/Polylang"
-  },
-  {
-    "case_id": "L-03",
-    "name": "Product translation",
-    "status": "SKIP",
-    "detail": "Requires WPML/Polylang"
-  },
-  {
-    "case_id": "L-04",
-    "name": "Language URL prefix",
-    "status": "SKIP",
-    "detail": "Requires WPML/Polylang"
-  },
-  {
-    "case_id": "L-05",
-    "name": "Language cookie preference",
-    "status": "SKIP",
-    "detail": "Requires WPML/Polylang"
-  },
-  {
-    "case_id": "B-01",
-    "name": "Product create/read",
-    "status": "PASS",
-    "detail": "11 products"
-  },
-  {
-    "case_id": "B-02",
-    "name": "Product edit propagation",
-    "status": "PASS",
-    "detail": "Seed script updates products idempotently by SKU"
-  },
-  {
-    "case_id": "B-03",
-    "name": "Product delete behavior",
-    "status": "SKIP",
-    "detail": "Destructive delete test intentionally not run"
-  },
-  {
-    "case_id": "B-04",
-    "name": "Category admin",
-    "status": "PASS",
-    "detail": "product categories"
-  },
-  {
-    "case_id": "B-05",
-    "name": "Inquiry records",
-    "status": "SKIP",
-    "detail": "Requires form plugin submissions"
-  },
-  {
-    "case_id": "B-06",
-    "name": "Catalog PDF upload",
-    "status": "SKIP",
-    "detail": "Requires uploaded PDF fixture"
-  },
-  {
-    "case_id": "B-07",
-    "name": "User roles",
-    "status": "PASS",
-    "detail": "editor_manage_options=False, admin_manage_options=True"
-  },
-  {
-    "case_id": "X-01",
-    "name": "Home performance smoke",
+    "case_id": "S-07::SEO-DATA-01",
+    "name": "robots.txt (SEO-DATA-01)",
     "status": "FAIL",
-    "detail": "status=504, 0.06s"
+    "detail": "missing=['Disallow: /wp-admin/']"
   },
   {
-    "case_id": "X-02",
-    "name": "HTTPS/SSL",
+    "case_id": "S-01::SEO-DATA-02",
+    "name": "Meta tags (/products/)",
+    "status": "FAIL",
+    "detail": "HTTP 404"
+  },
+  {
+    "case_id": "S-02::SEO-DATA-02",
+    "name": "Sitemap (/wp-sitemap.xml)",
+    "status": "FAIL",
+    "detail": "HTTP 404"
+  },
+  {
+    "case_id": "S-07::SEO-DATA-02",
+    "name": "robots.txt (SEO-DATA-02)",
+    "status": "FAIL",
+    "detail": "missing=['User-agent']"
+  },
+  {
+    "case_id": "S-01::SEO-DATA-03",
+    "name": "Meta tags (/products/lx-mh350-pro/)",
+    "status": "FAIL",
+    "detail": "HTTP 404"
+  },
+  {
+    "case_id": "S-02::SEO-DATA-03",
+    "name": "Sitemap (/sitemap_index.xml)",
+    "status": "FAIL",
+    "detail": "HTTP 404"
+  },
+  {
+    "case_id": "S-07::SEO-DATA-03",
+    "name": "robots.txt (SEO-DATA-03)",
+    "status": "FAIL",
+    "detail": "missing=['Sitemap']"
+  },
+  {
+    "case_id": "X-05::SEC-SQLI-01",
+    "name": "SQLi smoke (/?s=%27%20OR%201%3D1)",
+    "status": "PASS",
+    "detail": "HTTP 200"
+  },
+  {
+    "case_id": "X-05::SEC-SQLI-02",
+    "name": "SQLi smoke (/products/?product_category=%27%20OR%201%3D1%20--)",
+    "status": "PASS",
+    "detail": "HTTP 404"
+  },
+  {
+    "case_id": "X-05::SEC-SQLI-03",
+    "name": "SQLi smoke (/wp-json/wp/v2/posts?search=%27%20OR%201%3D1%20--)",
+    "status": "PASS",
+    "detail": "HTTP 404"
+  },
+  {
+    "case_id": "X-01::PERF-DATA-01",
+    "name": "Performance smoke (/)",
+    "status": "PASS",
+    "detail": "HTTP 200, 0.36s"
+  },
+  {
+    "case_id": "X-07::PERF-DATA-01",
+    "name": "Cache headers (/)",
+    "status": "PASS",
+    "detail": "cache"
+  },
+  {
+    "case_id": "X-06::PERF-DATA-01",
+    "name": "Lazy loading (/)",
+    "status": "PASS",
+    "detail": "loading=\"lazy\""
+  },
+  {
+    "case_id": "X-01::PERF-DATA-02",
+    "name": "Performance smoke (/products/)",
+    "status": "FAIL",
+    "detail": "HTTP 404, 0.00s"
+  },
+  {
+    "case_id": "X-07::PERF-DATA-02",
+    "name": "Cache headers (/products/)",
     "status": "SKIP",
-    "detail": "Local Docker runs over HTTP"
+    "detail": "cache"
   },
   {
-    "case_id": "X-03",
-    "name": "Login protection",
+    "case_id": "X-06::PERF-DATA-02",
+    "name": "Lazy loading (/products/)",
+    "status": "PASS",
+    "detail": "loading=\"lazy\""
+  },
+  {
+    "case_id": "X-01::PERF-DATA-03",
+    "name": "Performance smoke (/downloads/catalogs/)",
     "status": "FAIL",
-    "detail": "Install Wordfence or equivalent protection plugin"
+    "detail": "HTTP 404, 0.00s"
   },
   {
-    "case_id": "X-04",
-    "name": "XSS baseline escaping",
+    "case_id": "X-07::PERF-DATA-03",
+    "name": "Cache headers (/downloads/catalogs/)",
+    "status": "SKIP",
+    "detail": "etag"
+  },
+  {
+    "case_id": "X-06::PERF-DATA-03",
+    "name": "Lazy loading (/downloads/catalogs/)",
     "status": "PASS",
-    "detail": "Theme output uses escaping functions"
-  },
-  {
-    "case_id": "X-05",
-    "name": "SQL injection smoke",
-    "status": "FAIL",
-    "detail": "HTTP 598"
-  },
-  {
-    "case_id": "X-06",
-    "name": "Image lazy loading",
-    "status": "PASS",
-    "detail": "Depends on product images"
-  },
-  {
-    "case_id": "X-07",
-    "name": "Static cache headers",
-    "status": "PASS",
-    "detail": "Depends on web server/CDN cache"
+    "detail": "loading=\"lazy\""
   }
 ]
