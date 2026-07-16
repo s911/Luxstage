@@ -25,7 +25,7 @@ Options:
   --admin-user USER        WordPress admin username (default: luxstage_admin)
   --title TITLE            WordPress site title (default: Luxstage B2B)
   --no-ssl                 Configure HTTP reverse proxy only
-  --seed-demo-data         Import demo products after installation
+  --seed-demo-data         Import demo data (3 records per feature) after installation
   -h, --help               Show this help
 
 Environment overrides:

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Seed 3 demo records for each Luxstage content feature:
+# products, catalogs, applications, inquiries.
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"

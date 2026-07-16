@@ -1,6 +1,7 @@
 <?php
 /**
- * Seed Luxstage demo products for local/staging verification.
+ * Seed Luxstage demo data for local/staging verification.
+ * Creates 3 records for each content feature: products, catalogs, applications, inquiries.
  */
 
 $products = [
@@ -67,99 +68,6 @@ $products = [
         'certification_standards' => ['CE', 'RoHS', 'FCC'],
     ],
     [
-        'title' => 'LX-STROBE1000 LED Strobe Bar',
-        'sku' => 'LX-STROBE1000',
-        'category' => 'Strobe',
-        'scene' => ['Concert', 'Disco / Club'],
-        'source' => 'LED',
-        'certification' => ['CE', 'RoHS'],
-        'model' => 'S-Series 1000',
-        'light_source_type' => 'LED',
-        'wattage' => '1000W',
-        'color_temperature' => '6500K white + RGB backlight',
-        'light_life' => '50000 hours',
-        'luminous_flux' => 30000,
-        'beam_angle' => '120°',
-        'cri' => 80,
-        'channels' => '12CH / 24CH',
-        'control_protocols' => ['DMX512', 'RDM', 'Art-Net'],
-        'wireless_control' => 1,
-        'weight' => 11.5,
-        'dimensions' => '1000x120x210mm',
-        'ip_rating' => 'IP20',
-        'voltage' => 'AC 100-240V, 50/60Hz',
-        'max_power' => 1100,
-        'effect_features' => ['Color Wheel'],
-        'prism' => '',
-        'dimming_curves' => ['Linear', 'S-Curve'],
-        'refresh_rate' => '25000Hz',
-        'accessories' => 'Power cable, signal cable, hanging bracket, manual',
-        'optional_accessories' => 'Flight case, clamp',
-        'certification_standards' => ['CE', 'RoHS'],
-    ],
-    [
-        'title' => 'LX-FX200 RGBW Effect Light',
-        'sku' => 'LX-FX200-RGBW',
-        'category' => 'Effect Light',
-        'scene' => ['Disco / Club', 'Theatre'],
-        'source' => 'LED',
-        'certification' => ['CE'],
-        'model' => 'FX-Series 200',
-        'light_source_type' => 'LED',
-        'wattage' => '200W',
-        'color_temperature' => 'RGBW color mixing',
-        'light_life' => '50000 hours',
-        'luminous_flux' => 7600,
-        'beam_angle' => '8°-50°',
-        'cri' => 88,
-        'channels' => '14CH',
-        'control_protocols' => ['DMX512'],
-        'wireless_control' => 0,
-        'weight' => 9.2,
-        'dimensions' => '360x240x410mm',
-        'ip_rating' => 'IP20',
-        'voltage' => 'AC 100-240V, 50/60Hz',
-        'max_power' => 260,
-        'effect_features' => ['Color Wheel', 'Gobo Wheel', 'Zoom'],
-        'prism' => '6-facet prism',
-        'dimming_curves' => ['Linear', 'L-Curve'],
-        'refresh_rate' => '8000Hz',
-        'accessories' => 'Power cable, DMX cable, bracket, user manual',
-        'optional_accessories' => 'Clamp, safety rope',
-        'certification_standards' => ['CE'],
-    ],
-    [
-        'title' => 'LX-FOLLOW1200 Follow Spot',
-        'sku' => 'LX-FOLLOW1200',
-        'category' => 'Follow Spot',
-        'scene' => ['Theatre', 'Concert'],
-        'source' => 'Bulb',
-        'certification' => ['CE', 'UL'],
-        'model' => 'Follow 1200',
-        'light_source_type' => 'Bulb',
-        'wattage' => '1200W',
-        'color_temperature' => '5600K',
-        'light_life' => '1500 hours',
-        'luminous_flux' => 52000,
-        'beam_angle' => '5°-12°',
-        'cri' => 92,
-        'channels' => 'Manual / 6CH',
-        'control_protocols' => ['DMX512'],
-        'wireless_control' => 0,
-        'weight' => 38,
-        'dimensions' => '980x420x520mm',
-        'ip_rating' => 'IP20',
-        'voltage' => 'AC 220V, 50/60Hz',
-        'max_power' => 1350,
-        'effect_features' => ['Color Wheel', 'Frost'],
-        'prism' => '',
-        'dimming_curves' => ['Linear'],
-        'refresh_rate' => 'N/A',
-        'accessories' => 'Power cable, iris, color frame, tripod, manual',
-        'optional_accessories' => 'Flight case, spare lamp',
-        'certification_standards' => ['CE', 'UL'],
-    ],
-    [
         'title' => 'LX-LASER30 RGB Animation Laser',
         'sku' => 'LX-LASER30-RGB',
         'category' => 'Laser Light',
@@ -190,129 +98,74 @@ $products = [
         'optional_accessories' => 'Flight case, emergency stop switch',
         'certification_standards' => ['CE'],
     ],
+];
+
+$catalogs = [
     [
-        'title' => 'LX-BEAM380 Hybrid Beam Light',
-        'sku' => 'LX-BEAM380-HYB',
-        'category' => 'Beam Light',
-        'scene' => ['Concert', 'Outdoor Festival'],
-        'source' => 'Bulb',
-        'certification' => ['CE', 'RoHS', 'ETL'],
-        'model' => 'Beam 380 Hybrid',
-        'light_source_type' => 'Hybrid',
-        'wattage' => '380W',
-        'color_temperature' => '8000K',
-        'light_life' => '2000 hours',
-        'luminous_flux' => 22000,
-        'beam_angle' => '1.8°-20°',
-        'cri' => 86,
-        'channels' => '20CH / 24CH',
-        'control_protocols' => ['DMX512', 'RDM'],
-        'wireless_control' => 1,
-        'weight' => 25,
-        'dimensions' => '450x350x680mm',
-        'ip_rating' => 'IP20',
-        'voltage' => 'AC 100-240V, 50/60Hz',
-        'max_power' => 560,
-        'effect_features' => ['Color Wheel', 'Gobo Wheel', 'Prism', 'Frost', 'Zoom'],
-        'prism' => '8-facet + linear prism',
-        'dimming_curves' => ['Linear', 'S-Curve'],
-        'refresh_rate' => 'N/A',
-        'accessories' => 'Power cable, DMX cable, omega bracket, safety cable, manual',
-        'optional_accessories' => 'Flight case, clamp',
-        'certification_standards' => ['CE', 'RoHS', 'ETL'],
+        'title' => 'Luxstage Catalog 01',
+        'slug' => 'luxstage-catalog-01',
+        'version' => '2026.Q1',
+        'certification' => 'CE',
+        'excerpt' => 'Full-line stage lighting catalog for B2B buyers.',
     ],
     [
-        'title' => 'LX-WASH760 LED Moving Wash',
-        'sku' => 'LX-WASH760',
-        'category' => 'Moving Head',
-        'scene' => ['TV Studio', 'Theatre'],
-        'source' => 'LED',
-        'certification' => ['CE', 'RoHS'],
-        'model' => 'Wash 760',
-        'light_source_type' => 'LED',
-        'wattage' => '760W',
-        'color_temperature' => '2700K-8000K',
-        'light_life' => '50000 hours',
-        'luminous_flux' => 26000,
-        'beam_angle' => '6°-55°',
-        'cri' => 95,
-        'channels' => '24CH / 36CH',
-        'control_protocols' => ['DMX512', 'RDM', 'sACN'],
-        'wireless_control' => 1,
-        'weight' => 24.5,
-        'dimensions' => '480x330x610mm',
-        'ip_rating' => 'IP20',
-        'voltage' => 'AC 100-240V, 50/60Hz',
-        'max_power' => 820,
-        'effect_features' => ['Zoom', 'Frost'],
-        'prism' => '',
-        'dimming_curves' => ['Linear', 'S-Curve', 'L-Curve'],
-        'refresh_rate' => '25000Hz',
-        'accessories' => 'Power cable, signal cable, omega bracket, manual',
-        'optional_accessories' => 'Flight case, wireless DMX receiver',
-        'certification_standards' => ['CE', 'RoHS'],
+        'title' => 'Luxstage Catalog 02',
+        'slug' => 'luxstage-catalog-02',
+        'version' => '2026.Q1-IP',
+        'certification' => 'RoHS',
+        'excerpt' => 'Outdoor IP65/IP67 fixture catalog for rental and festival projects.',
     ],
     [
-        'title' => 'LX-PAR1210 Compact LED Par',
-        'sku' => 'LX-PAR1210',
-        'category' => 'LED Par',
-        'scene' => ['Theatre', 'Event Rental'],
-        'source' => 'LED',
-        'certification' => ['CE', 'RoHS'],
-        'model' => 'PAR 12x10W RGBW',
-        'light_source_type' => 'LED',
-        'wattage' => '120W',
-        'color_temperature' => 'RGBW color mixing',
-        'light_life' => '50000 hours',
-        'luminous_flux' => 4800,
-        'beam_angle' => '30°',
-        'cri' => 89,
-        'channels' => '4CH / 8CH',
-        'control_protocols' => ['DMX512'],
-        'wireless_control' => 0,
-        'weight' => 3.8,
-        'dimensions' => '220x180x260mm',
-        'ip_rating' => 'IP20',
-        'voltage' => 'AC 100-240V, 50/60Hz',
-        'max_power' => 150,
-        'effect_features' => [],
-        'prism' => '',
-        'dimming_curves' => ['Linear'],
-        'refresh_rate' => '4000Hz',
-        'accessories' => 'Power cable, bracket, manual',
-        'optional_accessories' => 'Clamp, carry bag',
-        'certification_standards' => ['CE', 'RoHS'],
+        'title' => 'Luxstage Catalog 03',
+        'slug' => 'luxstage-catalog-03',
+        'version' => '2026.Laser',
+        'certification' => 'UL',
+        'excerpt' => 'Laser and effect lighting catalog with certification matrix.',
+    ],
+];
+
+$applications = [
+    [
+        'title' => 'Luxstage Application Case 01',
+        'slug' => 'luxstage-application-01',
+        'scene' => 'Concert',
+        'content' => 'Arena concert install using LX-MH350-PRO moving heads for aerial beam looks and mid-air prism effects.',
     ],
     [
-        'title' => 'LX-IP67 Beam Wash Outdoor',
-        'sku' => 'LX-IP67-BW',
-        'category' => 'Beam Light',
-        'scene' => ['Outdoor Festival', 'Event Rental'],
-        'source' => 'LED',
-        'certification' => ['CE', 'RoHS', 'FCC'],
-        'model' => 'Outdoor Beam Wash IP67',
-        'light_source_type' => 'LED',
-        'wattage' => '480W',
-        'color_temperature' => 'RGBL color mixing',
-        'light_life' => '50000 hours',
-        'luminous_flux' => 18500,
-        'beam_angle' => '4°-42° motorized zoom',
-        'cri' => 90,
-        'channels' => '18CH / 26CH',
-        'control_protocols' => ['DMX512', 'RDM', 'Art-Net'],
-        'wireless_control' => 1,
-        'weight' => 28,
-        'dimensions' => '510x360x650mm',
-        'ip_rating' => 'IP67',
-        'voltage' => 'AC 100-240V, 50/60Hz',
-        'max_power' => 540,
-        'effect_features' => ['Zoom', 'Frost'],
-        'prism' => '',
-        'dimming_curves' => ['Linear', 'S-Curve'],
-        'refresh_rate' => '25000Hz',
-        'accessories' => 'Waterproof power cable, waterproof DMX cable, bracket, manual',
-        'optional_accessories' => 'Flight case, outdoor clamp',
-        'certification_standards' => ['CE', 'RoHS', 'FCC'],
+        'title' => 'Luxstage Application Case 02',
+        'slug' => 'luxstage-application-02',
+        'scene' => 'Outdoor Festival',
+        'content' => 'Outdoor festival stage wash with LX-PAR1815-IP65 fixtures covering front truss and side towers in IP65 conditions.',
+    ],
+    [
+        'title' => 'Luxstage Application Case 03',
+        'slug' => 'luxstage-application-03',
+        'scene' => 'Disco / Club',
+        'content' => 'Nightclub ceiling grid featuring LX-LASER30-RGB animation laser synchronized with DMX/Art-Net show control.',
+    ],
+];
+
+$inquiries = [
+    [
+        'title' => 'Demo Inquiry Fixture 01',
+        'slug' => 'demo-inquiry-fixture-01',
+        'content' => "Name: Alex Chen\nEmail: alex.chen@example.com\nCompany: Starlight Events\nSKU: LX-MH350-PRO\nMessage: Need 12 units quote with flight cases for Q3 tour.",
+        'mail_status' => 'sent',
+        'mail_to' => 'sales@luxstage.local',
+    ],
+    [
+        'title' => 'Demo Inquiry Fixture 02',
+        'slug' => 'demo-inquiry-fixture-02',
+        'content' => "Name: Maria Lopez\nEmail: maria.lopez@example.com\nCompany: Pacific Rental Co.\nSKU: LX-PAR1815-IP65\nMessage: Request outdoor LED Par pricing and lead time for festival season.",
+        'mail_status' => 'sent',
+        'mail_to' => 'sales@luxstage.local',
+    ],
+    [
+        'title' => 'Demo Inquiry Fixture 03',
+        'slug' => 'demo-inquiry-fixture-03',
+        'content' => "Name: Wei Zhang\nEmail: wei.zhang@example.com\nCompany: Neon Club Group\nSKU: LX-LASER30-RGB\nMessage: Looking for laser package with safety interlock accessories.",
+        'mail_status' => 'failed',
+        'mail_to' => 'sales@luxstage.local',
     ],
 ];
 
@@ -341,8 +194,45 @@ function luxstage_demo_ensure_term(string $taxonomy, string $name): int
     return (int) (is_array($term) ? $term['term_id'] : $term);
 }
 
-$created = 0;
-$updated = 0;
+function luxstage_demo_upsert_by_slug(string $post_type, string $slug, array $post_data): int
+{
+    $existing = get_posts([
+        'post_type' => $post_type,
+        'name' => $slug,
+        'posts_per_page' => 1,
+        'post_status' => 'any',
+    ]);
+
+    if ($existing) {
+        $post_id = (int) $existing[0]->ID;
+        $post_data['ID'] = $post_id;
+        $result = wp_update_post($post_data, true);
+    } else {
+        $post_data['post_type'] = $post_type;
+        $post_data['post_name'] = $slug;
+        $result = wp_insert_post($post_data, true);
+        $post_id = (int) $result;
+    }
+
+    if (is_wp_error($result)) {
+        WP_CLI::error($result->get_error_message());
+    }
+
+    return $post_id;
+}
+
+$created = [
+    'products' => 0,
+    'catalogs' => 0,
+    'applications' => 0,
+    'inquiries' => 0,
+];
+$updated = [
+    'products' => 0,
+    'catalogs' => 0,
+    'applications' => 0,
+    'inquiries' => 0,
+];
 
 foreach ($products as $product) {
     $existing = get_posts([
@@ -377,10 +267,10 @@ foreach ($products as $product) {
         $post_id = (int) $existing[0];
         $post_data['ID'] = $post_id;
         wp_update_post($post_data, true);
-        $updated++;
+        $updated['products']++;
     } else {
         $post_id = wp_insert_post($post_data, true);
-        $created++;
+        $created['products']++;
     }
 
     if (is_wp_error($post_id)) {
@@ -418,4 +308,99 @@ foreach ($products as $product) {
     wp_set_object_terms($post_id, array_map(static fn($term) => luxstage_demo_ensure_term('certification', $term), $product['certification']), 'certification');
 }
 
-WP_CLI::success(sprintf('Seeded Luxstage demo products. Created: %d, Updated: %d.', $created, $updated));
+foreach ($catalogs as $catalog) {
+    $existing = get_posts([
+        'post_type' => 'catalog',
+        'name' => $catalog['slug'],
+        'posts_per_page' => 1,
+        'post_status' => 'any',
+    ]);
+
+    $post_id = luxstage_demo_upsert_by_slug('catalog', $catalog['slug'], [
+        'post_status' => 'publish',
+        'post_title' => $catalog['title'],
+        'post_excerpt' => $catalog['excerpt'],
+        'post_content' => $catalog['excerpt'] . ' Download the PDF after submitting a catalog request form.',
+    ]);
+
+    if ($existing) {
+        $updated['catalogs']++;
+    } else {
+        $created['catalogs']++;
+    }
+
+    $upload = wp_upload_dir();
+    $file = trailingslashit((string) $upload['basedir']) . $catalog['slug'] . '.pdf';
+    if (!is_dir(dirname($file))) {
+        wp_mkdir_p(dirname($file));
+    }
+    if (!file_exists($file)) {
+        file_put_contents($file, 'Luxstage catalog file for ' . $catalog['title']);
+    }
+
+    $url = trailingslashit((string) $upload['baseurl']) . $catalog['slug'] . '.pdf';
+    update_post_meta($post_id, 'pdf_url', $url);
+    luxstage_demo_set_field($post_id, 'pdf_file', $url);
+    luxstage_demo_set_field($post_id, 'catalog_version', $catalog['version']);
+    wp_set_object_terms($post_id, [luxstage_demo_ensure_term('certification', $catalog['certification'])], 'certification');
+}
+
+foreach ($applications as $application) {
+    $existing = get_posts([
+        'post_type' => 'application',
+        'name' => $application['slug'],
+        'posts_per_page' => 1,
+        'post_status' => 'any',
+    ]);
+
+    $post_id = luxstage_demo_upsert_by_slug('application', $application['slug'], [
+        'post_status' => 'publish',
+        'post_title' => $application['title'],
+        'post_content' => $application['content'],
+        'post_excerpt' => wp_trim_words($application['content'], 24),
+    ]);
+
+    if ($existing) {
+        $updated['applications']++;
+    } else {
+        $created['applications']++;
+    }
+
+    wp_set_object_terms($post_id, [luxstage_demo_ensure_term('application_scene', $application['scene'])], 'application_scene');
+}
+
+foreach ($inquiries as $inquiry) {
+    $existing = get_posts([
+        'post_type' => 'inquiry_record',
+        'name' => $inquiry['slug'],
+        'posts_per_page' => 1,
+        'post_status' => 'any',
+    ]);
+
+    $post_id = luxstage_demo_upsert_by_slug('inquiry_record', $inquiry['slug'], [
+        'post_status' => 'publish',
+        'post_title' => $inquiry['title'],
+        'post_content' => $inquiry['content'],
+    ]);
+
+    if ($existing) {
+        $updated['inquiries']++;
+    } else {
+        $created['inquiries']++;
+    }
+
+    update_post_meta($post_id, 'mail_status', $inquiry['mail_status']);
+    update_post_meta($post_id, 'mail_to', $inquiry['mail_to']);
+}
+
+WP_CLI::success(sprintf(
+    'Seeded Luxstage demo data (3 per feature). Products C/U: %d/%d, Catalogs C/U: %d/%d, Applications C/U: %d/%d, Inquiries C/U: %d/%d.',
+    $created['products'],
+    $updated['products'],
+    $created['catalogs'],
+    $updated['catalogs'],
+    $created['applications'],
+    $updated['applications'],
+    $created['inquiries'],
+    $updated['inquiries']
+));
