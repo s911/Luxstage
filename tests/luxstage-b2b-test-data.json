@@ -1,0 +1,535 @@
+{
+  "meta": {
+    "document": "Luxstage_B2B独立站_功能测试用例文档",
+    "version": "V1.0",
+    "generated_at": "2026-07-16",
+    "datasets_per_module": 3,
+    "total_cases": 65
+  },
+  "home": {
+    "datasets": [
+      {
+        "id": "HOME-DATA-01",
+        "label": "桌面端冒烟",
+        "url": "/",
+        "viewport": "1920x1080",
+        "cta_text": ["View Products", "Get Catalog"],
+        "min_featured_products": 4,
+        "cert_badges": ["CE", "RoHS", "UL"],
+        "nav_links": ["Products", "Applications", "Downloads", "Contact"],
+        "footer_checks": ["sales@luxstage.com", "LinkedIn"]
+      },
+      {
+        "id": "HOME-DATA-02",
+        "label": "平板端布局",
+        "url": "/",
+        "viewport": "1024x768",
+        "cta_text": ["View Products", "Get Catalog"],
+        "min_featured_products": 4,
+        "cert_badges": ["CE", "UL"],
+        "nav_links": ["Products", "Contact"],
+        "footer_checks": ["sales@luxstage.com"]
+      },
+      {
+        "id": "HOME-DATA-03",
+        "label": "手机端布局",
+        "url": "/",
+        "viewport": "390x844",
+        "cta_text": ["View Products"],
+        "min_featured_products": 4,
+        "cert_badges": ["RoHS"],
+        "nav_links": ["Products", "Downloads"],
+        "footer_checks": ["LinkedIn"]
+      }
+    ]
+  },
+  "products": {
+    "datasets": [
+      {
+        "id": "PROD-DATA-01",
+        "label": "摇头灯产品线",
+        "categories": ["Moving Head"],
+        "list_path": "/products/",
+        "filter_query": "/products/?product_category=moving-head",
+        "sort_query": "/products/?sort=title_asc",
+        "product_slug": "lx-mh350-pro",
+        "gallery_checks": ["Media Gallery"],
+        "spec_labels": ["Wattage", "DMX Channels", "IP Rating", "Voltage"],
+        "related_section": "Related Products",
+        "rfq_sku": "LX-MH350-PRO",
+        "catalog_cta": "Download PDF",
+        "batch_skus": ["LX-MH350-PRO", "LX-PAR1815-IP65"]
+      },
+      {
+        "id": "PROD-DATA-02",
+        "label": "LED Par户外线",
+        "categories": ["LED Par"],
+        "list_path": "/products/category/led-par/",
+        "filter_query": "/products/?light_source=led",
+        "sort_query": "/products/?sort=title_desc",
+        "product_slug": "lx-par1815-ip65",
+        "gallery_checks": ["Watch Product Video", "Media Gallery"],
+        "spec_labels": ["Control Protocols", "Certification Standards"],
+        "related_section": "Related Products",
+        "rfq_sku": "LX-PAR1815-IP65",
+        "catalog_cta": "Download PDF",
+        "batch_skus": ["LX-PAR1815-IP65", "LX-STROBE1200"]
+      },
+      {
+        "id": "PROD-DATA-03",
+        "label": "激光灯产品线",
+        "categories": ["Laser Light"],
+        "list_path": "/products/category/laser-light/",
+        "filter_query": "/products/?product_category=laser-light",
+        "sort_query": "/products/?sort=date_desc",
+        "product_slug": "lx-laser30-rgb",
+        "gallery_checks": ["Media Gallery", "img"],
+        "spec_labels": ["Light Source Type", "Channels", "Weight"],
+        "related_section": "Related Products",
+        "rfq_sku": "LX-LASER30-RGB",
+        "catalog_cta": "Download PDF",
+        "batch_skus": ["LX-LASER30-RGB", "LX-MH350-PRO", "LX-PAR1815-IP65"]
+      }
+    ]
+  },
+  "forms": {
+    "contact": [
+      {
+        "id": "FORM-CONTACT-01",
+        "your-name": "Alex Chen",
+        "your-email": "alex.chen@starlight-events.com",
+        "your-company": "Starlight Events Ltd.",
+        "your-phone": "+86-13800000001",
+        "your-message": "Need OEM moving head package for 2026 arena tour."
+      },
+      {
+        "id": "FORM-CONTACT-02",
+        "your-name": "Maria Lopez",
+        "your-email": "maria.lopez@pacific-rental.com",
+        "your-company": "Pacific Rental Co.",
+        "your-phone": "+1-415-555-0102",
+        "your-message": "Looking for IP65 LED Par fixtures for outdoor festival season."
+      },
+      {
+        "id": "FORM-CONTACT-03",
+        "your-name": "Wei Zhang",
+        "your-email": "wei.zhang@neonclub.cn",
+        "your-company": "Neon Club Group",
+        "your-phone": "+86-13900000003",
+        "your-message": "Request distributor pricing and lead time for laser effect lights."
+      }
+    ],
+    "rfq": [
+      {
+        "id": "FORM-RFQ-01",
+        "your-name": "Alex Chen",
+        "your-email": "alex.chen@starlight-events.com",
+        "your-company": "Starlight Events Ltd.",
+        "product-sku": "LX-MH350-PRO",
+        "your-quantity": "12",
+        "your-message": "Need quotation with flight cases and DMX cables.",
+        "attachment": {
+          "filename": "mh350-spec-en.pdf",
+          "content_type": "application/pdf",
+          "content": "Mock MH350 technical requirement document."
+        }
+      },
+      {
+        "id": "FORM-RFQ-02",
+        "your-name": "Maria Lopez",
+        "your-email": "maria.lopez@pacific-rental.com",
+        "your-company": "Pacific Rental Co.",
+        "product-sku": "LX-PAR1815-IP65",
+        "your-quantity": "48",
+        "your-message": "Outdoor festival wash package, request best FOB price.",
+        "attachment": {
+          "filename": "par-rider.docx",
+          "content_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "content": "Mock PAR fixture rider document."
+        }
+      },
+      {
+        "id": "FORM-RFQ-03",
+        "your-name": "Wei Zhang",
+        "your-email": "wei.zhang@neonclub.cn",
+        "your-company": "Neon Club Group",
+        "product-sku": "LX-LASER30-RGB",
+        "your-quantity": "6",
+        "your-message": "Laser package with safety interlock and Art-Net control.",
+        "attachment": {
+          "filename": "laser-brief.txt",
+          "content_type": "text/plain",
+          "content": "Mock laser project brief for nightclub ceiling grid."
+        }
+      }
+    ],
+    "catalog": [
+      {
+        "id": "FORM-CATALOG-01",
+        "your-name": "Alex Chen",
+        "your-email": "alex.chen@starlight-events.com",
+        "your-company": "Starlight Events Ltd.",
+        "your-phone": "+86-13800000001"
+      },
+      {
+        "id": "FORM-CATALOG-02",
+        "your-name": "Maria Lopez",
+        "your-email": "maria.lopez@pacific-rental.com",
+        "your-company": "Pacific Rental Co.",
+        "your-phone": "+1-415-555-0102"
+      },
+      {
+        "id": "FORM-CATALOG-03",
+        "your-name": "Wei Zhang",
+        "your-email": "wei.zhang@neonclub.cn",
+        "your-company": "Neon Club Group",
+        "your-phone": "+86-13900000003"
+      }
+    ],
+    "catalog_returning": [
+      {
+        "id": "FORM-CATALOG-RETURN-01",
+        "cookie_query": "/catalog-request/?luxstage_catalog_return=1",
+        "expected_text": ["Returning visitor", "Go to catalog downloads"]
+      },
+      {
+        "id": "FORM-CATALOG-RETURN-02",
+        "cookie_query": "/catalog-request/?luxstage_catalog_return=1",
+        "expected_text": ["Returning visitor"]
+      },
+      {
+        "id": "FORM-CATALOG-RETURN-03",
+        "cookie_query": "/catalog-request/?luxstage_catalog_return=1",
+        "expected_text": ["Go to catalog downloads"]
+      }
+    ],
+    "batch": [
+      {
+        "id": "FORM-BATCH-01",
+        "your-name": "Alex Chen",
+        "your-email": "alex.chen@starlight-events.com",
+        "product-list": "LX-MH350-PRO x12\nLX-PAR1815-IP65 x24"
+      },
+      {
+        "id": "FORM-BATCH-02",
+        "your-name": "Maria Lopez",
+        "your-email": "maria.lopez@pacific-rental.com",
+        "product-list": "LX-PAR1815-IP65 x48\nLX-STROBE1200 x16"
+      },
+      {
+        "id": "FORM-BATCH-03",
+        "your-name": "Wei Zhang",
+        "your-email": "wei.zhang@neonclub.cn",
+        "product-list": "LX-LASER30-RGB x6\nLX-MH350-PRO x8\nLX-PAR1815-IP65 x20"
+      }
+    ],
+    "validation_negative": [
+      {
+        "id": "FORM-NEG-01",
+        "your-name": "",
+        "your-email": "invalid-email",
+        "your-message": "",
+        "expect_submit_fail": true
+      },
+      {
+        "id": "FORM-NEG-02",
+        "your-name": "Test User",
+        "your-email": "not-an-email",
+        "your-message": "Missing required format checks.",
+        "expect_submit_fail": true
+      },
+      {
+        "id": "FORM-NEG-03",
+        "your-name": "",
+        "your-email": "",
+        "your-company": "Only Company",
+        "your-message": "",
+        "expect_submit_fail": true
+      }
+    ],
+    "spam": [
+      {
+        "id": "FORM-SPAM-01",
+        "your-name": "viagra cheap offer",
+        "your-email": "spam1@bot-mail.test",
+        "your-message": "buy cialis now click http://spam.test"
+      },
+      {
+        "id": "FORM-SPAM-02",
+        "your-name": "casino winner",
+        "your-email": "spam2@bot-mail.test",
+        "your-message": "free money lottery winner guaranteed"
+      },
+      {
+        "id": "FORM-SPAM-03",
+        "your-name": "seo services",
+        "your-email": "spam3@bot-mail.test",
+        "your-message": "rank #1 google backlinks cheap"
+      }
+    ]
+  },
+  "catalogs": {
+    "datasets": [
+      {
+        "id": "CAT-DATA-01",
+        "slug": "luxstage-catalog-01",
+        "certification": "ce",
+        "archive_path": "/downloads/catalogs/",
+        "lang": "en",
+        "expired_sig": "expires=1&sig=invalid"
+      },
+      {
+        "id": "CAT-DATA-02",
+        "slug": "luxstage-catalog-02",
+        "certification": "rohs",
+        "archive_path": "/downloads/catalogs/?certification=rohs",
+        "lang": "zh",
+        "expired_sig": "expires=1&sig=invalid"
+      },
+      {
+        "id": "CAT-DATA-03",
+        "slug": "luxstage-catalog-03",
+        "certification": "ul",
+        "archive_path": "/downloads/catalogs/?certification=ul",
+        "lang": "en",
+        "expired_sig": "expires=1&sig=invalid"
+      }
+    ]
+  },
+  "about": {
+    "datasets": [
+      {
+        "id": "ABOUT-DATA-01",
+        "path": "/about-us/",
+        "keywords": ["Brand Story"],
+        "cert_keywords": ["Certificates", "CE"],
+        "video_embed": ["iframe", "youtube"]
+      },
+      {
+        "id": "ABOUT-DATA-02",
+        "path": "/about-us/",
+        "keywords": ["Factory Capability"],
+        "cert_keywords": ["RoHS", "UL"],
+        "video_embed": ["iframe"]
+      },
+      {
+        "id": "ABOUT-DATA-03",
+        "path": "/about-us/",
+        "keywords": ["Certificates"],
+        "cert_keywords": ["CE", "RoHS", "UL"],
+        "video_embed": ["youtube"]
+      }
+    ]
+  },
+  "contact": {
+    "datasets": [
+      {
+        "id": "CONTACT-DATA-01",
+        "path": "/contact/",
+        "map_embed": ["maps.google", "google.com/maps"],
+        "contact_info": ["sales@luxstage.com", "+86"],
+        "social_links": ["LinkedIn"]
+      },
+      {
+        "id": "CONTACT-DATA-02",
+        "path": "/contact/",
+        "map_embed": ["iframe"],
+        "contact_info": ["sales@luxstage.com"],
+        "social_links": ["YouTube", "LinkedIn"]
+      },
+      {
+        "id": "CONTACT-DATA-03",
+        "path": "/contact/",
+        "map_embed": ["maps.google"],
+        "contact_info": ["Guangzhou", "sales@luxstage.com"],
+        "social_links": ["LinkedIn"]
+      }
+    ]
+  },
+  "seo": {
+    "datasets": [
+      {
+        "id": "SEO-DATA-01",
+        "path": "/",
+        "sitemap_path": "/sitemap_index.xml",
+        "schema_types": ["Product", "application/ld+json"],
+        "breadcrumb_class": "lux-breadcrumbs",
+        "alt_required": true,
+        "url_pattern": "/products/",
+        "robots_rules": ["Disallow: /wp-admin/"]
+      },
+      {
+        "id": "SEO-DATA-02",
+        "path": "/products/",
+        "sitemap_path": "/wp-sitemap.xml",
+        "schema_types": ["BreadcrumbList"],
+        "breadcrumb_class": "lux-breadcrumbs",
+        "alt_required": true,
+        "url_pattern": "/products/moving-head/",
+        "robots_rules": ["User-agent"]
+      },
+      {
+        "id": "SEO-DATA-03",
+        "path": "/products/lx-mh350-pro/",
+        "sitemap_path": "/sitemap_index.xml",
+        "schema_types": ["Product"],
+        "breadcrumb_class": "lux-breadcrumbs",
+        "alt_required": true,
+        "url_pattern": "/products/{category}/{slug}/",
+        "robots_rules": ["Sitemap"]
+      }
+    ]
+  },
+  "languages": {
+    "datasets": [
+      {
+        "id": "LANG-DATA-01",
+        "expected_langs": ["en", "zh"],
+        "target_lang": "en",
+        "product_slug": "lx-mh350-pro",
+        "url_prefix": "/en/",
+        "cookie_name": "pll_language"
+      },
+      {
+        "id": "LANG-DATA-02",
+        "expected_langs": ["zh"],
+        "target_lang": "zh",
+        "product_slug": "lx-par1815-ip65",
+        "url_prefix": "/zh/",
+        "cookie_name": "pll_language"
+      },
+      {
+        "id": "LANG-DATA-03",
+        "expected_langs": ["en"],
+        "target_lang": "en",
+        "product_slug": "lx-laser30-rgb",
+        "url_prefix": "lang=",
+        "cookie_name": "pll_language"
+      }
+    ]
+  },
+  "backend": {
+    "products": [
+      {
+        "id": "BACKEND-PROD-01",
+        "sku": "LX-MH350-PRO",
+        "title": "LX-MH350 Pro Moving Head Beam",
+        "category": "Moving Head"
+      },
+      {
+        "id": "BACKEND-PROD-02",
+        "sku": "LX-PAR1815-IP65",
+        "title": "LX-PAR1815 Outdoor LED Par",
+        "category": "LED Par"
+      },
+      {
+        "id": "BACKEND-PROD-03",
+        "sku": "LX-LASER30-RGB",
+        "title": "LX-LASER30 RGB Animation Laser",
+        "category": "Laser Light"
+      }
+    ],
+    "categories": [
+      {
+        "id": "BACKEND-CAT-01",
+        "name": "Moving Head"
+      },
+      {
+        "id": "BACKEND-CAT-02",
+        "name": "LED Par"
+      },
+      {
+        "id": "BACKEND-CAT-03",
+        "name": "Laser Light"
+      }
+    ],
+    "delete_temp_title": "Temp Delete Check",
+    "inquiry_min_count": 3,
+    "catalog_pdf_min": 3,
+    "roles": {
+      "editor_blocked_cap": "manage_options",
+      "admin_allowed_cap": "manage_options"
+    }
+  },
+  "performance": {
+    "datasets": [
+      {
+        "id": "PERF-DATA-01",
+        "path": "/",
+        "scheme": "https://",
+        "lazy_attr": "loading=\"lazy\"",
+        "cache_header": "cache",
+        "max_load_seconds": 3.0
+      },
+      {
+        "id": "PERF-DATA-02",
+        "path": "/products/",
+        "scheme": "http://",
+        "lazy_attr": "loading=\"lazy\"",
+        "cache_header": "cache",
+        "max_load_seconds": 3.0
+      },
+      {
+        "id": "PERF-DATA-03",
+        "path": "/downloads/catalogs/",
+        "scheme": "http://",
+        "lazy_attr": "loading=\"lazy\"",
+        "cache_header": "etag",
+        "max_load_seconds": 3.0
+      }
+    ]
+  },
+  "security": {
+    "login_attempts": [
+      {
+        "id": "SEC-LOGIN-01",
+        "username": "admin",
+        "password": "wrong-password-1"
+      },
+      {
+        "id": "SEC-LOGIN-02",
+        "username": "admin",
+        "password": "wrong-password-2"
+      },
+      {
+        "id": "SEC-LOGIN-03",
+        "username": "luxstage_admin",
+        "password": "wrong-password-3"
+      }
+    ],
+    "xss_payloads": [
+      {
+        "id": "SEC-XSS-01",
+        "your-name": "<script>alert(1)</script>",
+        "your-email": "xss1@example.com",
+        "your-message": "<img src=x onerror=alert(1)>"
+      },
+      {
+        "id": "SEC-XSS-02",
+        "your-name": "\"><svg/onload=alert(1)>",
+        "your-email": "xss2@example.com",
+        "your-message": "javascript:alert(1)"
+      },
+      {
+        "id": "SEC-XSS-03",
+        "your-name": "<iframe src=javascript:alert(1)>",
+        "your-email": "xss3@example.com",
+        "your-message": "<body onload=alert(1)>"
+      }
+    ],
+    "sqli_queries": [
+      {
+        "id": "SEC-SQLI-01",
+        "path": "/?s=%27%20OR%201%3D1"
+      },
+      {
+        "id": "SEC-SQLI-02",
+        "path": "/products/?product_category=%27%20OR%201%3D1%20--"
+      },
+      {
+        "id": "SEC-SQLI-03",
+        "path": "/wp-json/wp/v2/posts?search=%27%20OR%201%3D1%20--"
+      }
+    ]
+  }
+}

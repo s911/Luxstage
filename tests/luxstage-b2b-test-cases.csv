@@ -1,0 +1,66 @@
+case_id,module,test_item,test_steps,expected_result,priority,test_data_key
+H-01,首页(Home),页面加载,访问首页并记录加载时间,3秒内完成加载且无404/500错误,P0,home.dataset[0-2].url
+H-02,首页(Home),响应式布局,在桌面端/平板/手机分别打开首页,各尺寸下布局正常无元素重叠或溢出,P0,home.dataset[0-2].viewport
+H-03,首页(Home),Hero Banner,检查首屏大图轮播,图片正常显示轮播流畅且CTA按钮可点击,P0,home.dataset[0-2].cta_text
+H-04,首页(Home),热门产品展示,检查首页产品展示区,显示4-6款旗舰产品且点击可跳转详情,P0,home.dataset[0-2].min_featured_products
+H-05,首页(Home),认证资质区,滚动至Certificates & Trust区域,CE/UL/RoHS等认证图标正常显示,P1,home.dataset[0-2].cert_badges
+H-06,首页(Home),导航菜单,点击顶部导航各菜单项,正确跳转至对应页面且当前页高亮,P0,home.dataset[0-2].nav_links
+H-07,首页(Home),页脚信息,滚动至页面底部,显示版权社交链接联系方式且链接可点击,P1,home.dataset[0-2].footer_checks
+P-01,产品中心(Products),产品分类导航,访问产品中心页查看分类导航,显示所有品类且分类层级正确,P0,products.dataset[0-2].categories
+P-02,产品中心(Products),产品列表展示,选择任意分类查看产品列表,网格展示缩略图名称核心参数,P0,products.dataset[0-2].list_path
+P-03,产品中心(Products),多维筛选,使用筛选区选择功率段光源类型控制协议,列表实时刷新仅显示符合条件产品,P0,products.dataset[0-2].filter_query
+P-04,产品中心(Products),产品排序,按最新/最热/价格区间排序,产品顺序按选择规则重新排列,P1,products.dataset[0-2].sort_query
+P-05,产品中心(Products),产品详情跳转,点击任意产品进入详情页,URL为/products/{category}/{slug}/且内容完整,P0,products.dataset[0-2].product_slug
+P-06,产品中心(Products),产品画廊,在详情页切换主图/视频,缩略图切换正常视频可播放支持放大,P0,products.dataset[0-2].gallery_checks
+P-07,产品中心(Products),技术规格表,查看详情页技术规格区域,完整显示21项参数且与后台一致,P0,products.dataset[0-2].spec_labels
+P-08,产品中心(Products),相关产品推荐,滚动至详情页底部,显示3-5款相关产品且可跳转,P1,products.dataset[0-2].related_section
+P-09,产品中心(Products),询盘按钮,点击详情页询价按钮,跳转询盘表单且自动填充SKU,P0,products.dataset[0-2].rfq_sku
+P-10,产品中心(Products),目录下载按钮,点击下载PDF按钮,触发留资表单填写后获得PDF链接,P0,products.dataset[0-2].catalog_cta
+P-11,产品中心(Products),批量询盘,在列表页勾选多个产品批量询盘,跳转批量表单且已选产品自动关联,P2,products.dataset[0-2].batch_skus
+F-01,询盘与留资,通用联系表单,在联系页填写姓名邮箱公司电话留言并提交,提交成功显示提示并发送确认邮件,P0,forms.contact[0-2]
+F-02,询盘与留资,表单字段验证,提交空表单或无效邮箱,前端提示必填项邮箱格式错误无法提交,P0,forms.validation_negative[0-2]
+F-03,询盘与留资,产品询盘表单,从详情页询价填写数量要求并提交,询盘成功销售收到含SKU的通知邮件,P0,forms.rfq[0-2]
+F-04,询盘与留资,附件上传,在询盘表单上传PDF/DOCX规格书,上传成功大小<=10MB后台可查看,P1,forms.rfq[0-2].attachment
+F-05,询盘与留资,目录下载留资,点击下载目录填写姓名公司邮箱电话,提交后获得PDF链接留资进入后台,P0,forms.catalog[0-2]
+F-06,询盘与留资,二次下载免填,同一浏览器再次点击下载目录,识别已留资用户直接提供下载链接,P1,forms.catalog_returning[0-2]
+F-07,询盘与留资,垃圾信息防护,输入垃圾关键词并快速连续提交,蜜罐/reCAPTCHA拦截垃圾询盘,P1,forms.spam[0-2]
+F-08,询盘与留资,批量询盘表单,勾选3款产品发起批量询盘,表单列出已选产品邮件含全部SKU,P2,forms.batch[0-2]
+C-01,产品目录下载,PDF文件生成,检查后台生成的PDF目录文件,PDF内容完整排版正确含产品图片参数,P0,catalogs.dataset[0-2].slug
+C-02,产品目录下载,按品类分段下载,分别下载摇头灯/LED Par等品类目录,各品类PDF独立且内容准确,P1,catalogs.dataset[0-2].certification
+C-03,产品目录下载,整站合辑下载,下载完整产品目录合辑,合辑包含所有品类文件大小合理,P1,catalogs.dataset[0-2].archive_path
+C-04,产品目录下载,多语言目录,切换英文版下载目录,获得英文版PDF且与当前语言一致,P1,catalogs.dataset[0-2].lang
+C-05,产品目录下载,下载链接有效性,点击已获取的下载链接,有效期内可用过期后提示重新留资,P1,catalogs.dataset[0-2].expired_sig
+A-01,关于我们(About),品牌故事,访问About Us查看品牌故事,图文混排正常文字可读图片清晰,P1,about.dataset[0-2].keywords
+A-02,关于我们(About),工厂介绍,查看工厂介绍和生产流程,工厂图片/视频正常播放流程描述清晰,P1,about.dataset[0-2].keywords
+A-03,关于我们(About),资质证书,查看资质认证展示区,证书图片可查看大图轮播正常,P1,about.dataset[0-2].cert_keywords
+A-04,关于我们(About),视频嵌入,点击工厂介绍中的视频,视频正常播放支持全屏无跨域错误,P1,about.dataset[0-2].video_embed
+T-01,联系我们(Contact),联系表单,填写并提交联系表单,提交成功用户收到确认邮件销售收到通知,P0,forms.contact[0-2]
+T-02,联系我们(Contact),Google Maps,查看联系页面地图区域,地图正常加载标记准确支持缩放拖拽,P1,contact.dataset[0-2].map_embed
+T-03,联系我们(Contact),联系方式展示,检查电话邮箱地址WhatsApp,信息正确显示电话邮箱可点击,P0,contact.dataset[0-2].contact_info
+T-04,联系我们(Contact),社交链接,点击页脚/联系页社交图标,正确跳转Facebook/LinkedIn/YouTube等,P1,contact.dataset[0-2].social_links
+S-01,SEO优化,Meta标签,查看首页和产品页源代码,每页有独立title和meta description,P1,seo.dataset[0-2].path
+S-02,SEO优化,XML Sitemap,访问/sitemap_index.xml,返回有效XML Sitemap含所有页面和产品链接,P1,seo.dataset[0-2].sitemap_path
+S-03,SEO优化,结构化数据,使用富媒体工具检测产品页,检测到Product/Organization/BreadcrumbList Schema,P1,seo.dataset[0-2].schema_types
+S-04,SEO优化,面包屑导航,访问任意产品详情页,显示首页>产品中心>品类>产品名面包屑,P1,seo.dataset[0-2].breadcrumb_class
+S-05,SEO优化,图片Alt标签,检查产品图片HTML,每张产品图片alt填充产品名称,P1,seo.dataset[0-2].alt_required
+S-06,SEO优化,URL结构,检查各页面URL,格式为/products/{category}/{slug}/无乱码,P1,seo.dataset[0-2].url_pattern
+S-07,SEO优化,robots.txt,访问/robots.txt,文件存在允许抓取核心页面屏蔽后台,P1,seo.dataset[0-2].robots_rules
+L-01,多语言支持,语言切换器,检查页面语言切换器,显示当前语言和可选语言列表样式正常,P1,languages.dataset[0-2].expected_langs
+L-02,多语言支持,页面内容翻译,切换英文浏览首页和产品页,静态文本导航按钮显示为英文,P1,languages.dataset[0-2].target_lang
+L-03,多语言支持,产品数据翻译,在英文版查看产品详情,名称描述参数标签英文数值不变,P1,languages.dataset[0-2].product_slug
+L-04,多语言支持,URL语言前缀,切换语言后检查URL,英文/en/中文/zh/或默认无前缀,P1,languages.dataset[0-2].url_prefix
+L-05,多语言支持,语言Cookie记忆,选择英文后关闭浏览器重开,自动跳转上次选择的语言版本,P2,languages.dataset[0-2].cookie_name
+B-01,后台管理,产品发布,后台创建新产品填写ACF字段并发布,前台列表和详情正常显示所有参数,P0,backend.products[0-2]
+B-02,后台管理,产品编辑,修改已有产品价格和参数保存,前台实时更新缓存自动刷新,P0,backend.products[0-2].sku
+B-03,后台管理,产品删除,删除一款产品,前台不再显示URL返回404无死链,P0,backend.delete_temp_title
+B-04,后台管理,分类管理,后台添加新产品品类,前台分类导航和筛选显示新品类,P0,backend.categories[0-2]
+B-05,后台管理,询盘数据查看,在表单后台查看提交的询盘,字段完整附件可下载支持导出CSV,P0,backend.inquiry_min_count
+B-06,后台管理,目录文件上传,后台上传新PDF目录文件,前台下载指向新文件,P1,backend.catalog_pdf_min
+B-07,后台管理,用户权限,使用不同角色账号登录后台,编辑仅管理内容管理员可管理设置,P1,backend.roles
+X-01,性能与安全,页面加载速度,使用Lighthouse检测首页和产品页,Performance>=80 LCP<=2.5s CLS<=0.1,P0,performance.dataset[0-2].path
+X-02,性能与安全,HTTPS/SSL,检查网站是否启用HTTPS,全站HTTPS证书有效无混合内容,P0,performance.dataset[0-2].scheme
+X-03,性能与安全,登录保护,多次错误密码登录后台,超次数后锁定或封禁并记录攻击日志,P1,security.login_attempts[0-2]
+X-04,性能与安全,XSS防护,在表单输入<script>alert(1)</script>,输入被转义不执行脚本,P0,security.xss_payloads[0-2]
+X-05,性能与安全,SQL注入防护,在URL参数尝试注入' OR 1=1 --,返回404或过滤结果无数据库错误,P0,security.sqli_queries[0-2]
+X-06,性能与安全,图片懒加载,检查产品列表页图片加载,首屏外图片loading=lazy滚动后才加载,P1,performance.dataset[0-2].lazy_attr
+X-07,性能与安全,缓存生效,多次访问同一页面检查响应头,静态资源有缓存头重复访问更快,P1,performance.dataset[0-2].cache_header
