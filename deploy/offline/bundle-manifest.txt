@@ -1,0 +1,10 @@
+﻿Generated: 2026-07-16T16:54:54.4564639+08:00
+Host: N-20W1PF3MDMCL
+WordPress core: wordpress-6.6.2.zip
+Docker images included: False
+
+Images:
+.gitkeep
+
+Packages:
+.gitkeep advanced-custom-fields.zip contact-form-7.zip elementor.zip fluentform.zip polylang.zip seo-by-rank-math.zip webp-converter-for-media.zip wordpress-6.6.2.zip

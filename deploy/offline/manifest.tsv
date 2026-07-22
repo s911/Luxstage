@@ -1,0 +1,15 @@
+type	name	target_path	download_url	required	notes
+docker-image	wordpress.tar	deploy/offline/images/	docker pull wordpress:6.6.2-php8.3-apache	yes	WordPress runtime
+docker-image	mysql-8.0.tar	deploy/offline/images/	docker pull mysql:8.0	yes	Database
+docker-image	wordpress-cli.tar	deploy/offline/images/	docker pull wordpress:cli	yes	WP-CLI tasks
+zip	wordpress-6.6.2.zip	deploy/offline/packages/	https://wordpress.org/wordpress-6.6.2.zip	yes	WordPress core files
+zip	advanced-custom-fields.zip	deploy/offline/packages/	https://downloads.wordpress.org/plugin/advanced-custom-fields.latest-stable.zip	yes	ACF plugin
+zip	contact-form-7.zip	deploy/offline/packages/	https://downloads.wordpress.org/plugin/contact-form-7.6.1.6.zip	yes	CF7 forms
+zip	polylang.zip	deploy/offline/packages/	https://downloads.wordpress.org/plugin/polylang.latest-stable.zip	yes	Multilingual
+zip	seo-by-rank-math.zip	deploy/offline/packages/	https://downloads.wordpress.org/plugin/seo-by-rank-math.latest-stable.zip	yes	SEO
+zip	fluentform.zip	deploy/offline/packages/	https://downloads.wordpress.org/plugin/fluentform.latest-stable.zip	no	Alternative forms
+zip	elementor.zip	deploy/offline/packages/	https://downloads.wordpress.org/plugin/elementor.latest-stable.zip	no	Page builder
+zip	elementor-pro.zip	deploy/offline/packages/	Commercial license package	no	Licensed plugin
+host-package	docker-ce	deploy/offline/host-packages/	https://download.docker.com/	yes	Install on server manually
+host-package	docker-compose-plugin	deploy/offline/host-packages/	https://download.docker.com/	yes	Compose v2 plugin
+host-package	nginx	deploy/offline/host-packages/	OS vendor mirror	no	Only if using --with-nginx

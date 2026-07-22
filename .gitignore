@@ -2,6 +2,10 @@
 deploy-credentials.txt
 *.sql
 *.tar.gz
+deploy/offline/images/*.tar
+deploy/offline/packages/*.zip
+!deploy/offline/images/.gitkeep
+!deploy/offline/packages/.gitkeep
 src/wp-config.php
 src/wp-content/uploads/
 src/wp-content/cache/

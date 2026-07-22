@@ -97,3 +97,55 @@ Install daily backup cron (02:30):
 ```bash
 sudo bash deploy/scripts/install-backup-cron.sh /opt/luxstage "30 2 * * *"
 ```
+
+## Offline / Air-Gapped Deploy
+
+For servers **without internet access**, use the offline workflow.
+
+### Step 1: On a PC with internet
+
+```bash
+cd Luxstage
+bash deploy/offline/prepare-bundle.sh
+git push   # push code + scripts; large tar/zip files stay local and are copied manually
+```
+
+Copy the full project folder to the offline server, including:
+
+- `deploy/offline/images/*.tar`
+- `deploy/offline/packages/*.zip`
+
+See the full checklist: [deploy/offline/ARTIFACTS.md](offline/ARTIFACTS.md)
+
+### Step 2: On the offline server
+
+Install Docker Engine + Compose plugin manually, then run:
+
+```bash
+cd /opt/luxstage
+sudo bash deploy/one-click-deploy-offline.sh \
+  --domain 192.168.1.100 \
+  --email admin@luxstage.com \
+  --seed-demo-data
+```
+
+Optional Nginx HTTP reverse proxy:
+
+```bash
+sudo bash deploy/one-click-deploy-offline.sh \
+  --domain luxstage.internal \
+  --email admin@luxstage.com \
+  --with-nginx \
+  --seed-demo-data
+```
+
+### Offline scripts
+
+| Script | Purpose |
+|--------|---------|
+| `deploy/offline/prepare-bundle.sh` | Download images/plugins on connected PC |
+| `deploy/offline/load-images.sh` | `docker load` on offline server |
+| `deploy/one-click-deploy-offline.sh` | Full offline deployment |
+| `deploy/scripts/extract-wordpress-core.sh` | Restore WP core from local zip |
+| `deploy/scripts/install-plugins-offline.sh` | Install plugins from local zip |
+| `deploy/scripts/bootstrap-wordpress-site.sh` | Pages, CF7 forms, theme, permalinks |
